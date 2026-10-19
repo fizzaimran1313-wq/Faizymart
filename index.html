@@ -34,7 +34,8 @@
   .sidebar .admin-only, .sidebar .sub-admin-only, .sidebar .super-only { display: none; }
   body.is-super-admin .sidebar .admin-only,
   body.is-super-admin .sidebar .super-only,
-  body.is-sub-admin .sidebar .sub-admin-only { display: block; }
+  body.is-sub-admin .sidebar .sub-admin-only,
+  body.is-sub-admin .sidebar .admin-only { display: block; }
   body.is-super-admin .sidebar .sub-admin-only { display: none; }
 
   /* ===== ہیڈر ===== */
@@ -47,7 +48,7 @@
   .menu-btn:hover { background: var(--primary-yellow); color: #000; }
   header h1 { font-size: 22px; color: var(--primary-yellow); font-weight: 700; }
 
-  /* ===== ہیڈر لوگو (گول + بارڈر، صرف ایڈمن کلک کر سکتا) ===== */
+  /* ===== ہیڈر لوگو (گول + بارڈر) ===== */
   header .logo-wrap {
     position: relative;
     width: 52px; height: 52px;
@@ -58,6 +59,7 @@
     overflow: hidden;
     box-shadow: 0 0 0 3px #000, 0 0 15px rgba(250, 204, 21, 0.4);
     transition: 0.3s;
+    user-select: none;
   }
   header .logo-wrap.admin-clickable { cursor: pointer; }
   header .logo-wrap.admin-clickable:hover { transform: scale(1.08); box-shadow: 0 0 0 3px #000, 0 0 22px rgba(250, 204, 21, 0.8); }
@@ -85,7 +87,7 @@
   h2 { margin-bottom: 20px; color: var(--primary-yellow); font-size: 24px; text-align: center; }
   h3 { margin: 20px 0 15px; color: var(--primary-yellow); font-size: 18px; }
 
-  /* ===== کیٹگری کارڈز (گول + بارڈر) ===== */
+  /* ===== کیٹگری کارڈز ===== */
   .category-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 18px; margin: 20px auto; }
   .cat-card {
     background: var(--card-bg);
@@ -118,7 +120,7 @@
     border: 1.5px solid var(--primary-yellow);
   }
 
-  /* ===== پروڈکٹ کارڈز (گول + بارڈر) ===== */
+  /* ===== پروڈکٹ کارڈز ===== */
   .product-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 18px; margin-top: 15px; }
   .product-item {
     background: var(--card-bg);
@@ -152,7 +154,7 @@
   .category-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; padding: 20px; border-radius: 22px; background: var(--card-bg); border: 2.5px solid var(--primary-yellow); }
   .category-header h2 { color: var(--primary-yellow); margin: 0; }
 
-  /* ===== ایمپلائی/سیلری کارڈز (گول + بارڈر) ===== */
+  /* ===== کارڈز ===== */
   .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
   .card {
     background: var(--card-bg);
@@ -261,6 +263,56 @@
   .modal h3 { margin-top: 0; }
   .modal .close-modal { position: absolute; top: 10px; left: 10px; background: var(--red); color: #fff; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-size: 16px; }
 
+  /* پوشیدہ لاگ ان */
+  .hidden-login-box {
+    display: none;
+    max-width: 400px;
+    margin: 40px auto;
+    background: var(--card-bg);
+    padding: 30px;
+    border-radius: 22px;
+    border: 3px solid var(--primary-yellow);
+    text-align: center;
+    animation: fadeIn 0.4s;
+  }
+  .hidden-login-box.show { display: block; }
+  .hidden-login-box h2 { margin-bottom: 20px; }
+  .hidden-login-box input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+    border: 1px solid #444;
+    border-radius: 8px;
+    background: #111;
+    color: #fff;
+    font-family: inherit;
+  }
+  .hidden-login-box button {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary-yellow);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-family: inherit;
+    cursor: pointer;
+    font-size: 15px;
+  }
+  .hidden-login-box button:hover { background: #eab308; }
+  .hidden-login-box .cancel-btn {
+    background: #444;
+    color: #fff;
+    margin-top: 8px;
+  }
+  .hidden-login-box .cancel-btn:hover { background: #555; }
+  .hidden-login-error {
+    color: var(--red);
+    font-size: 13px;
+    margin-bottom: 10px;
+    display: none;
+  }
+
   @media (max-width: 600px) {
     header h1 { font-size: 18px; }
     table { font-size: 12px; }
@@ -304,10 +356,22 @@
 <div class="admin-bar">
   <span id="adminStatusText">👋 خوش آمدید!</span>
   <div>
-    <button class="admin-login-btn" id="adminLoginBtn" onclick="adminLogin()">🔐 ایڈمن لاگ ان</button>
+    <button class="admin-login-btn" id="adminLoginBtn" style="display:none;" onclick="showHiddenLogin()">🔐</button>
     <button class="admin-logout-btn" id="adminLogoutBtn" onclick="adminLogout()">🚪 لاگ آؤٹ</button>
   </div>
 </div>
+
+<!-- پوشیدہ لاگ ان باکس -->
+<section id="hiddenLoginSection" class="tab-content">
+  <div class="hidden-login-box" id="hiddenLoginBox">
+    <h2>🔐 ایڈمن لاگ ان</h2>
+    <div class="hidden-login-error" id="hiddenLoginError">❌ غلط آئی ڈی یا پاس ورڈ!</div>
+    <input type="text" id="hiddenLoginId" placeholder="آئی ڈی" dir="ltr" />
+    <input type="password" id="hiddenLoginPass" placeholder="پاس ورڈ" dir="ltr" />
+    <button onclick="submitHiddenLogin()">لاگ ان کریں</button>
+    <button class="cancel-btn" onclick="showTab('home')">منسوخ کریں</button>
+  </div>
+</section>
 
 <!-- ===== ہوم ===== -->
 <section id="home" class="tab-content active">
@@ -506,6 +570,7 @@
 <!-- ایڈمن مینجمنٹ -->
 <section id="manageAdmins" class="tab-content">
   <h2>⚙️ ایڈمن مینجمنٹ</h2>
+  <p style="text-align:center; font-size:13px; color:var(--text-muted); margin-bottom:15px;">کسی بھی ایمپلائی کو ایڈمن بنائیں یا ہٹائیں</p>
   <div style="overflow-x:auto;"><table id="adminManageTable"><thead><tr><th>ID</th><th>نام</th><th>رول</th><th>ایکشن</th></tr></thead><tbody></tbody></table></div>
 </section>
 
@@ -556,14 +621,18 @@
       <h3>حافظ محمد فیضان رضا عطّاری</h3>
       <p>ایڈمن - فیضی مارٹ</p>
       <p style="font-weight:bold; color:#000;">رابطہ: 03701304868</p>
+      <p style="color:#000; font-size:12px;">hafizraza11@gmail.com</p>
     </div>
   </div>
 </div>
 
 <script>
-// ====== ماسٹر ایڈمن ======
-const MASTER_ADMIN_ID = "Faizan-e-raza";
+// ====== سپر ایڈمن کی مکمل معلومات ======
+const MASTER_ADMIN_ID = "hafizraza11@gmail.com";
 const MASTER_ADMIN_PASS = "Faizymart@313";
+const MASTER_ADMIN_NAME = "حافظ محمد فیضان رضا عطّاری";
+const MASTER_ADMIN_PHONE = "03701304868";
+const MASTER_ADMIN_EMAIL = "hafizraza11@gmail.com";
 
 // ====== ڈیٹا ======
 let employees = JSON.parse(localStorage.getItem("fm_employees")) || [];
@@ -572,6 +641,8 @@ let admins = JSON.parse(localStorage.getItem("fm_admins")) || [];
 let currentAdmin = JSON.parse(localStorage.getItem("fm_currentAdmin")) || null;
 let salaryPayments = JSON.parse(localStorage.getItem("fm_salary_payments")) || [];
 let brandLogo = localStorage.getItem("fm_brandLogo") || "";
+let logoClickCount = 0;
+let logoClickTimer = null;
 
 let CATALOG = JSON.parse(localStorage.getItem("fm_catalog")) || {
   "COSMETICS": [], "DRONES": [], "TOYS": [], "GADGETS": [], "HOME PRODUCTS": []
@@ -593,7 +664,7 @@ function toggleSidebar() {
   document.getElementById("overlay").classList.toggle("show");
 }
 
-// ====== لوگو سسٹم (صرف ایڈمن) ======
+// ====== لوگو سسٹم ======
 function applyBrandLogo() {
   const img = document.getElementById("headerLogoImg");
   const fallback = document.getElementById("logoFallback");
@@ -622,27 +693,44 @@ function applyBrandLogo() {
 }
 
 function handleLogoClick() {
-  if (!isSuperAdmin()) {
-    alert("🔒 صرف ایڈمن لوگو تبدیل کر سکتا ہے۔");
-    return;
+  // 3 بار کلک کرنے پر پوشیدہ لاگ ان کھلے
+  logoClickCount++;
+  if (logoClickTimer) clearTimeout(logoClickTimer);
+
+  logoClickTimer = setTimeout(() => {
+    logoClickCount = 0;
+  }, 1000);
+
+  if (logoClickCount === 3) {
+    logoClickCount = 0;
+    if (currentAdmin) {
+      // اگر لاگ ان ہے تو لوگو تبدیل کریں
+      if (isSuperAdmin()) {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/*";
+        input.onchange = (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          if (file.size > 2 * 1024 * 1024) { alert("⚠️ تصویر 2MB سے کم ہونی چاہیے"); return; }
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            brandLogo = ev.target.result;
+            localStorage.setItem("fm_brandLogo", brandLogo);
+            applyBrandLogo();
+            alert("✅ لوگو تبدیل ہو گیا!");
+          };
+          reader.readAsDataURL(file);
+        };
+        input.click();
+      } else {
+        alert("🔒 صرف سپر ایڈمن لوگو تبدیل کر سکتا ہے۔");
+      }
+    } else {
+      // اگر لاگ ان نہیں ہے تو پوشیدہ لاگ ان کھولیں
+      showHiddenLogin();
+    }
   }
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = "image/*";
-  input.onchange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    if (file.size > 2 * 1024 * 1024) { alert("⚠️ تصویر 2MB سے کم ہونی چاہیے"); return; }
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      brandLogo = ev.target.result;
-      localStorage.setItem("fm_brandLogo", brandLogo);
-      applyBrandLogo();
-      alert("✅ لوگو تبدیل ہو گیا! تمام وزیٹرز کو نظر آئے گا۔");
-    };
-    reader.readAsDataURL(file);
-  };
-  input.click();
 }
 
 function resetBrandLogo() {
@@ -652,6 +740,60 @@ function resetBrandLogo() {
   localStorage.removeItem("fm_brandLogo");
   applyBrandLogo();
   alert("✅ ڈیفالٹ لوگو بحال!");
+}
+
+// ====== پوشیدہ لاگ ان ======
+function showHiddenLogin() {
+  showTab("hiddenLoginSection");
+  document.getElementById("hiddenLoginError").style.display = "none";
+  document.getElementById("hiddenLoginId").value = "";
+  document.getElementById("hiddenLoginPass").value = "";
+  setTimeout(() => {
+    document.getElementById("hiddenLoginId").focus();
+  }, 300);
+}
+
+function submitHiddenLogin() {
+  const id = document.getElementById("hiddenLoginId").value.trim();
+  const pass = document.getElementById("hiddenLoginPass").value;
+  const err = document.getElementById("hiddenLoginError");
+
+  if (!id || !pass) {
+    err.textContent = "❌ آئی ڈی اور پاس ورڈ دونوں درج کریں!";
+    err.style.display = "block";
+    return;
+  }
+
+  // سپر ایڈمن چیک
+  if ((id === MASTER_ADMIN_ID || id === "Faizan-e-raza") && pass === MASTER_ADMIN_PASS) {
+    currentAdmin = { role: "super", name: MASTER_ADMIN_NAME, email: MASTER_ADMIN_EMAIL, phone: MASTER_ADMIN_PHONE };
+    localStorage.setItem("fm_currentAdmin", JSON.stringify(currentAdmin));
+    checkLoginState();
+    showTab('orders');
+    alert("✅ سپر ایڈمن لاگ ان کامیاب!\n\n👑 " + MASTER_ADMIN_NAME);
+    return;
+  }
+
+  // سب ایڈمن چیک
+  const found = admins.find(a => a.empId === id && a.password === pass);
+  if (found) {
+    const emp = employees.find(e => e.empId === found.empId);
+    if (emp && emp.active === false) {
+      err.textContent = "❌ آپ کا اکاؤنٹ غیر فعال ہے!";
+      err.style.display = "block";
+      return;
+    }
+    currentAdmin = { role: "sub", empId: found.empId, name: found.name };
+    localStorage.setItem("fm_currentAdmin", JSON.stringify(currentAdmin));
+    checkLoginState();
+    showTab('myProfile');
+    alert("✅ لاگ ان کامیاب!\n\n👋 " + found.name);
+    return;
+  }
+
+  // غلط
+  err.textContent = "❌ غلط آئی ڈی یا پاس ورڈ!";
+  err.style.display = "block";
 }
 
 // ====== لاگ ان ======
@@ -665,48 +807,25 @@ window.addEventListener("load", () => {
 
 function checkLoginState() {
   document.body.classList.remove("is-super-admin", "is-sub-admin");
-  const loginBtn = document.getElementById("adminLoginBtn");
   const logoutBtn = document.getElementById("adminLogoutBtn");
   const statusText = document.getElementById("adminStatusText");
 
   if (currentAdmin) {
-    loginBtn.style.display = "none";
     logoutBtn.style.display = "inline-block";
     if (currentAdmin.role === "super") {
       document.body.classList.add("is-super-admin");
-      statusText.textContent = "👑 سپر ایڈمن";
+      statusText.textContent = "👑 سپر ایڈمن: " + MASTER_ADMIN_NAME;
     } else {
       document.body.classList.add("is-sub-admin");
       statusText.textContent = `👋 ${currentAdmin.name}`;
       renderMyProfile();
     }
   } else {
-    loginBtn.style.display = "inline-block";
     logoutBtn.style.display = "none";
     statusText.textContent = "👋 خوش آمدید!";
     showTab('home');
   }
   applyBrandLogo();
-}
-
-function adminLogin() {
-  const id = prompt("آئی ڈی:");
-  if (!id) return;
-  const pass = prompt("پاس ورڈ:");
-  if (id === MASTER_ADMIN_ID && pass === MASTER_ADMIN_PASS) {
-    currentAdmin = { role: "super", name: "حافظ محمد فیضان رضا عطّاری" };
-    localStorage.setItem("fm_currentAdmin", JSON.stringify(currentAdmin));
-    checkLoginState(); showTab('orders'); alert("✅ لاگ ان!");
-  } else {
-    const found = admins.find(a => a.empId === id && a.password === pass);
-    if (found) {
-      const emp = employees.find(e => e.empId === found.empId);
-      if (emp && emp.active === false) { alert("❌ آپ کا اکاؤنٹ غیر فعال ہے!"); return; }
-      currentAdmin = { role: "sub", empId: found.empId, name: found.name };
-      localStorage.setItem("fm_currentAdmin", JSON.stringify(currentAdmin));
-      checkLoginState(); showTab('myProfile'); alert("✅ لاگ ان!");
-    } else { alert("❌ غلط!"); }
-  }
 }
 
 function adminLogout() {
@@ -726,6 +845,9 @@ function showTab(tabName) {
   if (tabName === "addEmployee") generateNextEmpId();
   if (tabName === "empSearch") populateEmpSearchSelect();
   if (tabName === "salary") renderSalaryList();
+  if (tabName === "hiddenLoginSection") {
+    document.getElementById("hiddenLoginBox").classList.add("show");
+  }
   toggleSidebar();
 }
 
@@ -914,9 +1036,7 @@ function renderEmployees() {
     const card = document.createElement("div");
     card.className = "card" + (emp.active === false ? " inactive" : "");
     const activeLabel = emp.active === false ? '<span class="badge red">غیر فعال</span>' : '<span class="badge green">فعال</span>';
-    const bankInfo = isSuperAdmin()
-      ? `<p>🏦 ${emp.accName} - ${emp.bank || ''} - ${emp.accNo}</p><p>💰 سیلری: ${emp.salary.toLocaleString()} روپے</p>`
-      : `<p>🏦 بینک تفصیلات: 🔒 صرف ایڈمن</p>`;
+    const bankInfo = `<p>🏦 ${emp.accName} - ${emp.bank || ''} - ${emp.accNo}</p><p>💰 سیلری: ${emp.salary.toLocaleString()} روپے</p>`;
     card.innerHTML = `
       <span class="fm-id">${emp.empId}</span>
       <h3>${emp.name} ${isAdm?'<span style="font-size:10px;background:#facc15;color:#000;padding:2px 6px;border-radius:4px;">ایڈمن</span>':''}</h3>
@@ -941,7 +1061,7 @@ function renderEmployees() {
 }
 
 function toggleEmployee(id) {
-  if (!isSuperAdmin()) { alert("صرف سپر ایڈمن!"); return; }
+  if (!isAdmin()) { alert("صرف ایڈمن!"); return; }
   const e = employees.find(x => x.empId === id);
   if (!e) return;
   e.active = e.active === false ? true : false;
@@ -950,7 +1070,7 @@ function toggleEmployee(id) {
 }
 
 function editEmployee(index) {
-  if (!isSuperAdmin()) { alert("صرف سپر ایڈمن!"); return; }
+  if (!isAdmin()) { alert("صرف ایڈمن!"); return; }
   const emp = employees[index];
   const newName = prompt("نام:", emp.name); if (newName === null) return;
   const newMobile = prompt("موبائل:", emp.mobile); if (newMobile === null) return;
@@ -1374,7 +1494,7 @@ function makeAdmin(id) {
   const emp = employees.find(e => e.empId === id);
   if (!emp.password) { alert("پاس ورڈ نہیں!"); return; }
   admins.push({ empId: emp.empId, name: emp.name, password: emp.password });
-  saveData(); renderAdminManage(); alert("✅ ایڈمن بنا دیا!");
+  saveData(); renderAdminManage(); alert("✅ ایڈمن بنا دیا!\n\nاب یہ " + emp.name + " بھی ایڈمن کے تمام ڈٹیلز دیکھ سکتا ہے۔");
 }
 
 function removeAdmin(id) {
@@ -1445,7 +1565,7 @@ function exportBackup() {
   const data = {
     employees, orders, admins, CATALOG, salaryPayments, brandLogo,
     exportedAt: new Date().toISOString(),
-    version: "1.1"
+    version: "1.2"
   };
   downloadFile(JSON.stringify(data, null, 2), "faizy-mart-backup-" + new Date().toISOString().slice(0,10) + ".json", "application/json");
 }
@@ -1498,6 +1618,19 @@ function renderAll() {
   updateHomeCounts();
   applyBrandLogo();
 }
+
+// Enter key سے لاگ ان
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && document.getElementById("hiddenLoginSection")?.classList.contains("active")) {
+    submitHiddenLogin();
+  }
+  // Keyboard shortcut: Ctrl + Shift + L سے لاگ ان کھولیں
+  if (e.ctrlKey && e.shiftKey && e.key === "L") {
+    e.preventDefault();
+    if (!currentAdmin) showHiddenLogin();
+    else alert("آپ پہلے سے لاگ ان ہیں: " + currentAdmin.name);
+  }
+});
 
 renderAll();
 </script>
