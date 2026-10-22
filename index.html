@@ -512,7 +512,7 @@ async function loadFromFirebase() {
 
 async function saveToFirebase() {
   try {
-    await setDoc(doc(db, "store", "mainData"), { employees, orders, admins, CATALOG, salaryPayments, brandLogo, updatedAt: new Date().toISOString() });
+    await setDoc(doc(db, "store", "mainData"), { employees, orders, admins, CATALOG, salaryPayments, brandLogo, applications, updatedAt: new Date().toISOString() });
     console.log("☁️ Firebase میں ڈیٹا محفوظ");
   } catch (e) { console.error("❌ Firebase محفوظ میں مسئلہ:", e); }
 }
