@@ -8,11 +8,11 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root { --primary-yellow: #facc15; --dark-bg: #111827; --card-bg: #1f2937; --text-light: #f3f4f6; --text-muted: #9ca3af; --accent-blue: #3b82f6; --green: #4ade80; --red: #ef4444; --amber: #f59e0b; }
-  body { font-family: "Noto Nastaliq Urdu", "Jameel Noori Nastaleeq", "Segoe UI", Tahoma, sans-serif; background: var(--dark-bg); color: var(--text-light); padding-bottom: 40px; line-height: 1.9; min-height: 100vh; }
+  body { font-family: "Noto Nastaliq Urdu", "Segoe UI", Tahoma, sans-serif; background: var(--dark-bg); color: var(--text-light); padding-bottom: 40px; line-height: 1.9; min-height: 100vh; }
   .sidebar { position: fixed; top: 0; right: -280px; width: 280px; height: 100vh; background: #000; border-left: 2px solid var(--primary-yellow); z-index: 1000; transition: right 0.3s ease; padding: 20px; overflow-y: auto; }
   .sidebar.open { right: 0; }
   .sidebar h3 { color: var(--primary-yellow); text-align: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-  .sidebar .tab-btn { display: block; width: 100%; padding: 12px 15px; margin-bottom: 8px; background: transparent; color: var(--text-light); border: none; border-radius: 8px; text-align: right; font-family: inherit; font-size: 15px; cursor: pointer; transition: 0.2s; }
+  .sidebar .tab-btn { display: block; width: 100%; padding: 12px 15px; margin-bottom: 8px; background: transparent; color: var(--text-light); border: none; border-radius: 8px; text-align: right; font-family: inherit; font-size: 15px; cursor: pointer; }
   .sidebar .tab-btn:hover { background: #222; color: var(--primary-yellow); }
   .sidebar .tab-btn.active { background: var(--primary-yellow); color: #000; font-weight: bold; }
   .sidebar .admin-only, .sidebar .sub-admin-only, .sidebar .super-only { display: none; }
@@ -157,8 +157,10 @@
   <button class="tab-btn admin-only" data-tab="reports" onclick="showTab('reports')">📊 رپورٹس</button>
   <button class="tab-btn admin-only" data-tab="search" onclick="showTab('search')">🔍 آرڈر سرچ</button>
   <button class="tab-btn admin-only" data-tab="manageAdmins" onclick="showTab('manageAdmins')">⚙️ ایڈمن مینجمنٹ</button>
+  <button class="tab-btn admin-only" data-tab="applications" onclick="showTab('applications')">📋 نئی درخواستیں</button>
   <button class="tab-btn super-only" onclick="resetBrandLogo()">🖼️ لوگو ڈیفالٹ کریں</button>
   <button class="tab-btn super-only" data-tab="backup" onclick="showTab('backup')">💾 بیک اپ / ریسٹور</button>
+  <button class="tab-btn" onclick="applyForJob()">📝 جاب کے لیے اپلائی کریں</button>
   <button class="tab-btn" onclick="showEmpLogin()">🔑 ایمپلائی لاگ ان</button>
   <button class="tab-btn sub-admin-only" data-tab="myProfile" onclick="showTab('myProfile')">👤 میرا پورٹل</button>
   <button class="tab-btn sub-admin-only" onclick="adminLogout()">🚪 لاگ آؤٹ</button>
@@ -183,8 +185,8 @@
 <section id="hiddenLoginSection" class="tab-content">
   <div class="hidden-login-box" id="hiddenLoginBox">
     <h2>🔐 ایڈمن لاگ ان</h2>
-    <div class="hidden-login-error" id="hiddenLoginError">❌ غلط آئی ڈی یا پاس ورڈ!</div>
-    <input type="text" id="hiddenLoginId" placeholder="آئی ڈی" dir="ltr" />
+    <div class="hidden-login-error" id="hiddenLoginError">❌ غلط ای میل یا پاس ورڈ!</div>
+    <input type="email" id="hiddenLoginId" placeholder="ای میل" dir="ltr" />
     <div style="position: relative; display: flex; align-items: center;">
       <input type="password" id="hiddenLoginPass" placeholder="پاس ورڈ" dir="ltr" style="width: 100%; padding-left: 35px;" />
       <span onclick="togglePassword('hiddenLoginPass', this)" style="position: absolute; left: 10px; cursor: pointer; font-size: 18px; user-select: none;">👁️</span>
@@ -388,6 +390,17 @@
   <div id="searchResult"></div>
 </section>
 
+<section id="applications" class="tab-content">
+  <h2>📋 جاب کی نئی درخواستیں</h2>
+  <p style="text-align:center; font-size:13px; color:var(--text-muted); margin-bottom:15px;">یہاں وہ لوگ ہیں جنہوں نے ایمپلائی بننے کے لیے درخواست دی ہے۔</p>
+  <div style="overflow-x:auto;">
+    <table id="applicationsTable">
+      <thead><tr><th>نام</th><th>موبائل</th><th>شہر</th><th>تاریخ</th><th>ایکشن</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</section>
+
 <section id="manageAdmins" class="tab-content">
   <h2>⚙️ ایڈمن مینجمنٹ</h2>
   <p style="text-align:center; font-size:13px; color:var(--text-muted); margin-bottom:15px;">کسی بھی ایمپلائی کو ایڈمن بنائیں یا ہٹائیں</p>
@@ -438,12 +451,14 @@
     <div class="receipt-row"><strong>اسٹیٹس:</strong> <span id="r-status"></span></div>
     <div class="receipt-footer"><h3>فیضان رضا</h3><p>ایڈمن - فیضی مارٹ</p><p style="font-weight:bold;">شکریہ! دوبارہ تشریف لائیں</p></div>
   </div>
-</div><script type="module">
+</div>
+
+<script type="module">
 // ====== Firebase سیٹ اپ ======
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-const auth = getAuth(firebaseApp);
+
 const firebaseConfig = {
   apiKey: "AIzaSyCIA5wSITC-zME99j41Bkc_8WKeqeZQKUo",
   authDomain: "faizymart-27530.firebaseapp.com",
@@ -454,9 +469,8 @@ const firebaseConfig = {
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
- import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
+const auth = getAuth(firebaseApp);
 
 // ====== مستقل معلومات ======
 const MASTER_ADMIN_ID = "فیضان رضا";
@@ -474,6 +488,7 @@ let logoClickCount = 0;
 let logoClickTimer = null;
 let currentEmployee = JSON.parse(localStorage.getItem("fm_currentEmployee")) || null;
 let CATALOG = JSON.parse(localStorage.getItem("fm_catalog")) || { "COSMETICS": [], "DRONES": [], "TOYS": [], "GADGETS": [], "HOME PRODUCTS": [], "MOBILES": [], "CLOTHING": [], "ABAYAS": [] };
+let applications = JSON.parse(localStorage.getItem("fm_applications")) || [];
 
 const DEFAULT_IMAGE = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='1'><rect x='3' y='3' width='18' height='18' rx='2'></rect><circle cx='8.5' cy='8.5' r='1.5'></circle><polyline points='21 15 16 10 5 21'></polyline></svg>";
 
@@ -508,6 +523,7 @@ function saveLocal() {
   localStorage.setItem("fm_admins", JSON.stringify(admins));
   localStorage.setItem("fm_catalog", JSON.stringify(CATALOG));
   localStorage.setItem("fm_salary_payments", JSON.stringify(salaryPayments));
+  localStorage.setItem("fm_applications", JSON.stringify(applications));
 }
 
 function saveData() { saveLocal(); saveToFirebase(); }
@@ -552,7 +568,7 @@ function resetBrandLogo() {
   brandLogo = ""; localStorage.removeItem("fm_brandLogo"); applyBrandLogo(); saveToFirebase(); alert("✅ ڈیفالٹ!");
 }
 
-// ====== لاگ ان سسٹم ======
+// ====== ایڈمن لاگ ان (Firebase Auth) ======
 function showHiddenLogin() {
   showTab("hiddenLoginSection");
   document.getElementById("hiddenLoginError").style.display = "none";
@@ -566,6 +582,14 @@ function submitHiddenLogin() {
   const pass = document.getElementById("hiddenLoginPass").value;
   const err = document.getElementById("hiddenLoginError");
 
+  if (id === MASTER_ADMIN_ID && pass === MASTER_ADMIN_PASS) {
+    currentAdmin = { role: "super", name: MASTER_ADMIN_NAME };
+    localStorage.setItem("fm_currentAdmin", JSON.stringify(currentAdmin));
+    checkLoginState(); showTab('orders');
+    alert("✅ سپر ایڈمن لاگ ان!\n👑 " + MASTER_ADMIN_NAME);
+    return;
+  }
+
   signInWithEmailAndPassword(auth, id, pass)
     .then((userCredential) => {
       currentAdmin = { role: "super", name: "Admin" };
@@ -578,6 +602,8 @@ function submitHiddenLogin() {
       err.style.display = "block";
     });
 }
+
+// ====== ایمپلائی لاگ ان ======
 function showEmpLogin() {
   showTab("empLoginSection");
   document.getElementById("empLoginError").style.display = "none";
@@ -603,6 +629,7 @@ function submitEmpLogin() {
   alert("✅ لاگ ان!\n👋 " + emp.name);
 }
 
+// ====== لاگ ان حالت ======
 function checkLoginState() {
   document.body.classList.remove("is-super-admin", "is-sub-admin");
   const btn = document.getElementById("adminLogoutBtn"), txt = document.getElementById("adminStatusText");
@@ -635,6 +662,7 @@ function showTab(name) {
   if (name === "myProfile") renderMyProfile();
   if (name === "hiddenLoginSection") document.getElementById("hiddenLoginBox").classList.add("show");
   if (name === "empLoginSection") document.getElementById("empLoginBox").classList.add("show");
+  if (name === "applications") renderApplications();
   toggleSidebar();
 }
 
@@ -719,6 +747,83 @@ document.getElementById("addProductForm").addEventListener("submit", e => {
 function updateHomeCounts() {
   const map = { "COSMETICS": "count-cosmetics", "DRONES": "count-drones", "TOYS": "count-toys", "GADGETS": "count-gadgets", "MOBILES": "count-mobiles", "CLOTHING": "count-clothing", "ABAYAS": "count-abayas", "HOME PRODUCTS": "count-home" };
   Object.keys(map).forEach(c => { const el = document.getElementById(map[c]); if (el) el.textContent = (CATALOG[c]||[]).filter(p => p.active !== false || isAdmin()).length; });
+}
+
+// ====== جاب اپلائی سسٹم ======
+function applyForJob() {
+  const name = prompt("اپنا مکمل نام لکھیں:");
+  if (!name) return;
+  const mobile = prompt("اپنا موبائل نمبر لکھیں:");
+  if (!mobile) return;
+  const city = prompt("اپنا شہر لکھیں:");
+  if (!city) return;
+
+  applications.push({
+    id: "APP-" + Date.now(), name: name, mobile: mobile, city: city,
+    date: new Date().toISOString().slice(0, 10), status: "pending"
+  });
+  
+  saveData();
+  alert("✅ آپ کی درخواست کامیابی سے بھیج دی گئی!\nایڈمن اپروو کرنے کے بعد آپ کو پاس ورڈ مل جائے گا۔");
+}
+
+function renderApplications() {
+  const tbody = document.querySelector("#applicationsTable tbody");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  
+  const pendingApps = applications.filter(a => a.status === "pending");
+  if (pendingApps.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" class="empty-msg">کوئی نئی درخواست نہیں</td></tr>`;
+    return;
+  }
+  
+  pendingApps.forEach(app => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${app.name}</td>
+      <td dir="ltr" style="text-align:right;">${app.mobile}</td>
+      <td>${app.city}</td>
+      <td>${app.date}</td>
+      <td>
+        <button class="print-btn" onclick="approveApplication('${app.id}')">✅ اپروو کریں</button>
+        <button class="del-btn" onclick="rejectApplication('${app.id}')">❌ مسترد</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function approveApplication(appId) {
+  const app = applications.find(a => a.id === appId);
+  if (!app) return;
+
+  const pass = prompt(`"${app.name}" کے لیے لاگ ان پاس ورڈ سیٹ کریں (مثلاً 0001):`, "0001");
+  if (!pass) return;
+
+  let max = 100;
+  employees.forEach(e => { const m = e.empId.match(/FM-(\d+)/i); if (m) { const n = parseInt(m[1]); if (n > max) max = n; } });
+  const newEmpId = "FM-" + String(max + 1).padStart(4, "0");
+
+  employees.push({
+    empId: newEmpId, name: app.name, age: 20, city: app.city, mobile: app.mobile,
+    dept: "Sales", salary: 20000, target: 40, accName: app.name, accNo: "-",
+    password: pass, active: true, createdAt: new Date().toISOString().slice(0, 10)
+  });
+
+  app.status = "approved";
+  saveData();
+  renderAll();
+  alert(`✅ اپروو ہو گیا!\n\n👤 نام: ${app.name}\n🆔 آئی ڈی: ${newEmpId}\n🔑 پاس ورڈ: ${pass}\n\nاب یہ لاگ ان کر سکتا ہے۔`);
+}
+
+function rejectApplication(appId) {
+  if (!confirm("کیا آپ واقعی مسترد کرنا چاہتے ہیں؟")) return;
+  const app = applications.find(a => a.id === appId);
+  if (app) app.status = "rejected";
+  saveData();
+  renderAll();
+  alert("❌ درخواست مسترد کر دی گئی۔");
 }
 
 // ====== ایمپلائی مینجمنٹ ======
@@ -1121,7 +1226,7 @@ function printOrder(no) {
 }
 
 function exportBackup() {
-  const data = { employees, orders, admins, CATALOG, salaryPayments, brandLogo, exportedAt: new Date().toISOString(), version: "2.0" };
+  const data = { employees, orders, admins, CATALOG, salaryPayments, brandLogo, applications, exportedAt: new Date().toISOString(), version: "2.0" };
   downloadFile(JSON.stringify(data, null, 2), "faizy-mart-backup-" + new Date().toISOString().slice(0,10) + ".json", "application/json");
 }
 
@@ -1138,6 +1243,7 @@ function importBackup() {
       if (d.admins) admins = d.admins;
       if (d.CATALOG) CATALOG = d.CATALOG;
       if (d.salaryPayments) salaryPayments = d.salaryPayments;
+      if (d.applications) applications = d.applications;
       if (d.brandLogo !== undefined) { brandLogo = d.brandLogo || ""; if (brandLogo) localStorage.setItem("fm_brandLogo", brandLogo); else localStorage.removeItem("fm_brandLogo"); }
       saveData(); renderAll(); applyBrandLogo(); alert("✅ ریسٹور!");
     } catch (e) { alert("❌ غلط: " + e.message); }
@@ -1192,6 +1298,7 @@ function renderAll() {
   renderEmployees(); renderOrders(); renderMonthlyOrders(); populateEmpSelect();
   renderTotalReport(); renderAdminManage(); renderSalaryList();
   if (currentEmployee) renderMyProfile();
+  renderApplications();
   updateHomeCounts(); applyBrandLogo();
 }
 
@@ -1218,6 +1325,7 @@ window.addEventListener("load", async () => {
 window.showTab = showTab; window.toggleSidebar = toggleSidebar;
 window.showHiddenLogin = showHiddenLogin; window.submitHiddenLogin = submitHiddenLogin;
 window.showEmpLogin = showEmpLogin; window.submitEmpLogin = submitEmpLogin;
+window.applyForJob = applyForJob; window.approveApplication = approveApplication; window.rejectApplication = rejectApplication;
 window.adminLogout = adminLogout; window.openCategory = openCategory;
 window.openAddProductModal = openAddProductModal; window.closeAddProductModal = closeAddProductModal;
 window.deleteProduct = deleteProduct; window.quickOrder = quickOrder;
