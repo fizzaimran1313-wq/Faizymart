@@ -514,6 +514,11 @@
 <section id="employees" class="tab-content">
   <h2>تمام ایمپلائیز</h2>
  <div style="text-align:center; margin-bottom: 15px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+  <button class="export-btn" onclick="exportEmployeesCSV()">📥 ایمپلائیز کی CSV ڈاؤن لوڈ کریں</button>
+  <button class="export-btn" style="background: #3b82f6; color: #fff;" onclick="document.getElementById('importEmpFile').click()">📂 CSV اپلوڈ کریں</button>
+  <input type="file" id="importEmpFile" accept=".csv" style="display: none;" onchange="importEmployeesCSV(event)">
+</div>
+ <div style="text-align:center; margin-bottom: 15px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
   <button class="export-btn" onclick="exportEmployeesCSV()">📥 ملازمین کا CSV ڈاؤن لوڈ کریں</button>
   <button class="export-btn" style="background: #3b82f6; color: #fff;" onclick="document.getElementById('importEmpFile').click()">📂 CSV اپلوڈ کریں</button>
   <input type="file" id="importEmpFile" accept=".csv" style="display: none;" onchange="importEmployeesCSV(event)">
@@ -631,6 +636,7 @@
       </select>
     </label>
     <button type="submit">آرڈر محفوظ کریں اور پرنٹ کریں</button>
+   <!-- چھوٹا سا آئیکون پرافٹ کے لیے -->
   </form>
 </section>
 
@@ -687,24 +693,43 @@
 </div>
 
 <!-- پرنٹ رسیپٹ -->
+<!-- پرنٹ رسیپٹ (Receipt) -->
 <div id="receipt-area">
   <div class="receipt-box">
-    <div class="receipt-header"><h2>FAIZY MART</h2><p>Everything You Need, One Place</p></div>
+    <div class="receipt-header">
+      <h2>FAIZY MART</h2>
+      <p style="margin: 5px 0;">www.faizymart.com</p>
+      <p style="margin: 5px 0;">رابطہ: 03701304868</p>
+    </div>
+    
     <div class="receipt-row"><strong>آرڈر نمبر:</strong> <span id="r-order-no"></span></div>
     <div class="receipt-row"><strong>تاریخ:</strong> <span id="r-date"></span></div>
     <div class="receipt-row"><strong>آرڈر کرنے والا:</strong> <span id="r-emp-name"></span></div>
+    <div class="receipt-row"><strong>ایمپلائی ID:</strong> <span id="r-emp-id"></span></div>
     <div class="receipt-row"><strong>کسٹمر:</strong> <span id="r-customer"></span></div>
+    <div class="receipt-row"><strong>موبائل:</strong> <span id="r-customer-mobile"></span></div>
     <div class="receipt-row"><strong>ایڈریس:</strong> <span id="r-address"></span></div>
     <div class="receipt-row"><strong>شہر:</strong> <span id="r-city"></span></div>
+    
+    <hr style="margin: 15px 0; border: 1px solid #ccc;">
+    
     <div class="receipt-row"><strong>کیٹگری:</strong> <span id="r-category"></span></div>
     <div class="receipt-row"><strong>پروڈکٹ:</strong> <span id="r-product"></span></div>
+    <div class="receipt-row"><strong>مقدار:</strong> <span id="r-qty"></span></div>
+    <div class="receipt-row"><strong>فی کلو / فی عدد قیمت:</strong> <span id="r-base-amount"></span></div>
+    <div class="receipt-row"><strong>ڈسکاؤنٹ:</strong> <span id="r-discount"></span></div>
+    <div class="receipt-row"><strong>ڈیلیوری چارجز:</strong> <span id="r-delivery"></span></div>
+    <div class="receipt-row" id="r-emp-profit-row" style="display: none;"><strong>ایمپلائی پرافٹ:</strong> <span id="r-emp-profit"></span></div>
+    
+    <div class="receipt-total"><span>کل رقم:</span><span><span id="r-amount"></span> روپے</span></div>
+    
     <div class="receipt-row"><strong>پیمنٹ:</strong> <span id="r-payment"></span></div>
     <div class="receipt-row"><strong>اسٹیٹس:</strong> <span id="r-status"></span></div>
-    <div class="receipt-total"><span>کل رقم:</span><span><span id="r-amount"></span> روپے</span></div>
+    
     <div class="receipt-footer">
       <h3>فیضان رضا</h3>
       <p>ایڈمن - فیضی مارٹ</p>
-      <p style="font-weight:bold; color:#000;">رابطہ: 03701304868</p>
+      <p style="font-weight:bold;">شکریہ! دوبارہ تشریف لائیں</p>
     </div>
   </div>
 </div>
@@ -1655,36 +1680,67 @@ function renderMyProfile() {
   box.innerHTML = html;
 }
 
-// ====== پرنٹ ======
+// ====== پرنٹ رسید ======
 function printOrder(no) {
   const o = orders.find(x => x.orderNo === no);
   if (!o) return;
+  
+  // بنیادی معلومات
   document.getElementById("r-order-no").textContent = o.orderNo;
   document.getElementById("r-date").textContent = o.date;
-  let dn = o.empName;
-  if (o.empType === "employee") { const e = employees.find(x => x.empId === o.empId); if (e) dn = `${e.name} (${e.empId})`; }
-  else dn = `${o.empName} (نان ایمپلائی)`;
-  document.getElementById("r-emp-name").textContent = dn;
   document.getElementById("r-customer").textContent = o.customer;
+  document.getElementById("r-customer-mobile").textContent = o.customerMobile || "-";
   document.getElementById("r-address").textContent = o.address;
   document.getElementById("r-city").textContent = o.city;
-  document.getElementById("r-category").textContent = o.category;
+  document.getElementById("r-category").textContent = o.category || "-";
   document.getElementById("r-product").textContent = o.product;
+  document.getElementById("r-qty").textContent = o.qty || 1;
+  document.getElementById("r-base-amount").textContent = (o.baseAmount || o.amount).toLocaleString();
+  document.getElementById("r-discount").textContent = (o.discount || 0).toLocaleString();
+  document.getElementById("r-delivery").textContent = (o.deliveryCharge || 0).toLocaleString();
   document.getElementById("r-amount").textContent = o.amount.toLocaleString();
   document.getElementById("r-payment").textContent = o.paymentMethod;
   document.getElementById("r-status").textContent = o.status || "نیا";
+  
+  // ایمپلائی کی معلومات
+  let empName = o.empName || "-";
+  let empId = o.empId || "-";
+  if (o.empType === "employee" && o.empId) {
+    const e = employees.find(x => x.empId === o.empId);
+    if (e) { empName = e.name; empId = e.empId; }
+  }
+  document.getElementById("r-emp-name").textContent = empName + (o.empType === "non-employee" ? " (نان ایمپلائی)" : "");
+  document.getElementById("r-emp-id").textContent = empId;
+  
+  // ایمپلائی پرافٹ
+  if (o.empType === "employee" && o.empProfit > 0) {
+    document.getElementById("r-emp-profit-row").style.display = "flex";
+    document.getElementById("r-emp-profit").textContent = o.empProfit.toLocaleString() + " روپے";
+  } else {
+    document.getElementById("r-emp-profit-row").style.display = "none";
+  }
+  
+  // پرنٹ کھولیں
   window.print();
+}
 }
 
 // ====== بیک اپ / ریسٹور ======
 function exportBackup() {
   const data = {
-    employees, orders, admins, CATALOG, salaryPayments, brandLogo,
+    employees: employees,
+    orders: orders,
+    admins: admins,
+    CATALOG: CATALOG,
+    salaryPayments: salaryPayments,
+    brandLogo: brandLogo,
+    applications: JSON.parse(localStorage.getItem("fm_applications")) || [],
     exportedAt: new Date().toISOString(),
-    version: "1.3"
+    version: "2.0"
   };
   downloadFile(JSON.stringify(data, null, 2), "faizy-mart-backup-" + new Date().toISOString().slice(0,10) + ".json", "application/json");
 }
+ 
 
 function importBackup() {
   const file = document.getElementById("restoreFile").files[0];
@@ -1699,6 +1755,7 @@ function importBackup() {
       if (data.admins) admins = data.admins;
       if (data.CATALOG) CATALOG = data.CATALOG;
       if (data.salaryPayments) salaryPayments = data.salaryPayments;
+      if (data.applications) localStorage.setItem("fm_applications", JSON.stringify(data.applications));
       if (data.brandLogo !== undefined) {
         brandLogo = data.brandLogo || "";
         if (brandLogo) localStorage.setItem("fm_brandLogo", brandLogo);
@@ -1710,6 +1767,7 @@ function importBackup() {
   };
   reader.readAsText(file);
 }
+    
 
 function downloadFile(content, filename, mime) {
   const blob = new Blob([content], { type: mime });
@@ -1733,6 +1791,86 @@ function renderAll() {
   if (currentAdmin?.role === "sub") renderMyProfile();
   updateHomeCounts();
   applyBrandLogo();
+}
+ // 📥 تمام ایمپلائیز کی CSV ڈاؤن لوڈ
+function exportEmployeesCSV() {
+  if (employees.length === 0) { alert("کوئی ایمپلائی نہیں!"); return; }
+  
+  const headers = ["empId", "name", "age", "city", "address", "mobile", "email", "dept", "salary", "target", "accName", "bank", "accNo", "password", "active", "createdAt"];
+  let csv = headers.join(",") + "\n";
+  
+  employees.forEach(emp => {
+    const row = headers.map(h => {
+      let val = emp[h] === undefined || emp[h] === null ? "" : emp[h];
+      val = String(val).replace(/"/g, '""');
+      return `"${val}"`;
+    });
+    csv += row.join(",") + "\n";
+  });
+  
+  downloadFile(csv, "faizy-mart-employees-" + new Date().toISOString().slice(0,10) + ".csv", "text/csv;charset=utf-8;");
+}
+
+// 📂 CSV فائل سے ایمپلائیز شامل کرنا
+function importEmployeesCSV(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  if (!confirm("⚠️ یہ فائل کے تمام ایمپلائیز موجودہ ڈیٹا میں شامل ہو جائیں گے۔ جاری رکھیں؟")) {
+    event.target.value = "";
+    return;
+  }
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const text = e.target.result;
+      const lines = text.split(/\r?\n/).filter(line => line.trim() !== "");
+      if (lines.length < 2) { alert("❌ فائل خالی ہے!"); return; }
+      
+      const headers = lines[0].split(",").map(h => h.replace(/^"|"$/g, "").trim());
+      let added = 0;
+      
+      for (let i = 1; i < lines.length; i++) {
+        const values = [];
+        let current = "", inQuotes = false;
+        for (let char of lines[i]) {
+          if (char === '"') inQuotes = !inQuotes;
+          else if (char === ',' && !inQuotes) { values.push(current); current = ""; }
+          else current += char;
+        }
+        values.push(current);
+        
+        const emp = {};
+        headers.forEach((h, idx) => {
+          let val = (values[idx] || "").trim();
+          if (val === "true") val = true;
+          else if (val === "false") val = false;
+          else if (h === "age" || h === "salary" || h === "target") val = Number(val) || 0;
+          emp[h] = val;
+        });
+        
+        if (!emp.empId) {
+          let max = 100;
+          employees.forEach(e => { const m = e.empId.match(/FM-(\d+)/i); if (m) { const n = parseInt(m[1]); if (n > max) max = n; } });
+          emp.empId = "FM-" + String(max + 1).padStart(4, "0");
+        }
+        if (employees.some(e => e.empId === emp.empId)) continue;
+        
+        emp.createdAt = emp.createdAt || new Date().toISOString().slice(0,10);
+        emp.active = emp.active !== false;
+        employees.push(emp);
+        added++;
+      }
+      
+      saveData(); renderAll();
+      alert(`✅ ${added} ایمپلائیز شامل ہو گئے!`);
+    } catch (err) {
+      alert("❌ مسئلہ: " + err.message);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = "";
 }
 
 // Enter key سے لاگ ان + Keyboard shortcut
