@@ -454,6 +454,8 @@ const firebaseConfig = {
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
+ import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
 
 // ====== مستقل معلومات ======
