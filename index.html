@@ -503,6 +503,7 @@ async function loadFromFirebase() {
       if (d.admins) admins = d.admins;
       if (d.CATALOG) CATALOG = d.CATALOG;
       if (d.salaryPayments) salaryPayments = d.salaryPayments;
+      if (d.applications) applications = d.applications;
       if (d.brandLogo !== undefined) { brandLogo = d.brandLogo || ""; if (brandLogo) localStorage.setItem("fm_brandLogo", brandLogo); }
       saveLocal(); renderAll();
       console.log("✅ Firebase سے ڈیٹا لوڈ ہو گیا");
