@@ -442,7 +442,8 @@
 // ====== Firebase سیٹ اپ ======
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+const auth = getAuth(firebaseApp);
 const firebaseConfig = {
   apiKey: "AIzaSyCIA5wSITC-zME99j41Bkc_8WKeqeZQKUo",
   authDomain: "faizymart-27530.firebaseapp.com",
@@ -562,27 +563,19 @@ function submitHiddenLogin() {
   const id = document.getElementById("hiddenLoginId").value.trim();
   const pass = document.getElementById("hiddenLoginPass").value;
   const err = document.getElementById("hiddenLoginError");
-  if (!id || !pass) { err.textContent = "❌ دونوں درج کریں!"; err.style.display = "block"; return; }
-  if (id === MASTER_ADMIN_ID && pass === MASTER_ADMIN_PASS) {
-    currentAdmin = { role: "super", name: MASTER_ADMIN_NAME };
-    localStorage.setItem("fm_currentAdmin", JSON.stringify(currentAdmin));
-    checkLoginState(); showTab('orders');
-    alert("✅ سپر ایڈمن لاگ ان!\n👑 " + MASTER_ADMIN_NAME);
-    return;
-  }
-  const found = admins.find(a => a.empId === id && a.password === pass);
-  if (found) {
-    const emp = employees.find(e => e.empId === found.empId);
-    if (emp && emp.active === false) { err.textContent = "❌ غیر فعال!"; err.style.display = "block"; return; }
-    currentAdmin = { role: "sub", empId: found.empId, name: found.name };
-    localStorage.setItem("fm_currentAdmin", JSON.stringify(currentAdmin));
-    checkLoginState(); showTab('myProfile');
-    alert("✅ لاگ ان!\n👋 " + found.name);
-    return;
-  }
-  err.textContent = "❌ غلط!"; err.style.display = "block";
-}
 
+  signInWithEmailAndPassword(auth, id, pass)
+    .then((userCredential) => {
+      currentAdmin = { role: "super", name: "Admin" };
+      localStorage.setItem("fm_currentAdmin", JSON.stringify(currentAdmin));
+      checkLoginState(); showTab('orders');
+      alert("✅ ایڈمن لاگ ان کامیاب!");
+    })
+    .catch((error) => {
+      err.textContent = "❌ غلط ای میل یا پاس ورڈ!";
+      err.style.display = "block";
+    });
+}
 function showEmpLogin() {
   showTab("empLoginSection");
   document.getElementById("empLoginError").style.display = "none";
