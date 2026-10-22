@@ -404,7 +404,10 @@
     <h2>🔐 ایڈمن لاگ ان</h2>
     <div class="hidden-login-error" id="hiddenLoginError">❌ غلط آئی ڈی یا پاس ورڈ!</div>
     <input type="text" id="hiddenLoginId" placeholder="آئی ڈی" dir="ltr" />
-    <input type="password" id="hiddenLoginPass" placeholder="پاس ورڈ" dir="ltr" />
+    <div style="position: relative; display: flex; align-items: center;">
+  <input type="password" id="hiddenLoginPass" placeholder="پاس ورڈ" dir="ltr" style="width: 100%; padding-left: 35px;" />
+  <span onclick="togglePassword('hiddenLoginPass', this)" style="position: absolute; left: 10px; cursor: pointer; font-size: 18px; user-select: none;">👁️</span>
+</div>
     <button onclick="submitHiddenLogin()">لاگ ان کریں</button>
     <button class="cancel-btn" onclick="showTab('home')">منسوخ کریں</button>
   </div>
@@ -466,6 +469,7 @@
 <!-- نیا ایمپلائی -->
 <section id="addEmployee" class="tab-content">
   <h2>نیا ایمپلائی شامل کریں</h2>
+ <button type="button" onclick="showTab('home')" style="background: transparent; color: #facc15; border: 1px solid #facc15; padding: 5px 15px; border-radius: 5px; cursor: pointer; margin-bottom: 15px; font-family: inherit;">← واپس ہوم</button>
   <form id="employeeForm">
     <label>ایمپلائی ID (خودکار) <input type="text" id="empId" readonly style="text-align:center; font-weight:bold;" /></label>
     <label>مکمل نام <input type="text" id="empName" required /></label>
@@ -480,14 +484,24 @@
     <label>بینک اکاؤنٹ ٹائٹل <input type="text" id="empAccName" required /></label>
     <label>بینک کا نام <input type="text" id="empBank" /></label>
     <label>اکاؤنٹ نمبر / IBAN <input type="text" id="empAccNo" required dir="ltr" style="text-align:left;" /></label>
-    <label>لاگ ان پاس ورڈ (ایڈمن بننے کے لیے) <input type="password" id="empPass" required dir="ltr" style="text-align:left;" /></label>
-    <button type="submit">محفوظ کریں</button>
+<label>لاگ ان پاس ورڈ (ایڈمن بننے کے لیے)
+  <div style="position: relative; display: flex; align-items: center; margin-top: 5px;">
+    <input type="password" id="empPass" required dir="ltr" style="text-align:left; width: 100%; padding-left: 35px;" />
+    <span onclick="togglePassword('empPass', this)" style="position: absolute; left: 10px; cursor: pointer; font-size: 18px; user-select: none;">👁️</span>
+  </div>
+</label>
+   <button type="submit">محفوظ کریں</button>
   </form>
 </section>
 
 <!-- ایمپلائیز کی فہرست -->
 <section id="employees" class="tab-content">
   <h2>تمام ایمپلائیز</h2>
+ <div style="text-align:center; margin-bottom: 15px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+  <button class="export-btn" onclick="exportEmployeesCSV()">📥 ملازمین کا CSV ڈاؤن لوڈ کریں</button>
+  <button class="export-btn" style="background: #3b82f6; color: #fff;" onclick="document.getElementById('importEmpFile').click()">📂 CSV اپلوڈ کریں</button>
+  <input type="file" id="importEmpFile" accept=".csv" style="display: none;" onchange="importEmployeesCSV(event)">
+</div>
   <div style="text-align:center; margin-bottom:15px;">
     <span id="totalTargetDisplay" class="badge" style="font-size:14px; padding:8px 16px;"></span>
   </div>
@@ -542,6 +556,7 @@
 <!-- نیا آرڈر -->
 <section id="addOrder" class="tab-content">
   <h2>نیا آرڈر شامل کریں</h2>
+ <button type="button" onclick="showTab('home')" style="background: transparent; color: #facc15; border: 1px solid #facc15; padding: 5px 15px; border-radius: 5px; cursor: pointer; margin-bottom: 15px; font-family: inherit;">← واپس ہوم</button>
   <form id="orderForm">
     <label>آرڈر نمبر (خودکار) <input type="text" id="orderNo" readonly style="text-align:center; font-weight:bold;" /></label>
     <label>آرڈر کرنے والا کون ہے؟
@@ -1662,7 +1677,103 @@ document.addEventListener("keydown", (e) => {
     else alert("آپ پہلے سے لاگ ان ہیں: " + currentAdmin.name);
   }
 });
+// 📥 ملازمین کا CSV ڈاؤن لوڈ
+function exportEmployeesCSV() {
+  if (employees.length === 0) { alert("کوئی ملازم نہیں ہے!"); return; }
+  
+  const headers = ["empId", "name", "age", "city", "address", "mobile", "email", "dept", "salary", "target", "accName", "bank", "accNo", "password", "active", "createdAt"];
+  let csv = headers.join(",") + "\n";
+  
+  employees.forEach(emp => {
+    const row = headers.map(h => {
+      let val = emp[h] === undefined || emp[h] === null ? "" : emp[h];
+      val = String(val).replace(/"/g, '""'); // کوما یا کوٹیشن سے بچاؤ
+      return `"${val}"`;
+    });
+    csv += row.join(",") + "\n";
+  });
+  
+  downloadFile(csv, "faizy-mart-employees-" + new Date().toISOString().slice(0, 10) + ".csv", "text/csv;charset=utf-8;");
+}
 
+// 📂 CSV اپلوڈ کر کے ملازمین شامل کریں
+function importEmployeesCSV(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  if (!confirm("⚠️ یہ فائل کے تمام ملازمین موجودہ ڈیٹا میں شامل ہو جائیں گے۔ جاری رکھیں؟")) {
+    event.target.value = "";
+    return;
+  }
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const text = e.target.result;
+      const lines = text.split(/\r?\n/).filter(line => line.trim() !== "");
+      
+      if (lines.length < 2) { alert("❌ فائل خالی ہے!"); return; }
+      
+      // ہیڈر پڑھیں
+      const headers = lines[0].split(",").map(h => h.replace(/^"|"$/g, "").trim());
+      
+      let addedCount = 0;
+      for (let i = 1; i < lines.length; i++) {
+        // سادہ CSV پارسر (کوماز کو ہینڈل کرتا ہے)
+        const values = [];
+        let current = "";
+        let inQuotes = false;
+        
+        for (let char of lines[i]) {
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            values.push(current);
+            current = "";
+          } else {
+            current += char;
+          }
+        }
+        values.push(current);
+        
+        const emp = {};
+        headers.forEach((h, idx) => {
+          let val = (values[idx] || "").trim();
+          if (val === "true") val = true;
+          else if (val === "false") val = false;
+          else if (h === "age" || h === "salary" || h === "target") val = Number(val) || 0;
+          emp[h] = val;
+        });
+        
+        // اگر empId نہیں ہے تو خود بخود بنائیں
+        if (!emp.empId) {
+          let max = 100;
+          employees.forEach(e => { const m = e.empId.match(/FM-(\d+)/i); if (m) { const n = parseInt(m[1]); if (n > max) max = n; } });
+          emp.empId = "FM-" + String(max + 1).padStart(4, "0");
+        }
+        
+        // ڈپلیکیٹ چیک
+        if (employees.some(e => e.empId === emp.empId)) {
+          console.warn("ڈپلیکیٹ empId نظر انداز: " + emp.empId);
+          continue;
+        }
+        
+        emp.createdAt = emp.createdAt || new Date().toISOString().slice(0, 10);
+        emp.active = emp.active !== false;
+        employees.push(emp);
+        addedCount++;
+      }
+      
+      saveData();
+      renderAll();
+      alert(`✅ ${addedCount} ملازمین کامیابی سے شامل ہو گئے!`);
+    } catch (err) {
+      alert("❌ فائل پڑھنے میں مسئلہ: " + err.message);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = ""; // دوبارہ اسی فائل کو منتخب کرنے کے لیے
+}
 renderAll();
 </script>
 </body>
