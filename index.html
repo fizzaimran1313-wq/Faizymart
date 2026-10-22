@@ -377,7 +377,10 @@
   <button class="tab-btn admin-only" data-tab="manageAdmins" onclick="showTab('manageAdmins')">⚙️ ایڈمن مینجمنٹ</button>
   <button class="tab-btn super-only" onclick="resetBrandLogo()">🖼️ لوگو ڈیفالٹ کریں</button>
   <button class="tab-btn super-only" data-tab="backup" onclick="showTab('backup')">💾 بیک اپ / ریسٹور</button>
-  <button class="tab-btn sub-admin-only" data-tab="myProfile" onclick="showTab('myProfile')">👤 میری پروفائل</button>
+  <!-- 👇 نئے بٹنز -->
+<button class="tab-btn" onclick="showEmpLogin()">🔑 ایمپلائی لاگ ان</button>
+<button class="tab-btn sub-admin-only" data-tab="myProfile" onclick="showTab('myProfile')">👤 میرا پورٹل (ڈیش بورڈ)</button>
+<button class="tab-btn sub-admin-only" onclick="adminLogout()">🚪 لاگ آؤٹ</button>
 </aside>
 
 <header>
@@ -412,7 +415,20 @@
     <button class="cancel-btn" onclick="showTab('home')">منسوخ کریں</button>
   </div>
 </section>
-
+<!-- ===== ایمپلائی لاگ ان ===== -->
+<section id="empLoginSection" class="tab-content">
+  <div class="hidden-login-box" id="empLoginBox">
+    <h2>🔑 ایمپلائی لاگ ان</h2>
+    <div class="hidden-login-error" id="empLoginError">❌ غلط آئی ڈی یا پاس ورڈ!</div>
+    <input type="text" id="empLoginId" placeholder="ایمپلائی آئی ڈی (مثلاً FM-0101)" dir="ltr" />
+    <div style="position: relative; display: flex; align-items: center;">
+      <input type="password" id="empLoginPass" placeholder="پاس ورڈ" dir="ltr" style="width: 100%; padding-left: 35px;" />
+      <span onclick="togglePassword('empLoginPass', this)" style="position: absolute; left: 10px; cursor: pointer; font-size: 18px; user-select: none;">👁️</span>
+    </div>
+    <button onclick="submitEmpLogin()">لاگ ان کریں</button>
+    <button class="cancel-btn" onclick="showTab('home')">منسوخ کریں</button>
+  </div>
+</section>
 <!-- ===== ہوم ===== -->
 <section id="home" class="tab-content active">
   <h2>فیضی مارٹ میں خوش آمدید</h2>
@@ -507,7 +523,14 @@
   </div>
   <div id="employeeList" class="card-grid"></div>
 </section>
-
+<!-- ===== ایمپلائی پورٹل (ڈیش بورڈ) ===== -->
+<section id="myProfile" class="tab-content">
+  <h2>👤 میرا پورٹل</h2>
+  <div style="text-align:center; margin-bottom: 15px;">
+    <button class="export-btn" onclick="exportMyOrdersCSV()">📥 میری رپورٹ ڈاؤن لوڈ کریں (CSV)</button>
+  </div>
+  <div id="myProfileBox"></div>
+</section>
 <!-- آرڈرز -->
 <section id="orders" class="tab-content">
   <h2>تمام آرڈرز</h2>
@@ -571,6 +594,10 @@
       <label>نان ایمپلائی کا موبائل <input type="tel" id="nonEmpMobile" placeholder="موبائل" dir="ltr" style="text-align:left;" /></label>
     </div>
     <hr style="margin: 15px 0; border: 1px solid #333;" />
+   <label style="background: #1a2e1a; padding: 12px; border-radius: 8px; border: 1px solid #4ade80;">
+  🆔 کس ایمپلائی کے ذریعے آرڈر کر رہے ہیں؟ (آئی ڈی درج کریں)
+  <input type="text" id="customerEmpId" placeholder="مثلاً FM-0101 (اختیاری)" dir="ltr" style="text-align:left; margin-top: 5px;" />
+</label>
     <label>کسٹمر کا نام <input type="text" id="customer" required /></label>
     <label>کسٹمر موبائل <input type="tel" id="customerMobile" required dir="ltr" style="text-align:left;" /></label>
     <label>ڈیلیوری ایڈریس <textarea id="address" required rows="2"></textarea></label>
@@ -590,6 +617,11 @@
     <label>مقدار <input type="number" id="qty" min="1" value="1" required /></label>
     <label>رقم (روپے) <input type="number" id="amount" required min="0" /></label>
     <label>ڈسکاؤنٹ (روپے) <input type="number" id="discount" min="0" value="0" /></label>
+   <!-- 👇 ایمپلائی پرافٹ -->
+<label id="empProfitBox" style="display: none; background: #1a2e1a; padding: 10px; border-radius: 8px; border: 1px solid #4ade80;">
+  💰 ایمپلائی پرافٹ (روپے): 
+  <input type="number" id="empProfit" min="0" value="0" placeholder="اپنا پرافٹ لکھیں" style="border-color: #4ade80;" />
+</label>
     <label>ڈیلیوری چارجز <input type="number" id="deliveryCharge" min="0" value="0" /></label>
     <label>پیمنٹ
       <select id="paymentMethod" required>
@@ -696,8 +728,14 @@ let logoClickCount = 0;
 let logoClickTimer = null;
 
 let CATALOG = JSON.parse(localStorage.getItem("fm_catalog")) || {
-  "COSMETICS": [], "DRONES": [], "TOYS": [], "GADGETS": [], "HOME PRODUCTS": []
+  "COSMETICS": [], "DRONES": [], "TOYS": [], "GADGETS": [], "HOME PRODUCTS": [], 
+  "MOBILES": [], "CLOTHING": [], "ABAYAS": []
 };
+
+// 👇 ایمپلائی لاگ ان کے لیے نیا ڈیٹا
+let currentEmployee = JSON.parse(localStorage.getItem("fm_currentEmployee")) || null;
+  
+
 
 const DEFAULT_IMAGE = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='1'><rect x='3' y='3' width='18' height='18' rx='2'></rect><circle cx='8.5' cy='8.5' r='1.5'></circle><polyline points='21 15 16 10 5 21'></polyline></svg>";
 
@@ -920,7 +958,14 @@ function updateOrderNoField() {
 let currentCategory = "";
 function openCategory(cat) {
   currentCategory = cat;
-  const icons = { "COSMETICS": "💄", "DRONES": "🚁", "TOYS": "🧸", "GADGETS": "🎧", "HOME PRODUCTS": "🏠" };
+  <div class="cat-card" onclick="openCategory('TOYS')"><span class="icon">🧸</span><h3>TOYS</h3><span class="count-badge" id="count-toys">0</span></div>
+<div class="cat-card" onclick="openCategory('DRONES')"><span class="icon">🚁</span><h3>DRONES</h3><span class="count-badge" id="count-drones">0</span></div>
+<div class="cat-card" onclick="openCategory('GADGETS')"><span class="icon">🎧</span><h3>GADGETS</h3><span class="count-badge" id="count-gadgets">0</span></div>
+<div class="cat-card" onclick="openCategory('COSMETICS')"><span class="icon">💄</span><h3>COSMETICS</h3><span class="count-badge" id="count-cosmetics">0</span></div>
+<div class="cat-card" onclick="openCategory('MOBILES')"><span class="icon">📱</span><h3>MOBILES</h3><span class="count-badge" id="count-mobiles">0</span></div>
+<div class="cat-card" onclick="openCategory('CLOTHING')"><span class="icon">👕</span><h3>CLOTHING</h3><span class="count-badge" id="count-clothing">0</span></div>
+<div class="cat-card" onclick="openCategory('ABAYAS')"><span class="icon">🧕</span><h3>ABAYAS</h3><span class="count-badge" id="count-abayas">0</span></div>
+<div class="cat-card" onclick="openCategory('HOME PRODUCTS')"><span class="icon">🏠</span><h3>HOME</h3><span class="count-badge" id="count-home">0</span></div>
   document.getElementById("catHeaderIcon").textContent = icons[cat] || "📦";
   document.getElementById("catHeaderTitle").textContent = cat;
   renderProducts();
@@ -1273,6 +1318,21 @@ document.querySelectorAll('input[name="empType"]').forEach(r => {
     document.getElementById("nonEmployeeBox").style.display = v === "non-employee" ? "block" : "none";
   });
 });
+ function toggleProfitBox() {
+  const type = document.querySelector('input[name="empType"]:checked').value;
+  const box = document.getElementById("empProfitBox");
+  if (type === "employee") {
+    box.style.display = "block";
+  } else {
+    box.style.display = "none";
+    document.getElementById("empProfit").value = 0;
+  }
+}
+ amount: finalAmount,
+empProfit: empProfit,
+customerEmpId: customerEmpId,
+// ابتدائی حالت میں چلائیں
+setTimeout(toggleProfitBox, 500);
 
 document.getElementById("orderForm").addEventListener("submit", e => {
   e.preventDefault();
@@ -1288,10 +1348,19 @@ document.getElementById("orderForm").addEventListener("submit", e => {
   const dup = orders.find(o => o.customer === document.getElementById("customer").value.trim() && o.product === document.getElementById("product").value.trim() && o.amount === Number(document.getElementById("amount").value) && o.createdAt && new Date(o.createdAt).getTime() > fiveMinAgo);
   if (dup) { alert("⚠️ مشتبہ ڈپلیکیٹ آرڈر! 5 منٹ پہلے بھی ایسا ہی آرڈر آیا ہے۔"); return; }
 
-  const baseAmount = Number(document.getElementById("amount").value);
-  const discount = Number(document.getElementById("discount").value) || 0;
+const baseAmount = Number(document.getElementById("amount").value);
+const discount = Number(document.getElementById("discount").value) || 0;
+const delivery = Number(document.getElementById("deliveryCharge").value) || 0;
+const empProfit = Number(document.getElementById("empProfit")?.value) || 0;
+
+let finalAmount = baseAmount - discount + delivery;
+if (type === "employee") {
+  finalAmount += empProfit;
+}
+
+// 👇 کسٹمر کی بتائی ہوئی ایمپلائی آئی ڈی (اگر ہے)
+const customerEmpId = document.getElementById("customerEmpId")?.value.trim() || "";  
   const delivery = Number(document.getElementById("deliveryCharge").value) || 0;
-  const finalAmount = baseAmount - discount + delivery;
   const qty = Number(document.getElementById("qty").value) || 1;
 
   let o = {
@@ -1774,6 +1843,187 @@ function importEmployeesCSV(event) {
   reader.readAsText(file);
   event.target.value = ""; // دوبارہ اسی فائل کو منتخب کرنے کے لیے
 }
+ // ==========================================
+// 🆕 ایمپلائی لاگ ان اور پورٹل کا سسٹم
+// ==========================================
+
+// 1. ایمپلائی لاگ ان فارم دکھانا
+function showEmpLogin() {
+  showTab("empLoginSection");
+  document.getElementById("empLoginError").style.display = "none";
+  document.getElementById("empLoginId").value = "";
+  document.getElementById("empLoginPass").value = "";
+  setTimeout(() => document.getElementById("empLoginId").focus(), 300);
+}
+
+// 2. ایمپلائی لاگ ان جمع کرانا
+function submitEmpLogin() {
+  const id = document.getElementById("empLoginId").value.trim();
+  const pass = document.getElementById("empLoginPass").value;
+  const err = document.getElementById("empLoginError");
+
+  if (!id || !pass) {
+    err.textContent = "❌ آئی ڈی اور پاس ورڈ دونوں درج کریں!";
+    err.style.display = "block";
+    return;
+  }
+
+  const emp = employees.find(e => e.empId === id && e.password === pass);
+  if (!emp) {
+    err.textContent = "❌ غلط آئی ڈی یا پاس ورڈ!";
+    err.style.display = "block";
+    return;
+  }
+  if (emp.active === false) {
+    err.textContent = "❌ آپ کا اکاؤنٹ غیر فعال ہے!";
+    err.style.display = "block";
+    return;
+  }
+
+  // لاگ ان کامیاب
+  currentEmployee = { empId: emp.empId, name: emp.name };
+  localStorage.setItem("fm_currentEmployee", JSON.stringify(currentEmployee));
+  
+  // UI اپ ڈیٹ
+  document.body.classList.add("is-sub-admin"); // پورٹل دکھانے کے لیے
+  document.getElementById("adminLogoutBtn").style.display = "inline-block";
+  document.getElementById("adminStatusText").textContent = "👋 " + emp.name + " (" + emp.empId + ")";
+  
+  showTab('myProfile');
+  renderMyProfile();
+  alert("✅ لاگ ان کامیاب!\n👋 " + emp.name);
+}
+
+// 3. ایمپلائی کا پورٹل
+function renderMyProfile() {
+  if (!currentEmployee) return;
+  const emp = employees.find(e => e.empId === currentEmployee.empId);
+  if (!emp) { document.getElementById("myProfileBox").innerHTML = `<div class="empty-msg">پروفائل نہیں</div>`; return; }
+
+  // صرف اس ایمپلائی کے آرڈرز
+  const myOrders = orders.filter(o => o.empType === "employee" && o.empId === emp.empId);
+  const completed = myOrders.filter(o => isCompletedOrder(o));
+  const pending = myOrders.filter(o => !isCompletedOrder(o) && o.status !== "منسوخ شدہ");
+  const totalAmount = completed.reduce((s,o) => s + o.amount, 0);
+
+  const monthKey = new Date().toISOString().slice(0,7);
+  const thisMonth = completed.filter(o => o.date && o.date.startsWith(monthKey));
+  const target = emp.target || 40;
+  const salary = emp.salary || 20000;
+  const rate = Math.min(target > 0 ? thisMonth.length / target : 0, 2);
+  const earned = Math.round(salary * rate);
+  const paid = salaryPayments.filter(p => p.empId === emp.empId && p.month === monthKey).reduce((s,p) => s + p.amount, 0);
+  const due = Math.max(0, earned - paid);
+  const rem = Math.max(0, target - thisMonth.length);
+
+  const salaryStatus = thisMonth.length >= target
+    ? (due > 0 ? `<span style="color:#facc15;">🟡 سیلری پینڈنگ: ${due.toLocaleString()} روپے</span>` : `<span style="color:#4ade80;">✅ سیلری ادا شدہ</span>`)
+    : `<span style="color:#facc15;">⏳ سیلری کے لیے ${rem} آرڈرز باقی</span>`;
+
+  let html = `
+    <div style="background: var(--card-bg); padding: 20px; border-radius: 22px; border: 2px solid var(--primary-yellow); margin-bottom: 20px;">
+      <h3>👤 ${emp.name} (${emp.empId})</h3>
+      <p>📱 ${emp.mobile} | 🏙️ ${emp.city} | 🏢 ${emp.dept}</p>
+      <p>🎂 عمر: ${emp.age} | 📅 تاریخ شمولیت: ${emp.createdAt || "-"}</p>
+      <p>🏦 اکاؤنٹ: ${emp.accName} | ${emp.bank || '-'} | ${emp.accNo}</p>
+      <p>💰 بنیادی سیلری: ${salary.toLocaleString()} روپے</p>
+      <p>🎯 ماہانہ ٹارگٹ: ${target} آرڈرز</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+      <div class="card" style="text-align: center;">
+        <h4 style="color: var(--primary-yellow);">📦 اس ماہ کے آرڈرز</h4>
+        <p style="font-size: 24px; font-weight: bold; color: #4ade80;">${thisMonth.length}</p>
+      </div>
+      <div class="card" style="text-align: center;">
+        <h4 style="color: var(--primary-yellow);">🎯 ٹارگٹ</h4>
+        <p style="font-size: 24px; font-weight: bold;">${target}</p>
+      </div>
+      <div class="card" style="text-align: center;">
+        <h4 style="color: var(--primary-yellow);">💰 قابل سیلری</h4>
+        <p style="font-size: 24px; font-weight: bold; color: #4ade80;">${earned.toLocaleString()}</p>
+      </div>
+      <div class="card" style="text-align: center;">
+        <h4 style="color: var(--primary-yellow);">💳 ادا شدہ</h4>
+        <p style="font-size: 24px; font-weight: bold; color: #3b82f6;">${paid.toLocaleString()}</p>
+      </div>
+      <div class="card" style="text-align: center;">
+        <h4 style="color: var(--primary-yellow);">⏳ باقی سیلری</h4>
+        <p style="font-size: 24px; font-weight: bold; color: #f59e0b;">${due.toLocaleString()}</p>
+      </div>
+      <div class="card" style="text-align: center;">
+        <h4 style="color: var(--primary-yellow);">✅ ڈیلیور شدہ</h4>
+        <p style="font-size: 24px; font-weight: bold; color: #4ade80;">${completed.length}</p>
+      </div>
+      <div class="card" style="text-align: center;">
+        <h4 style="color: var(--primary-yellow);">⏳ پینڈنگ</h4>
+        <p style="font-size: 24px; font-weight: bold; color: #f59e0b;">${pending.length}</p>
+      </div>
+      <div class="card" style="text-align: center;">
+        <h4 style="color: var(--primary-yellow);">💵 کل رقم</h4>
+        <p style="font-size: 24px; font-weight: bold; color: var(--primary-yellow);">${totalAmount.toLocaleString()}</p>
+      </div>
+    </div>
+
+    <div style="background: #1a2e1a; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; color: #4ade80; font-size: 15px;">
+      ${salaryStatus}
+    </div>
+
+    <h3>📋 میرے آرڈرز (${myOrders.length})</h3>
+    <div style="overflow-x: auto;">
+      <table>
+        <thead><tr><th>آرڈر #</th><th>کسٹمر</th><th>پروڈکٹ</th><th>رقم</th><th>پرافٹ</th><th>اسٹیٹس</th><th>تاریخ</th></tr></thead>
+        <tbody>
+  `;
+
+  if (myOrders.length === 0) {
+    html += `<tr><td colspan="7" style="text-align:center;">کوئی آرڈر نہیں</td></tr>`;
+  } else {
+    myOrders.sort((a,b) => (b.date||"").localeCompare(a.date||"")).forEach(o => {
+      html += `
+        <tr>
+          <td>${o.orderNo}</td>
+          <td>${o.customer}</td>
+          <td>${o.product}</td>
+          <td>${o.amount.toLocaleString()}</td>
+          <td style="color:#4ade80;">${(o.empProfit||0).toLocaleString()}</td>
+          <td>${o.status || "نیا"}</td>
+          <td>${o.date}</td>
+        </tr>
+      `;
+    });
+  }
+
+  html += `</tbody></table></div>`;
+  document.getElementById("myProfileBox").innerHTML = html;
+}
+
+// 4. ایمپلائی کے آرڈرز کا CSV ڈاؤن لوڈ
+function exportMyOrdersCSV() {
+  if (!currentEmployee) { alert("پہلے لاگ ان کریں!"); return; }
+  const myOrders = orders.filter(o => o.empType === "employee" && o.empId === currentEmployee.empId);
+  if (myOrders.length === 0) { alert("کوئی آرڈر نہیں!"); return; }
+  
+  let csv = "OrderNo,Date,Customer,Product,Amount,Profit,Status,Payment\n";
+  myOrders.forEach(o => {
+    csv += `"${o.orderNo}","${o.date}","${o.customer}","${o.product}",${o.amount},${o.empProfit||0},"${o.status||''}","${o.paymentMethod}"\n`;
+  });
+  downloadFile(csv, "my-orders-" + currentEmployee.empId + "-" + new Date().toISOString().slice(0,10) + ".csv", "text/csv;charset=utf-8;");
+}
+
+// 5. لاگ آؤٹ میں تبدیلی
+const originalAdminLogout = adminLogout;
+adminLogout = function() {
+  currentEmployee = null;
+  localStorage.removeItem("fm_currentEmployee");
+  document.body.classList.remove("is-sub-admin");
+  document.getElementById("adminLogoutBtn").style.display = "none";
+  document.getElementById("adminStatusText").textContent = "👋 خوش آمدید!";
+  originalAdminLogout();
+};
+
+// 6. لائن 848 کے قریب "myProfile" والی لائن ہٹا دیں
+// (کیونکہ اب currentEmployee الگ ہے)
 renderAll();
 </script>
 </body>
