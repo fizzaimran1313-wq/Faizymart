@@ -458,13 +458,10 @@
   </div>
 </footer>
 
-<script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
-
-const supabaseUrl = 'https://ofjlswkrdrpwapcvwzun.supabase.co';
-const supabaseKey = 'sb_publishable_yk51b9Pps15BXSX-tmnBdw_IFsWoUCW';
-const supabase = createClient(supabaseUrl, supabaseKey);
-
+<script>
+// ==========================================
+// سادہ اور بغیر رکاوٹ والا کوڈ (بٹن کام کریں گے)
+// ==========================================
 let employees = JSON.parse(localStorage.getItem("fm_employees")) || [];
 let orders = JSON.parse(localStorage.getItem("fm_orders")) || [];
 let salaryPayments = JSON.parse(localStorage.getItem("fm_salary_payments")) || [];
@@ -473,34 +470,7 @@ let applications = JSON.parse(localStorage.getItem("fm_applications")) || [];
 let currentAdmin = JSON.parse(localStorage.getItem("fm_currentAdmin")) || null;
 let currentEmployee = JSON.parse(localStorage.getItem("fm_currentEmployee")) || null;
 
-async function loadFromSupabase() {
-  try {
-    const { data, error } = await supabase.from('store').select('data').eq('id', 1).single();
-    if (error) throw error;
-    if (data && data.data) {
-      const d = data.data;
-      if (d.employees) employees = d.employees;
-      if (d.orders) orders = d.orders;
-      if (d.CATALOG) CATALOG = d.CATALOG;
-      if (d.salaryPayments) salaryPayments = d.salaryPayments;
-      if (d.applications) applications = d.applications;
-      saveLocal(); renderAll();
-      console.log("✅ Supabase سے ڈیٹا لوڈ ہو گیا");
-    }
-  } catch (e) { console.error("❌ Supabase لوڈ میں مسئلہ:", e); }
-}
-
-async function saveToSupabase() {
-  try {
-    await supabase.from('store').upsert({
-      id: 1,
-      data: { employees, orders, CATALOG, salaryPayments, applications, updatedAt: new Date().toISOString() }
-    });
-    console.log("☁️ Supabase میں ڈیٹا محفوظ");
-  } catch (e) { console.error("❌ Supabase محفوظ میں مسئلہ:", e); }
-}
-
-function saveLocal() {
+function saveData() {
   localStorage.setItem("fm_employees", JSON.stringify(employees));
   localStorage.setItem("fm_orders", JSON.stringify(orders));
   localStorage.setItem("fm_catalog", JSON.stringify(CATALOG));
@@ -508,38 +478,9 @@ function saveLocal() {
   localStorage.setItem("fm_applications", JSON.stringify(applications));
 }
 
-function saveData() { saveLocal(); saveToSupabase(); }
-
-function toggleSidebar() { document.getElementById("sidebar").classList.toggle("open"); document.getElementById("overlay").classList.toggle("show"); }
-function handleLogoClick() { if (!currentAdmin) showHiddenLogin(); }
-function showHiddenLogin() { showTab("hiddenLoginSection"); }
-function submitHiddenLogin() {
-  const id = document.getElementById("hiddenLoginId").value.trim();
-  const pass = document.getElementById("hiddenLoginPass").value;
-  if (id === "فیضان رضا" && pass === "المدار 313") {
-    currentAdmin = { role: "super", name: "Admin" };
-    localStorage.setItem("fm_currentAdmin", JSON.stringify(currentAdmin));
-    document.body.classList.add("is-super-admin");
-    showTab('home'); alert("✅ ایڈمن لاگ ان!");
-  } else { document.getElementById("hiddenLoginError").style.display = "block"; }
-}
-function showEmpLogin() { showTab("empLoginSection"); }
-function submitEmpLogin() {
-  const id = document.getElementById("empLoginId").value.trim();
-  const pass = document.getElementById("empLoginPass").value;
-  const emp = employees.find(e => e.empId === id && e.password === pass);
-  if (emp) {
-    currentEmployee = { empId: emp.empId, name: emp.name };
-    localStorage.setItem("fm_currentEmployee", JSON.stringify(currentEmployee));
-    document.body.classList.add("is-sub-admin");
-    showTab('myProfile'); alert("✅ ایمپلائی لاگ ان!");
-  } else { document.getElementById("empLoginError").style.display = "block"; }
-}
-function adminLogout() {
-  currentAdmin = null; currentEmployee = null;
-  localStorage.removeItem("fm_currentAdmin"); localStorage.removeItem("fm_currentEmployee");
-  document.body.classList.remove("is-super-admin", "is-sub-admin");
-  showTab('home'); alert("🚪 لاگ آؤٹ!");
+function toggleSidebar() {
+  document.getElementById("sidebar").classList.toggle("open");
+  document.getElementById("overlay").classList.toggle("show");
 }
 function showTab(name) {
   document.querySelectorAll(".tab-content").forEach(s => s.classList.remove("active"));
@@ -553,21 +494,63 @@ function showTab(name) {
   if (name === "orders") renderOrders();
   if (name === "salary") renderSalaryList();
   if (name === "applications") renderApplications();
+  
   document.getElementById("sidebar").classList.remove("open");
   document.getElementById("overlay").classList.remove("show");
 }
+
 function togglePassword(id, el) {
   const inp = document.getElementById(id); if (!inp) return;
   if (inp.type === "password") { inp.type = "text"; el.innerHTML = "🙈"; }
   else { inp.type = "password"; el.innerHTML = "👁️"; }
 }
-function generateNextEmpId() { return "FM-" + (employees.length + 1001); }
+
+function handleLogoClick() {
+  if (!currentAdmin) showHiddenLogin();
+}
+function showHiddenLogin() { showTab("hiddenLoginSection"); }
+function submitHiddenLogin() {
+  const id = document.getElementById("hiddenLoginId").value.trim();
+  const pass = document.getElementById("hiddenLoginPass").value;
+  if (id === "فیضان رضا" && pass === "المدار 313") {
+    currentAdmin = { role: "super", name: "Admin" };
+    localStorage.setItem("fm_currentAdmin", JSON.stringify(currentAdmin));
+    document.body.classList.add("is-super-admin");
+    showTab('home'); alert("✅ ایڈمن لاگ ان!");
+  } else {
+    document.getElementById("hiddenLoginError").style.display = "block";
+  }
+}
+
+function showEmpLogin() { showTab("empLoginSection"); }
+function submitEmpLogin() {
+  const id = document.getElementById("empLoginId").value.trim();
+  const pass = document.getElementById("empLoginPass").value;
+  const emp = employees.find(e => e.empId === id && e.password === pass);
+  if (emp) {
+    currentEmployee = { empId: emp.empId, name: emp.name };
+    localStorage.setItem("fm_currentEmployee", JSON.stringify(currentEmployee));
+    document.body.classList.add("is-sub-admin");
+    showTab('myProfile'); alert("✅ ایمپلائی لاگ ان!");
+  } else {
+    document.getElementById("empLoginError").style.display = "block";
+  }
+}
+
+function adminLogout() {
+  currentAdmin = null; currentEmployee = null;
+  localStorage.removeItem("fm_currentAdmin"); localStorage.removeItem("fm_currentEmployee");
+  document.body.classList.remove("is-super-admin", "is-sub-admin");
+  showTab('home'); alert("🚪 لاگ آؤٹ!");
+}
+
 let currentCategory = "";
 function openCategory(cat) {
   currentCategory = cat;
   document.getElementById("catHeaderTitle").textContent = cat;
   renderProducts(); showTab("categoryDetail");
 }
+
 function renderProducts() {
   const list = document.getElementById("productList"); list.innerHTML = "";
   const items = CATALOG[currentCategory] || [];
@@ -579,6 +562,7 @@ function renderProducts() {
     list.appendChild(div);
   });
 }
+
 function openAddProductModal() { document.getElementById("addProductForm").style.display = "block"; document.getElementById("prodCat").value = currentCategory; }
 function closeAddProductModal() { document.getElementById("addProductForm").style.display = "none"; document.getElementById("addProductForm").reset(); }
 
@@ -590,7 +574,9 @@ document.getElementById("addProductForm").addEventListener("submit", e => {
   const price = +document.getElementById("prodPrice").value;
   const stock = +document.getElementById("prodStock").value;
   const files = [1,2,3,4,5].map(n => document.getElementById("prodImg"+n).files[0]).filter(f => f);
-  let images = []; let loaded = 0;
+  
+  let images = [];
+  let loaded = 0;
   const finalize = (imgs) => {
     if (!CATALOG[cat]) CATALOG[cat] = [];
     CATALOG[cat].push({ name, desc, price, stock, images: imgs });
@@ -599,63 +585,77 @@ document.getElementById("addProductForm").addEventListener("submit", e => {
   if (files.length === 0) { finalize([]); return; }
   files.forEach(file => {
     const r = new FileReader();
-    r.onload = (ev) => { images.push(ev.target.result); loaded++; if (loaded === files.length) finalize(images); };
+    r.onload = (ev) => {
+      images.push(ev.target.result);
+      loaded++;
+      if (loaded === files.length) finalize(images);
+    };
     r.readAsDataURL(file);
   });
 });
+
 function quickOrder(name, price) {
   showTab('addOrder');
   setTimeout(() => { document.getElementById('product').value = name; document.getElementById('amount').value = price; }, 200);
 }
+
+function generateNextEmpId() { return "FM-" + (employees.length + 1001); }
 document.getElementById("employeeForm").addEventListener("submit", e => {
   e.preventDefault();
   const emp = { empId: document.getElementById("empId").value, name: document.getElementById("empName").value, mobile: document.getElementById("empMobile").value, salary: +document.getElementById("empSalary").value, target: +document.getElementById("empTarget").value, password: document.getElementById("empPass").value, active: true };
   employees.push(emp); saveData(); renderEmployees(); e.target.reset(); alert("✅ شامل!");
 });
+
 function renderEmployees() {
   const box = document.getElementById("employeeList"); box.innerHTML = "";
   employees.forEach(emp => { box.innerHTML += `<div class="card"><h3>${emp.name} (${emp.empId})</h3><p>📱 ${emp.mobile}</p><p>💰 سیلری: ${emp.salary}</p><p>🎯 ٹارگٹ: ${emp.target}</p></div>`; });
 }
+
 document.getElementById("orderForm").addEventListener("submit", e => {
   e.preventDefault();
   const o = { orderNo: document.getElementById("orderNo").value, customer: document.getElementById("customer").value, product: document.getElementById("product").value, amount: +document.getElementById("amount").value, date: new Date().toISOString().slice(0,10) };
   orders.push(o); saveData(); renderOrders(); e.target.reset(); alert("✅ آرڈر محفوظ!"); printOrder(o.orderNo);
 });
+
 function renderOrders() {
   const tb = document.querySelector("#ordersTable tbody"); tb.innerHTML = "";
   orders.forEach(o => { tb.innerHTML += `<tr><td>${o.orderNo}</td><td>${o.customer}</td><td>${o.product}</td><td>${o.amount}</td><td>✅</td></tr>`; });
 }
+
 function printOrder(no) {
-  const o = orders.find(x => x.orderNo === no); if (!o) return;
+  const o = orders.find(x => x.orderNo === no);
+  if (!o) return;
   document.getElementById("r-order-no").textContent = o.orderNo;
   document.getElementById("r-customer").textContent = o.customer;
   document.getElementById("r-product").textContent = o.product;
   document.getElementById("r-amount").textContent = o.amount;
   window.print();
 }
+
 function applyForJob() {
   const name = prompt("نام:"); if (!name) return;
   const mobile = prompt("موبائل:"); if (!mobile) return;
   applications.push({ id: Date.now(), name, mobile });
   saveData(); alert("✅ درخواست بھیج دی گئی!");
 }
+
 function renderApplications() {
   const tb = document.querySelector("#applicationsTable tbody"); tb.innerHTML = "";
   applications.forEach(a => { tb.innerHTML += `<tr><td>${a.name}</td><td>${a.mobile}</td><td><button onclick="alert('اپرووڈ')">✅ اپروو</button></td></tr>`; });
 }
+
 function renderMyProfile() {
   document.getElementById("myProfileBox").innerHTML = `<div class="card"><h3>👤 ${currentEmployee.name}</h3><p>خوش آمدید! یہ آپ کا پورٹل ہے۔</p></div>`;
 }
+
 function renderSalaryList() { document.getElementById("salaryList").innerHTML = "<div class='card'>سیلری مینجمنٹ جلد آ رہی ہے...</div>"; }
+
 function exportBackup() { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify({ employees, orders, CATALOG })], {type:"application/json"})); a.download = "backup.json"; a.click(); }
 function importBackup() { alert("ریسٹور کام کر رہا ہے!"); }
-function renderAll() { renderEmployees(); renderOrders(); renderSalaryList(); renderApplications(); }
 
-window.onload = async () => {
-  await loadFromSupabase();
+window.onload = () => {
   if (currentAdmin) document.body.classList.add("is-super-admin");
   if (currentEmployee) document.body.classList.add("is-sub-admin");
-  renderAll();
 };
 </script>
 </body>
