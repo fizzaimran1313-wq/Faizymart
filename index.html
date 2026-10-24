@@ -453,11 +453,17 @@
   </div>
 </footer>
 
-<script type="module">
-// ====== Firebase سیٹ اپ ======
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<script>
+// ====== بنیادی ڈیٹا ======
+let employees = JSON.parse(localStorage.getItem("fm_employees")) || [];
+let orders = JSON.parse(localStorage.getItem("fm_orders")) || [];
+let salaryPayments = JSON.parse(localStorage.getItem("fm_salary_payments")) || [];
+let CATALOG = JSON.parse(localStorage.getItem("fm_catalog")) || { "COSMETICS": [], "DRONES": [], "TOYS": [], "GADGETS": [], "HOME PRODUCTS": [], "MOBILES": [], "CLOTHING": [], "ABAYAS": [] };
+let applications = JSON.parse(localStorage.getItem("fm_applications")) || [];
+let currentAdmin = JSON.parse(localStorage.getItem("fm_currentAdmin")) || null;
+let currentEmployee = JSON.parse(localStorage.getItem("fm_currentEmployee")) || null;
 
+// ====== فائر بیس کا کوڈ (بغیر ماڈیول کے، تاکہ بٹن کام کریں) ======
 const firebaseConfig = {
   apiKey: "AIzaSyCIA5wSITC-zME99j41Bkc_8WKeqeZQKUo",
   authDomain: "faizymart-27530.firebaseapp.com",
@@ -467,24 +473,23 @@ const firebaseConfig = {
   appId: "1:133819927436:web:2f180ca1796ba8df4ae4a9"
 };
 
-const firebaseApp = initializeApp(firebaseConfig);
-const db = getFirestore(firebaseApp);
+// فائر بیس کو لوڈ کرنا
+const firebaseScript = document.createElement('script');
+firebaseScript.src = "https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js";
+document.head.appendChild(firebaseScript);
 
-// ====== ڈیٹا ویریبلز ======
-let employees = JSON.parse(localStorage.getItem("fm_employees")) || [];
-let orders = JSON.parse(localStorage.getItem("fm_orders")) || [];
-let salaryPayments = JSON.parse(localStorage.getItem("fm_salary_payments")) || [];
-let CATALOG = JSON.parse(localStorage.getItem("fm_catalog")) || { "COSMETICS": [], "DRONES": [], "TOYS": [], "GADGETS": [], "HOME PRODUCTS": [], "MOBILES": [], "CLOTHING": [], "ABAYAS": [] };
-let applications = JSON.parse(localStorage.getItem("fm_applications")) || [];
-let currentAdmin = JSON.parse(localStorage.getItem("fm_currentAdmin")) || null;
-let currentEmployee = JSON.parse(localStorage.getItem("fm_currentEmployee")) || null;
+const firestoreScript = document.createElement('script');
+firestoreScript.src = "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js";
+document.head.appendChild(firestoreScript);
 
-// ====== فائر بیس سے ڈیٹا لوڈ کرنا ======
-async function loadFromFirebase() {
-  try {
-    const snap = await getDoc(doc(db, "store", "mainData"));
-    if (snap.exists()) {
-      const d = snap.data();
+firestoreScript.onload = () => {
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  
+  // ڈیٹا لوڈ کرنا
+  db.collection("store").doc("mainData").get().then((doc) => {
+    if (doc.exists) {
+      const d = doc.data();
       if (d.employees) employees = d.employees;
       if (d.orders) orders = d.orders;
       if (d.CATALOG) CATALOG = d.CATALOG;
@@ -493,16 +498,27 @@ async function loadFromFirebase() {
       saveLocal(); renderAll();
       console.log("✅ Firebase سے ڈیٹا لوڈ ہو گیا");
     }
-  } catch (e) { console.error("❌ Firebase لوڈ میں مسئلہ:", e); }
-}
+  }).catch((e) => console.error("❌ Firebase لوڈ میں مسئلہ:", e));
 
-// ====== فائر بیس میں ڈیٹا محفوظ کرنا ======
-async function saveToFirebase() {
-  try {
-    await setDoc(doc(db, "store", "mainData"), { employees, orders, CATALOG, salaryPayments, applications, updatedAt: new Date().toISOString() });
-    console.log("☁️ Firebase میں ڈیٹا محفوظ");
-  } catch (e) { console.error("❌ Firebase محفوظ میں مسئلہ:", e); }
-}
+  // ڈیٹا محفوظ کرنا
+  window.saveToFirebase = function() {
+    db.collection("store").doc("mainData").set({
+      employees: employees,
+      orders: orders,
+      CATALOG: CATALOG,
+      salaryPayments: salaryPayments,
+      applications: applications,
+      updatedAt: new Date().toISOString()
+    }).then(() => {
+      console.log("☁️ Firebase میں ڈیٹا محفوظ");
+    }).catch((e) => console.error("❌ Firebase محفوظ میں مسئلہ:", e));
+  };
+
+  // اگر ڈیٹا لوڈ ہو گیا تو ویب سائٹ دکھائیں
+  if (currentAdmin) document.body.classList.add("is-super-admin");
+  if (currentEmployee) document.body.classList.add("is-sub-admin");
+  renderAll();
+};
 
 function saveLocal() {
   localStorage.setItem("fm_employees", JSON.stringify(employees));
@@ -512,7 +528,10 @@ function saveLocal() {
   localStorage.setItem("fm_applications", JSON.stringify(applications));
 }
 
-function saveData() { saveLocal(); saveToFirebase(); }
+function saveData() {
+  saveLocal();
+  if (window.saveToFirebase) window.saveToFirebase();
+}
 
 // ====== سائیڈبار اور لوگو ======
 function toggleSidebar() {
@@ -689,13 +708,6 @@ function importBackup() { alert("ریسٹور کام کر رہا ہے!"); }
 function renderAll() {
   renderEmployees(); renderOrders(); renderSalaryList(); renderApplications();
 }
-
-window.onload = async () => {
-  await loadFromFirebase();
-  if (currentAdmin) document.body.classList.add("is-super-admin");
-  if (currentEmployee) document.body.classList.add("is-sub-admin");
-  renderAll();
-};
 </script>
 </body>
 </html>
