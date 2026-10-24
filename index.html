@@ -107,9 +107,10 @@
   .product-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin-top: 20px; }
   .product-item { background: var(--card-bg); border-radius: 12px; overflow: hidden; transition: 0.3s; border: 1px solid #333; display: flex; flex-direction: column; }
   .product-item:hover { transform: translateY(-5px); border-color: var(--primary-yellow); box-shadow: 0 5px 15px rgba(250,204,21,0.2); }
-  .product-img-box { width: 100%; height: 200px; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-  .product-img-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
-  .product-item:hover .product-img-box img { transform: scale(1.05); }
+  .product-img-box { width: 100%; height: 200px; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+  .product-img-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; position: absolute; top: 0; left: 0; opacity: 0; }
+  .product-img-box img.active { opacity: 1; }
+  .product-item:hover .product-img-box img.active { transform: scale(1.05); }
   .product-info { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
   .product-item h4 { color: var(--text-light); margin-bottom: 5px; font-size: 16px; }
   .product-item p { font-size: 13px; color: var(--text-muted); margin: 2px 0; flex-grow: 1; }
@@ -297,7 +298,11 @@
     <label>تفصیل <input type="text" id="prodDesc" required /></label>
     <label>قیمت <input type="number" id="prodPrice" required min="0" /></label>
     <label>اسٹاک <input type="number" id="prodStock" min="0" value="0" /></label>
-    <label>تصویر <input type="file" id="prodImg1" accept="image/*" style="background:#111; color:#fff;" /></label>
+    <label>تصویر 1 <input type="file" id="prodImg1" accept="image/*" style="background:#111; color:#fff;" /></label>
+    <label>تصویر 2 <input type="file" id="prodImg2" accept="image/*" style="background:#111; color:#fff;" /></label>
+    <label>تصویر 3 <input type="file" id="prodImg3" accept="image/*" style="background:#111; color:#fff;" /></label>
+    <label>تصویر 4 <input type="file" id="prodImg4" accept="image/*" style="background:#111; color:#fff;" /></label>
+    <label>تصویر 5 <input type="file" id="prodImg5" accept="image/*" style="background:#111; color:#fff;" /></label>
     <div style="display:flex; gap:10px; margin-top:10px;">
       <button type="submit" style="background:#4ade80; color:#000;">محفوظ</button>
     </div>
@@ -454,7 +459,6 @@
 </footer>
 
 <script>
-// ====== بنیادی ڈیٹا ======
 let employees = JSON.parse(localStorage.getItem("fm_employees")) || [];
 let orders = JSON.parse(localStorage.getItem("fm_orders")) || [];
 let salaryPayments = JSON.parse(localStorage.getItem("fm_salary_payments")) || [];
@@ -463,64 +467,7 @@ let applications = JSON.parse(localStorage.getItem("fm_applications")) || [];
 let currentAdmin = JSON.parse(localStorage.getItem("fm_currentAdmin")) || null;
 let currentEmployee = JSON.parse(localStorage.getItem("fm_currentEmployee")) || null;
 
-// ====== فائر بیس کا کوڈ (بغیر ماڈیول کے، تاکہ بٹن کام کریں) ======
-const firebaseConfig = {
-  apiKey: "AIzaSyCIA5wSITC-zME99j41Bkc_8WKeqeZQKUo",
-  authDomain: "faizymart-27530.firebaseapp.com",
-  projectId: "faizymart-27530",
-  storageBucket: "faizymart-27530.firebasestorage.app",
-  messagingSenderId: "133819927436",
-  appId: "1:133819927436:web:2f180ca1796ba8df4ae4a9"
-};
-
-// فائر بیس کو لوڈ کرنا
-const firebaseScript = document.createElement('script');
-firebaseScript.src = "https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js";
-document.head.appendChild(firebaseScript);
-
-const firestoreScript = document.createElement('script');
-firestoreScript.src = "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js";
-document.head.appendChild(firestoreScript);
-
-firestoreScript.onload = () => {
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  
-  // ڈیٹا لوڈ کرنا
-  db.collection("store").doc("mainData").get().then((doc) => {
-    if (doc.exists) {
-      const d = doc.data();
-      if (d.employees) employees = d.employees;
-      if (d.orders) orders = d.orders;
-      if (d.CATALOG) CATALOG = d.CATALOG;
-      if (d.salaryPayments) salaryPayments = d.salaryPayments;
-      if (d.applications) applications = d.applications;
-      saveLocal(); renderAll();
-      console.log("✅ Firebase سے ڈیٹا لوڈ ہو گیا");
-    }
-  }).catch((e) => console.error("❌ Firebase لوڈ میں مسئلہ:", e));
-
-  // ڈیٹا محفوظ کرنا
-  window.saveToFirebase = function() {
-    db.collection("store").doc("mainData").set({
-      employees: employees,
-      orders: orders,
-      CATALOG: CATALOG,
-      salaryPayments: salaryPayments,
-      applications: applications,
-      updatedAt: new Date().toISOString()
-    }).then(() => {
-      console.log("☁️ Firebase میں ڈیٹا محفوظ");
-    }).catch((e) => console.error("❌ Firebase محفوظ میں مسئلہ:", e));
-  };
-
-  // اگر ڈیٹا لوڈ ہو گیا تو ویب سائٹ دکھائیں
-  if (currentAdmin) document.body.classList.add("is-super-admin");
-  if (currentEmployee) document.body.classList.add("is-sub-admin");
-  renderAll();
-};
-
-function saveLocal() {
+function saveData() {
   localStorage.setItem("fm_employees", JSON.stringify(employees));
   localStorage.setItem("fm_orders", JSON.stringify(orders));
   localStorage.setItem("fm_catalog", JSON.stringify(CATALOG));
@@ -528,15 +475,31 @@ function saveLocal() {
   localStorage.setItem("fm_applications", JSON.stringify(applications));
 }
 
-function saveData() {
-  saveLocal();
-  if (window.saveToFirebase) window.saveToFirebase();
-}
-
-// ====== سائیڈبار اور لوگو ======
 function toggleSidebar() {
   document.getElementById("sidebar").classList.toggle("open");
   document.getElementById("overlay").classList.toggle("show");
+}
+function showTab(name) {
+  document.querySelectorAll(".tab-content").forEach(s => s.classList.remove("active"));
+  const sec = document.getElementById(name); if (sec) sec.classList.add("active");
+  if (name === "addEmployee") document.getElementById("empId").value = generateNextEmpId();
+  if (name === "addOrder") document.getElementById("orderNo").value = "FM-ORD-" + (orders.length + 1).toString().padStart(3, '0');
+  if (name === "hiddenLoginSection") document.getElementById("hiddenLoginBox").classList.add("show");
+  if (name === "empLoginSection") document.getElementById("empLoginBox").classList.add("show");
+  if (name === "myProfile") renderMyProfile();
+  if (name === "employees") renderEmployees();
+  if (name === "orders") renderOrders();
+  if (name === "salary") renderSalaryList();
+  if (name === "applications") renderApplications();
+  
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("overlay").classList.remove("show");
+}
+
+function togglePassword(id, el) {
+  const inp = document.getElementById(id); if (!inp) return;
+  if (inp.type === "password") { inp.type = "text"; el.innerHTML = "🙈"; }
+  else { inp.type = "password"; el.innerHTML = "👁️"; }
 }
 
 function handleLogoClick() {
@@ -578,34 +541,6 @@ function adminLogout() {
   showTab('home'); alert("🚪 لاگ آؤٹ!");
 }
 
-function showTab(name) {
-  document.querySelectorAll(".tab-content").forEach(s => s.classList.remove("active"));
-  const sec = document.getElementById(name); if (sec) sec.classList.add("active");
-  if (name === "addEmployee") document.getElementById("empId").value = generateNextEmpId();
-  if (name === "addOrder") document.getElementById("orderNo").value = "FM-ORD-" + (orders.length + 1).toString().padStart(3, '0');
-  if (name === "hiddenLoginSection") document.getElementById("hiddenLoginBox").classList.add("show");
-  if (name === "empLoginSection") document.getElementById("empLoginBox").classList.add("show");
-  if (name === "myProfile") renderMyProfile();
-  if (name === "employees") renderEmployees();
-  if (name === "orders") renderOrders();
-  if (name === "salary") renderSalaryList();
-  if (name === "applications") renderApplications();
-  
-  document.getElementById("sidebar").classList.remove("open");
-  document.getElementById("overlay").classList.remove("show");
-}
-
-// ====== پاس ورڈ شو سسٹم ======
-function togglePassword(id, el) {
-  const inp = document.getElementById(id); if (!inp) return;
-  if (inp.type === "password") { inp.type = "text"; el.innerHTML = "🙈"; }
-  else { inp.type = "password"; el.innerHTML = "👁️"; }
-}
-
-// ====== ID اور نمبرنگ ======
-function generateNextEmpId() { return "FM-" + (employees.length + 1001); }
-
-// ====== کیٹگری اور پروڈکٹس ======
 let currentCategory = "";
 function openCategory(cat) {
   currentCategory = cat;
@@ -635,15 +570,25 @@ document.getElementById("addProductForm").addEventListener("submit", e => {
   const desc = document.getElementById("prodDesc").value;
   const price = +document.getElementById("prodPrice").value;
   const stock = +document.getElementById("prodStock").value;
-  const file = document.getElementById("prodImg1").files[0];
+  const files = [1,2,3,4,5].map(n => document.getElementById("prodImg"+n).files[0]).filter(f => f);
   
+  let images = [];
+  let loaded = 0;
   const finalize = (imgs) => {
     if (!CATALOG[cat]) CATALOG[cat] = [];
     CATALOG[cat].push({ name, desc, price, stock, images: imgs });
     saveData(); renderProducts(); closeAddProductModal(); alert("✅ شامل!");
   };
-  if (!file) { finalize([]); return; }
-  const r = new FileReader(); r.onload = (ev) => finalize([ev.target.result]); r.readAsDataURL(file);
+  if (files.length === 0) { finalize([]); return; }
+  files.forEach(file => {
+    const r = new FileReader();
+    r.onload = (ev) => {
+      images.push(ev.target.result);
+      loaded++;
+      if (loaded === files.length) finalize(images);
+    };
+    r.readAsDataURL(file);
+  });
 });
 
 function quickOrder(name, price) {
@@ -651,7 +596,7 @@ function quickOrder(name, price) {
   setTimeout(() => { document.getElementById('product').value = name; document.getElementById('amount').value = price; }, 200);
 }
 
-// ====== ایمپلائی اور آرڈرز ======
+function generateNextEmpId() { return "FM-" + (employees.length + 1001); }
 document.getElementById("employeeForm").addEventListener("submit", e => {
   e.preventDefault();
   const emp = { empId: document.getElementById("empId").value, name: document.getElementById("empName").value, mobile: document.getElementById("empMobile").value, salary: +document.getElementById("empSalary").value, target: +document.getElementById("empTarget").value, password: document.getElementById("empPass").value, active: true };
@@ -705,9 +650,10 @@ function renderSalaryList() { document.getElementById("salaryList").innerHTML = 
 function exportBackup() { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify({ employees, orders, CATALOG })], {type:"application/json"})); a.download = "backup.json"; a.click(); }
 function importBackup() { alert("ریسٹور کام کر رہا ہے!"); }
 
-function renderAll() {
-  renderEmployees(); renderOrders(); renderSalaryList(); renderApplications();
-}
+window.onload = () => {
+  if (currentAdmin) document.body.classList.add("is-super-admin");
+  if (currentEmployee) document.body.classList.add("is-sub-admin");
+};
 </script>
 </body>
 </html>
