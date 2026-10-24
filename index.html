@@ -458,10 +458,15 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ==========================================
-// سادہ اور بغیر رکاوٹ والا کوڈ (بٹن کام کریں گے)
+// Supabase کنکشن (بغیر type="module" کے، تاکہ بٹن کام کریں)
 // ==========================================
+const supabaseUrl = 'https://ofjlswkrdrpwapcvwzun.supabase.co';
+const supabaseKey = 'sb_publishable_yk51b9Pps15BXSX-tmnBdw_IFsWoUCW';
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
 let employees = JSON.parse(localStorage.getItem("fm_employees")) || [];
 let orders = JSON.parse(localStorage.getItem("fm_orders")) || [];
 let salaryPayments = JSON.parse(localStorage.getItem("fm_salary_payments")) || [];
@@ -470,13 +475,44 @@ let applications = JSON.parse(localStorage.getItem("fm_applications")) || [];
 let currentAdmin = JSON.parse(localStorage.getItem("fm_currentAdmin")) || null;
 let currentEmployee = JSON.parse(localStorage.getItem("fm_currentEmployee")) || null;
 
-function saveData() {
+// ====== Supabase سے ڈیٹا لوڈ کرنا ======
+async function loadFromSupabase() {
+  try {
+    const { data, error } = await supabase.from('store').select('data').eq('id', 1).single();
+    if (error) throw error;
+    if (data && data.data) {
+      const d = data.data;
+      if (d.employees) employees = d.employees;
+      if (d.orders) orders = d.orders;
+      if (d.CATALOG) CATALOG = d.CATALOG;
+      if (d.salaryPayments) salaryPayments = d.salaryPayments;
+      if (d.applications) applications = d.applications;
+      saveLocal(); renderAll();
+      console.log("✅ Supabase سے ڈیٹا لوڈ ہو گیا");
+    }
+  } catch (e) { console.error("❌ Supabase لوڈ میں مسئلہ:", e); }
+}
+
+// ====== Supabase میں ڈیٹا محفوظ کرنا ======
+async function saveToSupabase() {
+  try {
+    await supabase.from('store').upsert({
+      id: 1,
+      data: { employees, orders, CATALOG, salaryPayments, applications, updatedAt: new Date().toISOString() }
+    });
+    console.log("☁️ Supabase میں ڈیٹا محفوظ");
+  } catch (e) { console.error("❌ Supabase محفوظ میں مسئلہ:", e); }
+}
+
+function saveLocal() {
   localStorage.setItem("fm_employees", JSON.stringify(employees));
   localStorage.setItem("fm_orders", JSON.stringify(orders));
   localStorage.setItem("fm_catalog", JSON.stringify(CATALOG));
   localStorage.setItem("fm_salary_payments", JSON.stringify(salaryPayments));
   localStorage.setItem("fm_applications", JSON.stringify(applications));
 }
+
+function saveData() { saveLocal(); saveToSupabase(); }
 
 function toggleSidebar() {
   document.getElementById("sidebar").classList.toggle("open");
@@ -653,9 +689,13 @@ function renderSalaryList() { document.getElementById("salaryList").innerHTML = 
 function exportBackup() { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify({ employees, orders, CATALOG })], {type:"application/json"})); a.download = "backup.json"; a.click(); }
 function importBackup() { alert("ریسٹور کام کر رہا ہے!"); }
 
-window.onload = () => {
+function renderAll() { renderEmployees(); renderOrders(); renderSalaryList(); renderApplications(); }
+
+window.onload = async () => {
+  await loadFromSupabase();
   if (currentAdmin) document.body.classList.add("is-super-admin");
   if (currentEmployee) document.body.classList.add("is-sub-admin");
+  renderAll();
 };
 </script>
 </body>
