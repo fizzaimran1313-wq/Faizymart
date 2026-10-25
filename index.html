@@ -400,9 +400,10 @@ window.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem("fm_applications", JSON.stringify(applications));
   }
 
+  // saveData اب Supabase کا انتظار نہیں کرے گا، فوراً لوکل میں محفوظ کرے گا اور پیچھے پیچھے Supabase میں بھی بھیج دے گا
   function saveData() {
     saveLocal();
-    saveToSupabase();
+    saveToSupabase(); // یہ پیچھے پیچھے چلتا رہے گا، بٹن کو نہیں روکے گا
   }
 
   function readFileAsDataURL(file) {
