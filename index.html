@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ur" dir="rtl">
 <head>
@@ -483,7 +482,6 @@ window.addEventListener('DOMContentLoaded', () => {
   let currentAdmin = JSON.parse(localStorage.getItem("fm_currentAdmin")) || null;
   let currentEmployee = JSON.parse(localStorage.getItem("fm_currentEmployee")) || null;
 
-  // Supabase سے ڈیٹا لوڈ کرنا اور ریئل ٹائم سننا
   async function loadFromSupabase() {
     if (!supabase) return;
     try {
@@ -500,24 +498,6 @@ window.addEventListener('DOMContentLoaded', () => {
         console.log("✅ Supabase سے ڈیٹا لوڈ ہو گیا");
       }
     } catch (e) { console.error("❌ Supabase لوڈ میں مسئلہ:", e); }
-  }
-
-  // ریئل ٹائم لسنر (جب بھی ڈیٹا تبدیل ہوگا، خود اپ ڈیٹ ہوگا)
-  if (supabase) {
-    supabase.channel('public:store')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'store' }, payload => {
-        console.log("🔥 ڈیٹا تبدیل ہوا، خود بخود اپ ڈیٹ ہو رہا ہے...", payload);
-        if(payload.new && payload.new.data) {
-           const d = payload.new.data;
-           if (d.employees) employees = d.employees;
-           if (d.orders) orders = d.orders;
-           if (d.CATALOG) CATALOG = d.CATALOG;
-           if (d.salaryPayments) salaryPayments = d.salaryPayments;
-           if (d.applications) applications = d.applications;
-           saveLocal(); renderAll();
-        }
-      })
-      .subscribe();
   }
 
   async function saveToSupabase() {
