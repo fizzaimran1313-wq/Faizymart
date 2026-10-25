@@ -516,7 +516,11 @@ window.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem("fm_applications", JSON.stringify(applications));
   }
 
-  function saveData() { saveLocal(); saveToSupabase(); }
+  // یہ فنکشن اب فوراً ڈیٹا Supabase میں بھیجے گا
+  async function saveData() { 
+    saveLocal(); 
+    await saveToSupabase(); 
+  }
 
   function compressImage(file, maxWidth, maxHeight, quality) {
     return new Promise((resolve, reject) => {
@@ -628,10 +632,11 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  window.deleteProduct = (cat, index) => {
+  window.deleteProduct = async (cat, index) => {
     if(confirm("کیا آپ واقعی یہ پروڈکٹ ڈیلیٹ کرنا چاہتی ہیں؟")) {
       CATALOG[cat].splice(index, 1);
-      saveData(); renderProducts(); alert("✅ پروڈکٹ ڈیلیٹ ہو گئی!");
+      await saveData(); // یہاں بھی await لگا دیا تاکہ ڈیلیٹ فوراً محفوظ ہو
+      renderProducts(); alert("✅ پروڈکٹ ڈیلیٹ ہو گئی!");
     }
   }
 
@@ -662,7 +667,11 @@ window.addEventListener('DOMContentLoaded', () => {
       }
       if (!CATALOG[cat]) CATALOG[cat] = [];
       CATALOG[cat].push({ name, desc, price, stock, images: compressedImages });
-      saveData(); renderProducts(); closeAddProductModal(); alert("✅ پروڈکٹ کامیابی سے شامل ہو گئی!");
+      
+      // یہاں سب سے اہم تبدیلی: ڈیٹا محفوظ کرنے کا انتظار کریں
+      await saveData(); 
+      
+      renderProducts(); closeAddProductModal(); alert("✅ پروڈکٹ کامیابی سے شامل ہو گئی!");
     } catch (error) {
       console.error("Image processing error:", error);
       alert("❌ تصویر لوڈ کرنے میں مسئلہ آیا۔");
@@ -679,10 +688,12 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function generateNextEmpId() { return "FM-" + (employees.length + 1001); }
   
-  document.getElementById("employeeForm").addEventListener("submit", e => {
+  document.getElementById("employeeForm").addEventListener("submit", async e => {
     e.preventDefault();
     const emp = { empId: document.getElementById("empId").value, name: document.getElementById("empName").value, mobile: document.getElementById("empMobile").value, salary: +document.getElementById("empSalary").value, target: +document.getElementById("empTarget").value, password: document.getElementById("empPass").value, active: true };
-    employees.push(emp); saveData(); renderEmployees(); e.target.reset(); alert("✅ شامل!");
+    employees.push(emp); 
+    await saveData(); // await لگا دیا
+    renderEmployees(); e.target.reset(); alert("✅ شامل!");
   });
 
   function renderEmployees() {
@@ -690,10 +701,12 @@ window.addEventListener('DOMContentLoaded', () => {
     employees.forEach(emp => { box.innerHTML += `<div class="card"><h3>${emp.name} (${emp.empId})</h3><p>📱 ${emp.mobile}</p><p>💰 سیلری: ${emp.salary}</p><p>🎯 ٹارگٹ: ${emp.target}</p></div>`; });
   }
 
-  document.getElementById("orderForm").addEventListener("submit", e => {
+  document.getElementById("orderForm").addEventListener("submit", async e => {
     e.preventDefault();
     const o = { orderNo: document.getElementById("orderNo").value, customer: document.getElementById("customer").value, product: document.getElementById("product").value, amount: +document.getElementById("amount").value, date: new Date().toISOString().slice(0,10) };
-    orders.push(o); saveData(); renderOrders(); e.target.reset(); alert("✅ آرڈر محفوظ!"); printOrder(o.orderNo);
+    orders.push(o); 
+    await saveData(); // await لگا دیا
+    renderOrders(); e.target.reset(); alert("✅ آرڈر محفوظ!"); printOrder(o.orderNo);
   });
 
   function renderOrders() {
@@ -711,11 +724,12 @@ window.addEventListener('DOMContentLoaded', () => {
     window.print();
   }
 
-  window.applyForJob = () => {
+  window.applyForJob = async () => {
     const name = prompt("نام:"); if (!name) return;
     const mobile = prompt("موبائل:"); if (!mobile) return;
     applications.push({ id: Date.now(), name, mobile });
-    saveData(); alert("✅ درخواست بھیج دی گئی!");
+    await saveData(); // await لگا دیا
+    alert("✅ درخواست بھیج دی گئی!");
   }
 
   function renderApplications() {
