@@ -269,6 +269,9 @@
 <section id="reports" class="tab-content">
   <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
   <h2>📊 رپورٹس</h2>
+  <div style="margin-bottom:10px;">
+    <input type="text" id="searchEmployee" placeholder="ایمپلائی تلاش کریں..." oninput="filterReports()" style="padding:10px; border-radius:8px; border:1px solid #444; background:#111; color:#fff; width:300px;">
+  </div>
   <table id="totalReport"><thead><tr><th>ایمپلائی</th><th>آرڈرز</th><th>رقم</th><th>ایکشن</th></tr></thead><tbody></tbody></table>
   <button onclick="downloadReportsCSV()" style="background:#4ade80; padding:10px; border:none; border-radius:8px; margin-top:10px; font-weight:bold; color:#000;">📥 رپورٹس ایکسل ڈاؤن لوڈ</button>
   <button onclick="printReports()" style="background:#3b82f6; padding:10px; border:none; border-radius:8px; margin-top:10px; font-weight:bold; color:#fff;">🖨️ رپورٹس پرنٹ کریں</button>
@@ -513,11 +516,9 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     if (editIdx === -1) {
-      // نیا پروڈکٹ
       CATALOG[cat].push({ name, desc, price, stock, images: imgData ? [imgData] : [] });
       alert("✅ شامل!");
     } else {
-      // پروڈکٹ ایڈٹ
       const oldImg = CATALOG[cat][editIdx].images[0];
       CATALOG[cat][editIdx] = { name, desc, price, stock, images: imgData ? [imgData] : (oldImg ? [oldImg] : []) };
       alert("✅ ایڈٹ ہو گیا!");
@@ -744,6 +745,14 @@ window.addEventListener('DOMContentLoaded', () => {
       const empTotal = empOrders.reduce((sum, o) => sum + o.amount, 0);
       tb.innerHTML += `<tr><td>${emp.name} (${emp.empId})</td><td>${empOrders.length}</td><td>${empTotal} روپے</td>
         <td><button class="action-btn edit-btn" onclick="editEmployee(${i})">✏️</button></td></tr>`;
+    });
+  }
+
+  window.filterReports = () => {
+    const val = document.getElementById("searchEmployee").value.toLowerCase();
+    const rows = document.querySelectorAll("#totalReport tbody tr");
+    rows.forEach(row => {
+      row.style.display = row.innerText.toLowerCase().includes(val) ? "" : "none";
     });
   }
 
