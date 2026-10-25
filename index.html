@@ -8,7 +8,7 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root { --primary-yellow: #facc15; --dark-bg: #111827; --card-bg: #1f2937; --text-light: #f3f4f6; --text-muted: #9ca3af; --green: #4ade80; --red: #ef4444; --blue: #3b82f6; --amber: #f59e0b; }
-  body { font-family: "Noto Nastaliq Urdu", "Segoe UI", Tahoma, sans-serif; background: var(--dark-bg); color: var(--text-light); line-height: 1.9; min-height: 100vh; display: flex; flex-direction: column; }
+  body { font-family: "Noto Nastaliq Urdu", "Segoe UI", Tahoma, sans-serif; background: var(--dark-bg); color: var(--text-light); line-height: 1.9; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
   .top-strip { background: var(--primary-yellow); color: #000; padding: 8px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: bold; }
   .main-header { background: #000; border-bottom: 2px solid var(--primary-yellow); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
   .main-header .logo { display: flex; align-items: center; gap: 10px; cursor: pointer; }
@@ -26,7 +26,7 @@
   .hero-text button { padding: 12px 30px; background: var(--primary-yellow); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
   .hero-image { flex: 1; }
   .hero-image img { width: 100%; height: 100%; object-fit: cover; }
-  .sidebar { position: fixed; top: 0; right: -300px; width: 300px; height: 100vh; background: #000; border-left: 2px solid var(--primary-yellow); z-index: 1000; transition: right 0.3s ease; padding: 20px; overflow-y: auto; }
+  .sidebar { position: fixed; top: 0; right: -300px; width: 280px; height: 100vh; background: #000; border-left: 2px solid var(--primary-yellow); z-index: 1000; transition: right 0.3s ease; padding: 20px; overflow-y: auto; }
   .sidebar.open { right: 0; }
   .sidebar .tab-btn { display: block; width: 100%; padding: 12px 15px; margin-bottom: 8px; background: transparent; color: var(--text-light); border: none; border-radius: 8px; text-align: right; font-family: inherit; font-size: 15px; cursor: pointer; }
   .sidebar .admin-only, .sidebar .sub-admin-only, .sidebar .super-only, .admin-only { display: none !important; }
@@ -58,9 +58,12 @@
   form label { display: block; margin-bottom: 15px; font-weight: 600; color: var(--primary-yellow); }
   form input, form select, form textarea { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #444; border-radius: 8px; background: #111; color: var(--text-light); font-family: inherit; }
   form button { width: 100%; padding: 14px; background: var(--primary-yellow); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; font-family: inherit; }
-  table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
-  th, td { padding: 12px; text-align: right; border-bottom: 1px solid #333; }
+  
+  .table-container { width: 100%; overflow-x: auto; display: block; }
+  table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 10px; overflow: hidden; margin-bottom: 20px; min-width: 600px; }
+  th, td { padding: 12px; text-align: right; border-bottom: 1px solid #333; white-space: nowrap; }
   th { background: #000; color: var(--primary-yellow); }
+  
   .action-btn { padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin: 0 2px; }
   .edit-btn { background: var(--blue); color: #fff; }
   .del-btn { background: var(--red); color: #fff; }
@@ -72,6 +75,19 @@
   .overlay.show { display: block; }
   footer { background: #000; border-top: 2px solid var(--primary-yellow); padding: 40px 20px; margin-top: 40px; text-align: center; }
   .notif-badge { background: red; color: white; border-radius: 50%; padding: 2px 8px; font-size: 12px; margin-right: 5px; display: none; }
+
+  @media (max-width: 768px) {
+    .hero-text h1 { font-size: 28px; }
+    .main-header .nav-links { display: none; }
+    .main-header { padding: 10px; }
+    .main-header .logo span { font-size: 18px; }
+    .main-header .logo .logo-img { width: 40px; height: 40px; font-size: 20px; }
+    .sidebar { width: 250px; }
+    .category-grid, .product-list, .card-grid { grid-template-columns: 1fr; }
+    .cat-card { height: 200px; }
+    form { padding: 15px; }
+    .hero-text { padding: 20px; }
+  }
 </style>
 </head>
 <body>
@@ -220,13 +236,17 @@
 <section id="myOrders" class="tab-content">
   <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
   <h2>📦 میرے آرڈرز</h2>
-  <table id="myOrdersTable"><thead><tr><th>آرڈر</th><th>پروڈکٹ</th><th>رقم</th><th>اسٹیٹس</th><th>ایکشن</th></tr></thead><tbody></tbody></table>
+  <div class="table-container">
+    <table id="myOrdersTable"><thead><tr><th>آرڈر</th><th>پروڈکٹ</th><th>رقم</th><th>اسٹیٹس</th><th>ایکشن</th></tr></thead><tbody></tbody></table>
+  </div>
 </section>
 
 <section id="orders" class="tab-content">
   <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
   <h2>تمام آرڈرز</h2>
-  <table id="ordersTable"><thead><tr><th>آرڈر</th><th>کسٹمر</th><th>پروڈکٹ</th><th>رقم</th><th>اسٹیٹس</th><th>ایکشن</th></tr></thead><tbody></tbody></table>
+  <div class="table-container">
+    <table id="ordersTable"><thead><tr><th>آرڈر</th><th>کسٹمر</th><th>پروڈکٹ</th><th>رقم</th><th>اسٹیٹس</th><th>ایکشن</th></tr></thead><tbody></tbody></table>
+  </div>
   <button onclick="downloadOrdersCSV()" style="background:#4ade80; padding:10px; border:none; border-radius:8px; margin-top:10px; font-weight:bold; color:#000;">📥 آرڈرز ایکسل ڈاؤن لوڈ</button>
   <input type="file" id="uploadOrders" accept=".csv" style="margin-top:10px;" onchange="uploadOrdersCSV(event)">
   <button onclick="printOrders()" style="background:#3b82f6; padding:10px; border:none; border-radius:8px; margin-top:10px; font-weight:bold; color:#fff;">🖨️ آرڈرز پرنٹ کریں</button>
@@ -270,9 +290,11 @@
   <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
   <h2>📊 رپورٹس</h2>
   <div style="margin-bottom:10px;">
-    <input type="text" id="searchEmployee" placeholder="ایمپلائی تلاش کریں..." oninput="filterReports()" style="padding:10px; border-radius:8px; border:1px solid #444; background:#111; color:#fff; width:300px;">
+    <input type="text" id="searchEmployee" placeholder="ایمپلائی تلاش کریں..." oninput="filterReports()" style="padding:10px; border-radius:8px; border:1px solid #444; background:#111; color:#fff; width:100%; max-width:300px;">
   </div>
-  <table id="totalReport"><thead><tr><th>ایمپلائی</th><th>آرڈرز</th><th>رقم</th><th>ایکشن</th></tr></thead><tbody></tbody></table>
+  <div class="table-container">
+    <table id="totalReport"><thead><tr><th>ایمپلائی</th><th>آرڈرز</th><th>رقم</th><th>ایکشن</th></tr></thead><tbody></tbody></table>
+  </div>
   <button onclick="downloadReportsCSV()" style="background:#4ade80; padding:10px; border:none; border-radius:8px; margin-top:10px; font-weight:bold; color:#000;">📥 رپورٹس ایکسل ڈاؤن لوڈ</button>
   <button onclick="printReports()" style="background:#3b82f6; padding:10px; border:none; border-radius:8px; margin-top:10px; font-weight:bold; color:#fff;">🖨️ رپورٹس پرنٹ کریں</button>
 </section>
@@ -280,7 +302,9 @@
 <section id="applications" class="tab-content">
   <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
   <h2>📋 نئی درخواستیں</h2>
-  <table id="applicationsTable"><thead><tr><th>نام</th><th>موبائل</th><th>شہر</th><th>اکاؤنٹ</th><th>ایکشن</th></tr></thead><tbody></tbody></table>
+  <div class="table-container">
+    <table id="applicationsTable"><thead><tr><th>نام</th><th>موبائل</th><th>شہر</th><th>اکاؤنٹ</th><th>ایکشن</th></tr></thead><tbody></tbody></table>
+  </div>
 </section>
 
 <section id="manageExcel" class="tab-content">
@@ -376,24 +400,25 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function saveData() { saveLocal(); saveToSupabase(); }
 
+  // تصویر کو کمپریس کرنے کا نیا اور تیز طریقہ
   function compressImage(file) {
     return new Promise((resolve) => {
       const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = event => {
+      reader.onload = (e) => {
         const img = new Image();
-        img.src = event.target.result;
         img.onload = () => {
           const canvas = document.createElement('canvas');
-          const MAX = 600;
-          let width = img.width, height = img.height;
-          if (width > height) { if (width > MAX) { height *= MAX / width; width = MAX; } } 
-          else { if (height > MAX) { width *= MAX / height; height = MAX; } }
-          canvas.width = width; canvas.height = height;
-          canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+          const MAX_WIDTH = 600;
+          const scaleSize = MAX_WIDTH / img.width;
+          canvas.width = MAX_WIDTH;
+          canvas.height = img.height * scaleSize;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
           resolve(canvas.toDataURL('image/jpeg', 0.6));
         };
+        img.src = e.target.result;
       };
+      reader.readAsDataURL(file);
     });
   }
 
