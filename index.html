@@ -47,12 +47,14 @@
   .product-img-box img { width: 100%; height: 100%; object-fit: cover; }
   .product-info { padding: 15px; }
   .product-item h4 { color: var(--text-light); margin-bottom: 5px; }
+  .product-item .desc { font-size: 13px; color: var(--text-muted); margin-bottom: 5px; }
+  .product-item .stock { font-size: 12px; color: var(--amber); margin-bottom: 5px; }
   .product-item .price { color: var(--primary-yellow); font-weight: 700; }
   .order-btn { width: 100%; margin-top: 10px; padding: 10px; background: var(--primary-yellow); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
   .delete-prod-btn { position: absolute; top: 10px; right: 10px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; z-index: 10; }
   form { max-width: 700px; background: var(--card-bg); padding: 25px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
   form label { display: block; margin-bottom: 15px; font-weight: 600; color: var(--primary-yellow); }
-  form input, form select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #444; border-radius: 8px; background: #111; color: var(--text-light); }
+  form input, form select, form textarea { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #444; border-radius: 8px; background: #111; color: var(--text-light); font-family: inherit; }
   form button { width: 100%; padding: 14px; background: var(--primary-yellow); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; font-family: inherit; }
   table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
   th, td { padding: 12px; text-align: right; border-bottom: 1px solid #333; }
@@ -146,7 +148,9 @@
     <button class="back-btn" type="button" onclick="closeAddProductModal()">← واپس</button>
     <input type="hidden" id="prodCat" />
     <label>نام <input type="text" id="prodName" required /></label>
+    <label>تفصیل <textarea id="prodDesc" rows="3" required></textarea></label>
     <label>قیمت <input type="number" id="prodPrice" required /></label>
+    <label>اسٹاک <input type="number" id="prodStock" value="0" required /></label>
     <label>تصویر <input type="file" id="prodImg1" accept="image/*" /></label>
     <button type="submit" style="background:#4ade80;">محفوظ</button>
   </form>
@@ -394,7 +398,13 @@ window.addEventListener('DOMContentLoaded', () => {
       div.innerHTML = `
         <button class="delete-prod-btn" onclick="deleteProduct('${currentCategory}', ${index})" title="ڈیلیٹ کریں">🗑️</button>
         <div class="product-img-box"><img src="${p.images[0] || ''}" onerror="this.src='https://via.placeholder.com/200x200?text=Error'" /></div>
-        <div class="product-info"><h4>${p.name}</h4><span class="price">${p.price} روپے</span><button class="order-btn" onclick="quickOrder('${p.name}', ${p.price})">🛒 آرڈر کریں</button></div>`;
+        <div class="product-info">
+          <h4>${p.name}</h4>
+          <div class="desc">${p.desc || 'کوئی تفصیل نہیں'}</div>
+          <div class="stock">اسٹاک: ${p.stock || 0}</div>
+          <span class="price">${p.price} روپے</span>
+          <button class="order-btn" onclick="quickOrder('${p.name}', ${p.price})">🛒 آرڈر کریں</button>
+        </div>`;
       list.appendChild(div);
     });
   }
@@ -413,11 +423,13 @@ window.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     const cat = currentCategory;
     const name = document.getElementById("prodName").value;
+    const desc = document.getElementById("prodDesc").value;
     const price = document.getElementById("prodPrice").value;
+    const stock = document.getElementById("prodStock").value;
     const file = document.getElementById("prodImg1").files[0];
     let imgData = "";
     if (file) imgData = await compressImage(file);
-    CATALOG[cat].push({ name, price, images: [imgData] });
+    CATALOG[cat].push({ name, desc, price, stock, images: [imgData] });
     saveData(); renderProducts(); closeAddProductModal(); alert("✅ شامل!");
   });
 
