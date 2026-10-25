@@ -175,6 +175,11 @@
     <label>تفصیل <textarea id="prodDesc" rows="3" required></textarea></label>
     <label>قیمت <input type="number" id="prodPrice" required /></label>
     <label>اسٹاک <input type="number" id="prodStock" value="0" required /></label>
+    <label>تصویر 1 <input type="file" id="prodImg1" accept="image/*" /></label>
+    <label>تصویر 2 <input type="file" id="prodImg2" accept="image/*" /></label>
+    <label>تصویر 3 <input type="file" id="prodImg3" accept="image/*" /></label>
+    <label>تصویر 4 <input type="file" id="prodImg4" accept="image/*" /></label>
+    <label>تصویر 5 <input type="file" id="prodImg5" accept="image/*" /></label>
     <button type="submit" style="background:#4ade80;">محفوظ</button>
   </form>
   <div class="product-list" id="productList"></div>
@@ -399,6 +404,28 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function saveData() { saveLocal(); saveToSupabase(); }
 
+  // کمپریس امیج فنکشن (5 تصویروں کے لیے)
+  function compressImage(file) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 600;
+          const scaleSize = MAX_WIDTH / img.width;
+          canvas.width = MAX_WIDTH;
+          canvas.height = img.height * scaleSize;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL('image/jpeg', 0.6));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
   window.toggleSidebar = () => {
     document.getElementById("sidebar").classList.toggle("open");
     document.getElementById("overlay").classList.toggle("show");
@@ -464,10 +491,11 @@ window.addEventListener('DOMContentLoaded', () => {
     if (items.length === 0) { list.innerHTML = `<div style="text-align:center; grid-column:1/-1;">کوئی آئٹم نہیں</div>`; return; }
     items.forEach((p, index) => {
       const div = document.createElement("div"); div.className = "product-item";
+      const img = (p.images && p.images.length > 0) ? p.images[0] : "https://via.placeholder.com/200x200?text=No+Image";
       div.innerHTML = `
         <button class="edit-prod-btn" onclick="editProduct('${currentCategory}', ${index})" title="ایڈٹ کریں">✏️</button>
         <button class="delete-prod-btn" onclick="deleteProduct('${currentCategory}', ${index})" title="ڈیلیٹ کریں">🗑️</button>
-        <div class="product-img-box"><img src="${p.images[0] || ''}" onerror="this.src='https://via.placeholder.com/200x200?text=No+Image'" /></div>
+        <div class="product-img-box"><img src="${img}" onerror="this.src='https://via.placeholder.com/200x200?text=Error'" /></div>
         <div class="product-info">
           <h4>${p.name}</h4>
           <div class="desc">${p.desc || 'کوئی تفصیل نہیں'}</div>
@@ -502,7 +530,7 @@ window.addEventListener('DOMContentLoaded', () => {
   }
   window.closeAddProductModal = () => document.getElementById("addProductForm").style.display = "none";
 
-  document.getElementById("addProductForm").addEventListener("submit", e => {
+  document.getElementById("addProductForm").addEventListener("submit", async e => {
     e.preventDefault();
     const cat = document.getElementById("prodCat").value;
     const name = document.getElementById("prodName").value;
@@ -511,11 +539,22 @@ window.addEventListener('DOMContentLoaded', () => {
     const stock = document.getElementById("prodStock").value;
     const editIdx = parseInt(document.getElementById("editProdIndex").value);
 
+    // 5 تصویریں لوڈ کرنے کا نیا طریقہ
+    const fileInputs = [1,2,3,4,5].map(n => document.getElementById("prodImg"+n));
+    const files = fileInputs.map(input => input.files[0]).filter(f => f);
+    let images = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const compressed = await compressImage(files[i]);
+      images.push(compressed);
+    }
+
     if (editIdx === -1) {
-      CATALOG[cat].push({ name, desc, price, stock, images: [] });
+      CATALOG[cat].push({ name, desc, price, stock, images });
       alert("✅ شامل!");
     } else {
-      CATALOG[cat][editIdx] = { name, desc, price, stock, images: [] };
+      const oldImages = CATALOG[cat][editIdx].images || [];
+      CATALOG[cat][editIdx] = { name, desc, price, stock, images: images.length > 0 ? images : oldImages };
       alert("✅ ایڈٹ ہو گیا!");
     }
     saveData(); renderProducts(); closeAddProductModal();
