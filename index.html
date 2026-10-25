@@ -485,7 +485,7 @@ window.addEventListener('DOMContentLoaded', () => {
   async function loadFromSupabase() {
     if (!supabase) return;
     try {
-      const { data, error } = await supabase.from('store').select('data').eq('id', 1).single();
+      const { data, error } = await supabase.from('store').select('data').limit(1).single();
       if (error && error.code !== 'PGRST116') throw error;
       if (data && data.data) {
         const d = data.data;
@@ -504,9 +504,8 @@ window.addEventListener('DOMContentLoaded', () => {
     if (!supabase) return;
     try {
       await supabase.from('store').upsert({
-        id: 1,
-        data: { employees, orders, CATALOG, salaryPayments, applications, updatedAt: new Date().toISOString() }
-      });
+   data: { employees, orders, CATALOG, salaryPayments, applications, updatedAt: new Date().toISOString() }
+});
       console.log("☁️ Supabase میں ڈیٹا محفوظ");
     } catch (e) { console.error("❌ Supabase محفوظ میں مسئلہ:", e); }
   }
