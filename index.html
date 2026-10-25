@@ -6,79 +6,182 @@
 <title>Faizy Mart | فیضی مارٹ</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  /* آپ کی ویب سائٹ کا سارا ڈیزائن یہاں ہے */
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  :root { --primary-yellow: #facc15; --dark-bg: #111827; --card-bg: #1f2937; --text-light: #f3f4f6; --text-muted: #9ca3af; }
-  body { font-family: "Noto Nastaliq Urdu", sans-serif; background: var(--dark-bg); color: var(--text-light); line-height: 1.9; min-height: 100vh; display: flex; flex-direction: column; }
+  :root { 
+    --primary-yellow: #facc15; 
+    --dark-bg: #111827; 
+    --card-bg: #1f2937; 
+    --text-light: #f3f4f6; 
+    --text-muted: #9ca3af; 
+    --accent-blue: #3b82f6; 
+    --green: #4ade80; 
+    --red: #ef4444; 
+    --amber: #f59e0b; 
+  }
+  body { font-family: "Noto Nastaliq Urdu", "Segoe UI", Tahoma, sans-serif; background: var(--dark-bg); color: var(--text-light); padding-bottom: 0; line-height: 1.9; min-height: 100vh; display: flex; flex-direction: column; }
   
   .top-strip { background: var(--primary-yellow); color: #000; padding: 8px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: bold; }
+  .top-strip .socials { display: flex; gap: 15px; }
+  .top-strip .socials span { cursor: pointer; }
+  
   .main-header { background: #000; border-bottom: 2px solid var(--primary-yellow); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+  
   .main-header .logo { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-  .main-header .logo .logo-img { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--primary-yellow); background: var(--primary-yellow); display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: bold; color: #000; }
-  .main-header .logo span { font-size: 24px; color: var(--primary-yellow); font-weight: 900; }
-  .main-header .logo span b { color: #fff; }
-  .main-header .nav-links { display: flex; gap: 20px; }
-  .main-header .nav-links a { color: var(--text-light); text-decoration: none; font-weight: bold; cursor: pointer; }
-  .main-header .header-icons { display: flex; gap: 15px; }
-  .main-header .header-icons button { background: transparent; border: none; color: var(--text-light); font-size: 22px; cursor: pointer; }
+  .main-header .logo .logo-img { 
+    width: 55px; height: 55px; 
+    border-radius: 50%; 
+    border: 2px solid var(--primary-yellow); 
+    background: var(--primary-yellow); 
+    display: flex; align-items: center; justify-content: center; 
+    font-size: 26px; font-weight: bold; color: #000;
+    box-shadow: 0 0 10px rgba(250,204,21,0.3);
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .main-header .logo span { font-size: 24px; color: var(--primary-yellow); font-weight: 900; letter-spacing: 1px; font-family: 'Segoe UI', sans-serif; }
+  .main-header .logo span b { color: #fff; font-weight: 900; }
+  
+  .main-header .nav-links { display: flex; gap: 20px; align-items: center; }
+  .main-header .nav-links a { color: var(--text-light); text-decoration: none; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+  .main-header .nav-links a:hover { color: var(--primary-yellow); }
+  
+  .main-header .header-icons { display: flex; gap: 20px; align-items: center; }
+  .main-header .header-icons button { background: transparent; border: none; color: var(--text-light); font-size: 22px; cursor: pointer; transition: 0.3s; }
+  .main-header .header-icons button:hover { color: var(--primary-yellow); }
 
   .hero-section { display: flex; flex-wrap: wrap; background: var(--card-bg); margin: 20px; border-radius: 15px; overflow: hidden; border: 1px solid #333; }
-  .hero-text { flex: 1; padding: 50px 40px; display: flex; flex-direction: column; justify-content: center; }
-  .hero-text h1 { font-size: 40px; color: var(--text-light); margin-bottom: 10px; }
+  .hero-text { flex: 1; padding: 50px 40px; display: flex; flex-direction: column; justify-content: center; min-width: 300px; }
+  .hero-text h1 { font-size: 40px; color: var(--text-light); margin-bottom: 10px; line-height: 1.4; }
   .hero-text h1 span { color: var(--primary-yellow); }
-  .hero-text button { padding: 12px 30px; background: var(--primary-yellow); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; align-self: flex-start; font-family: inherit; }
-  .hero-image { flex: 1; background: #000; }
-  .hero-image img { width: 100%; height: 100%; object-fit: cover; }
+  .hero-text p { font-size: 16px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.8; }
+  .hero-text button { padding: 12px 30px; background: var(--primary-yellow); color: #000; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; align-self: flex-start; font-family: inherit; }
+  .hero-image { flex: 1; min-width: 300px; background: #000; }
+  .hero-image img { width: 100%; height: 100%; object-fit: cover; opacity: 0.95; }
 
-  .sidebar { position: fixed; top: 0; right: -300px; width: 300px; height: 100vh; background: #000; border-left: 2px solid var(--primary-yellow); z-index: 1000; transition: right 0.3s ease; padding: 20px; }
+  .sidebar { position: fixed; top: 0; right: -300px; width: 300px; height: 100vh; background: #000; border-left: 2px solid var(--primary-yellow); z-index: 1000; transition: right 0.3s ease; padding: 20px; overflow-y: auto; }
   .sidebar.open { right: 0; }
-  .sidebar .tab-btn { display: block; width: 100%; padding: 12px; margin-bottom: 8px; background: transparent; color: var(--text-light); border: none; border-radius: 8px; text-align: right; font-family: inherit; font-size: 15px; cursor: pointer; }
+  .sidebar h3 { color: var(--primary-yellow); text-align: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+  .sidebar .tab-btn { display: block; width: 100%; padding: 12px 15px; margin-bottom: 8px; background: transparent; color: var(--text-light); border: none; border-radius: 8px; text-align: right; font-family: inherit; font-size: 15px; cursor: pointer; transition: 0.2s; }
+  .sidebar .tab-btn:hover { background: #222; color: var(--primary-yellow); }
+  
   .sidebar .admin-only, .sidebar .sub-admin-only, .sidebar .super-only, .admin-only { display: none !important; }
   body.is-sub-admin .sidebar .sub-admin-only { display: block !important; }
-  body.is-super-admin .sidebar .admin-only, body.is-super-admin .sidebar .super-only { display: block !important; }
-  body.is-super-admin .sidebar .customer-only, body.is-sub-admin .sidebar .customer-only { display: none !important; }
+  body.is-super-admin .sidebar .admin-only, body.is-super-admin .sidebar .super-only, body.is-super-admin .admin-only { display: block !important; }
+  body.is-super-admin .sidebar .customer-only { display: none !important; }
+  body.is-sub-admin .sidebar .customer-only { display: none !important; }
 
-  .tab-content { display: none; padding: 20px; max-width: 1200px; margin: 0 auto; flex: 1; width: 100%; }
+  .tab-content { display: none; padding: 20px; max-width: 1200px; margin: 0 auto; animation: fadeIn 0.4s; flex: 1; width: 100%; }
   .tab-content.active { display: block; }
-  h2 { margin-bottom: 20px; color: var(--primary-yellow); text-align: center; }
-  .back-btn { background: #333; color: var(--primary-yellow); border: none; padding: 8px 16px; border-radius: 20px; margin-bottom: 20px; cursor: pointer; font-family: inherit; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  h2 { margin-bottom: 20px; color: var(--primary-yellow); font-size: 26px; text-align: center; }
   
-  .category-grid, .product-list, .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin-top: 20px; }
-  .cat-card { position: relative; border-radius: 15px; overflow: hidden; cursor: pointer; border: 2px solid #333; height: 250px; }
-  .cat-card img { width: 100%; height: 100%; object-fit: cover; }
-  .cat-card .cat-overlay { position: absolute; bottom: 0; width: 100%; background: linear-gradient(transparent, rgba(0,0,0,0.9)); padding: 20px; text-align: center; }
-  .cat-card h3 { color: var(--primary-yellow); font-size: 20px; }
+  .back-btn { display: inline-block; background: #333; color: var(--primary-yellow); border: none; padding: 8px 16px; border-radius: 20px; margin-bottom: 20px; cursor: pointer; font-family: inherit; font-size: 14px; transition: 0.3s; }
+  .back-btn:hover { background: var(--primary-yellow); color: #000; }
+
+  .category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin-top: 20px; }
+  .cat-card { position: relative; border-radius: 15px; overflow: hidden; cursor: pointer; transition: 0.3s; border: 2px solid #333; height: 250px; }
+  .cat-card:hover { transform: translateY(-5px); border-color: var(--primary-yellow); box-shadow: 0 10px 25px rgba(250,204,21,0.3); }
+  .cat-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+  .cat-card:hover img { transform: scale(1.1); }
+  .cat-card .cat-overlay { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(transparent, rgba(0,0,0,0.9)); padding: 40px 15px 15px 15px; text-align: center; }
+  .cat-card h3 { color: var(--primary-yellow); font-size: 20px; margin: 0; font-weight: bold; text-shadow: 1px 1px 3px #000; }
+
   .cat-card.abaya-card { background: linear-gradient(135deg, #1a1a1a, #333); display: flex; flex-direction: column; align-items: center; justify-content: center; }
-  .cat-card.abaya-card .abaya-shape { width: 80px; height: 120px; background: #000; border-radius: 40px 40px 10px 10px; }
+  .cat-card.abaya-card .abaya-shape {
+    width: 80px; height: 120px;
+    background: #000;
+    border-radius: 40px 40px 10px 10px;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0,0,0,0.8);
+    border: 1px solid #444;
+  }
+  .cat-card.abaya-card .abaya-shape::before {
+    content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+    width: 30px; height: 30px; background: #111; border-radius: 50%; border: 1px solid #333;
+  }
+  .cat-card.abaya-card .abaya-shape::after {
+    content: ''; position: absolute; top: 45px; left: 50%; transform: translateX(-50%);
+    width: 40px; height: 60px; background: #222; border-radius: 20px;
+  }
 
-  .product-item { background: var(--card-bg); border-radius: 12px; border: 1px solid #333; display: flex; flex-direction: column; position: relative; }
-  .product-img-box { width: 100%; height: 200px; background: #000; overflow: hidden; }
-  .product-img-box img { width: 100%; height: 100%; object-fit: cover; }
-  .product-info { padding: 15px; }
-  .product-item h4 { color: var(--text-light); margin-bottom: 5px; }
-  .product-item .price { color: var(--primary-yellow); font-weight: 700; font-size: 18px; }
-  .order-btn { width: 100%; margin-top: 10px; padding: 10px; background: var(--primary-yellow); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: inherit; }
+  .product-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin-top: 20px; }
+  .product-item { background: var(--card-bg); border-radius: 12px; overflow: hidden; transition: 0.3s; border: 1px solid #333; display: flex; flex-direction: column; position: relative; }
+  .product-item:hover { transform: translateY(-5px); border-color: var(--primary-yellow); box-shadow: 0 5px 15px rgba(250,204,21,0.2); }
   
-  .delete-prod-btn { position: absolute; top: 10px; right: 10px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; z-index: 10; }
+  .delete-prod-btn {
+    position: absolute; top: 10px; right: 10px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; z-index: 10; transition: 0.3s;
+  }
+  .delete-prod-btn:hover { background: red; transform: scale(1.1); }
 
+  .product-img-box { width: 100%; height: 200px; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+  .product-img-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+  .product-item:hover .product-img-box img { transform: scale(1.05); }
+  .product-info { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
+  .product-item h4 { color: var(--text-light); margin-bottom: 5px; font-size: 16px; }
+  .product-item p { font-size: 13px; color: var(--text-muted); margin: 2px 0; flex-grow: 1; }
+  .product-item .price { color: var(--primary-yellow); font-weight: 700; margin-top: 10px; font-size: 18px; }
+  .order-btn { display: block; width: 100%; margin-top: 10px; padding: 10px; background: var(--primary-yellow); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: inherit; font-size: 14px; transition: 0.3s; }
+  .order-btn:hover { background: #eab308; }
+
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+  .card { background: var(--card-bg); border-radius: 12px; padding: 20px; border: 1px solid #333; }
+  .card:hover { border-color: var(--primary-yellow); }
+  .card h3 { color: var(--primary-yellow); font-size: 18px; margin-bottom: 10px; }
+  .card p { font-size: 14px; color: var(--text-muted); margin: 5px 0; }
+  
   form { max-width: 700px; background: var(--card-bg); padding: 25px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
-  form label { display: block; margin-bottom: 15px; font-weight: 600; color: var(--primary-yellow); }
-  form input { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #444; border-radius: 8px; background: #111; color: var(--text-light); }
-  form button { width: 100%; padding: 14px; background: var(--primary-yellow); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; font-family: inherit; }
-
-  table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
-  th, td { padding: 12px; text-align: right; border-bottom: 1px solid #333; }
+  form label { display: block; margin-bottom: 15px; font-weight: 600; color: var(--primary-yellow); font-size: 15px; }
+  form input, form select, form textarea { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #444; border-radius: 8px; font-size: 14px; font-family: inherit; background: #111; color: var(--text-light); }
+  form input:focus { outline: none; border-color: var(--primary-yellow); }
+  form button { width: 100%; padding: 14px; background: var(--primary-yellow); color: #000; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; margin-top: 10px; font-family: inherit; font-weight: bold; }
+  
+  table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 10px; overflow: hidden; margin-bottom: 20px; border: 1px solid #333; }
+  th, td { padding: 12px; text-align: right; border-bottom: 1px solid #333; font-size: 14px; color: var(--text-light); }
   th { background: #000; color: var(--primary-yellow); }
+  tr:hover td { background: #2d3748; }
 
   .hidden-login-box { display: none; max-width: 400px; margin: 40px auto; background: var(--card-bg); padding: 30px; border-radius: 15px; border: 2px solid var(--primary-yellow); text-align: center; }
   .hidden-login-box.show { display: block; }
-  .hidden-login-box input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #444; border-radius: 8px; background: #111; color: #fff; }
-  .hidden-login-box button { width: 100%; padding: 12px; background: var(--primary-yellow); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+  .hidden-login-box input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #444; border-radius: 8px; background: #111; color: #fff; font-family: inherit; }
+  .hidden-login-box button { width: 100%; padding: 12px; background: var(--primary-yellow); color: #000; border: none; border-radius: 8px; font-weight: bold; font-family: inherit; cursor: pointer; font-size: 15px; }
+  .hidden-login-box .cancel-btn { background: #444; color: #fff; margin-top: 8px; }
+  .hidden-login-error { color: var(--red); font-size: 13px; margin-bottom: 10px; display: none; }
+  .pass-wrapper { position: relative; display: flex; align-items: center; }
+  .pass-wrapper input { padding-left: 35px; }
+  .toggle-pass { position: absolute; left: 10px; cursor: pointer; font-size: 18px; user-select: none; }
 
+  #receipt-area { display: none; }
+  @media print {
+    body * { visibility: hidden; }
+    #receipt-area, #receipt-area * { visibility: visible; }
+    #receipt-area { position: absolute; left: 0; top: 0; width: 100%; display: block !important; background: #fff; color: #000; }
+    .receipt-box { border: 3px solid #000; padding: 30px; max-width: 700px; margin: 20px auto; border-radius: 15px; background: #fff; }
+    .receipt-header { text-align: center; border-bottom: 3px solid #facc15; margin-bottom: 20px; background: #000; color: #fff; padding: 15px; border-radius: 10px; }
+    .receipt-header h2 { color: #facc15 !important; margin: 0; font-size: 28px; }
+    .receipt-row { display: flex; justify-content: space-between; border-bottom: 1px dotted #ccc; padding: 10px 0; font-size: 15px; color: #000; }
+    .receipt-total { display: flex; justify-content: space-between; padding: 15px 0; margin-top: 15px; border-top: 2px solid #000; border-bottom: 2px solid #000; font-size: 18px; font-weight: bold; color: #000; }
+    .receipt-footer { text-align: center; margin-top: 30px; font-size: 14px; border-top: 2px dashed #ccc; padding-top: 15px; color: #000; }
+  }
+  
   .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; }
   .overlay.show { display: block; }
 
-  footer { background: #000; border-top: 2px solid var(--primary-yellow); padding: 40px 20px; margin-top: 40px; text-align: center; }
+  footer { background: #000; border-top: 2px solid var(--primary-yellow); padding: 40px 20px; margin-top: 40px; }
+  .footer-content { max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 30px; }
+  .footer-col { flex: 1; min-width: 250px; }
+  .footer-col h3 { color: var(--primary-yellow); font-size: 20px; margin-bottom: 15px; }
+  .footer-col p { color: var(--text-muted); font-size: 14px; line-height: 1.8; margin-bottom: 10px; }
+  .footer-col a { display: block; color: var(--text-muted); text-decoration: none; margin-bottom: 10px; font-size: 14px; cursor: pointer; transition: 0.3s; }
+  .footer-col a:hover { color: var(--primary-yellow); }
+  .footer-socials { display: flex; gap: 15px; margin-top: 15px; }
+  .footer-socials span { color: var(--text-muted); font-size: 20px; cursor: pointer; transition: 0.3s; }
+  .footer-socials span:hover { color: var(--primary-yellow); }
+  .footer-bottom { text-align: center; color: var(--text-muted); font-size: 13px; margin-top: 40px; padding-top: 20px; border-top: 1px solid #333; }
+
+  @media (max-width: 768px) {
+    .main-header .nav-links { display: none; }
+    .hero-text { padding: 30px 20px; }
+    .hero-text h1 { font-size: 28px; }
+  }
 </style>
 </head>
 <body>
@@ -86,6 +189,9 @@
 <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
 
 <div class="top-strip">
+  <div class="socials">
+    <span>f</span> <span>📷</span> <span>▶</span> <span>t</span>
+  </div>
   <div>Cash on Delivery All Over Pakistan</div>
   <div onclick="toggleSidebar()" style="cursor:pointer;">☰</div>
 </div>
@@ -95,82 +201,264 @@
     <div class="logo-img">F</div>
     <span>Faizy <b>Mart</b></span>
   </div>
+  
   <div class="nav-links">
     <a onclick="showTab('home')">ہوم</a>
+    <a onclick="showTab('home')">کیٹگریز</a>
+    <a onclick="showTab('addOrder')">شاپ</a>
+    <a onclick="applyForJob()">جاب</a>
   </div>
+
   <div class="header-icons">
+    <button onclick="showTab('home')">🔍</button>
     <button onclick="showEmpLogin()">👤</button>
     <button onclick="toggleSidebar()">🛒</button>
   </div>
 </div>
 
 <aside class="sidebar" id="sidebar">
+  <h3>مینو</h3>
+  
   <button class="tab-btn customer-only" onclick="showTab('home')">🏠 ہوم</button>
+  <button class="tab-btn customer-only" onclick="showTab('addOrder')">➕ نیا آرڈر</button>
+  <button class="tab-btn customer-only" onclick="applyForJob()">📝 جاب اپلائی کریں</button>
+  <button class="tab-btn customer-only" onclick="showEmpLogin()">🔑 ایمپلائی لاگ ان</button>
   <button class="tab-btn customer-only" onclick="showHiddenLogin()">🔐 ایڈمن لاگ ان</button>
+
+  <button class="tab-btn admin-only" onclick="showTab('home')">🏠 ہوم</button>
   <button class="tab-btn admin-only" onclick="showTab('addEmployee')">➕ نیا ایمپلائی</button>
+  <button class="tab-btn admin-only" onclick="showTab('employees')">👥 تمام ایمپلائیز</button>
   <button class="tab-btn admin-only" onclick="showTab('orders')">🧾 تمام آرڈرز</button>
+  <button class="tab-btn admin-only" onclick="showTab('salary')">💰 سیلری مینجمنٹ</button>
+  <button class="tab-btn admin-only" onclick="showTab('reports')">📊 رپورٹس</button>
+  <button class="tab-btn admin-only" onclick="showTab('applications')">📋 نئی درخواستیں</button>
+  <button class="tab-btn super-only" onclick="showTab('backup')">💾 بیک اپ / ریسٹور</button>
   <button class="tab-btn admin-only" onclick="adminLogout()">🚪 لاگ آؤٹ</button>
+  
+  <button class="tab-btn sub-admin-only" onclick="showTab('myProfile')">👤 میرا پورٹل</button>
+  <button class="tab-btn sub-admin-only" onclick="adminLogout()">🚪 لاگ آؤٹ</button>
 </aside>
 
 <section id="home" class="tab-content active">
   <div class="hero-section">
     <div class="hero-text">
       <h1>Everything You Love,<br><span>All in One Place</span></h1>
+      <p>Discover fashion, beauty, accessories, and lifestyle essentials—all curated to make your everyday shopping easier, more stylish, and more enjoyable at Faizy Mart.</p>
       <button onclick="document.getElementById('categories').scrollIntoView({behavior: 'smooth'})">Shop Now</button>
     </div>
     <div class="hero-image">
-      <img src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&w=1000&q=80" alt="Store">
+      <img src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Toys Airplane">
     </div>
   </div>
 
   <div id="categories" style="margin-top: 40px;">
     <h2>Shop by Category</h2>
     <div class="category-grid">
-      <div class="cat-card" onclick="openCategory('TOYS')"><img src="https://images.unsplash.com/photo-1559454403-b8fb88521f11?auto=format&fit=crop&w=500&q=80"><div class="cat-overlay"><h3>TOYS</h3></div></div>
-      <div class="cat-card" onclick="openCategory('GADGETS')"><img src="https://images.unsplash.com/photo-1526738549149-8e07eca6c147?auto=format&fit=crop&w=500&q=80"><div class="cat-overlay"><h3>GADGETS</h3></div></div>
-      <div class="cat-card abaya-card" onclick="openCategory('ABAYAS')"><div class="abaya-shape"></div><div class="cat-overlay"><h3>ABAYAS</h3></div></div>
+      <div class="cat-card" onclick="openCategory('COSMETICS')">
+        <img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Cosmetics">
+        <div class="cat-overlay"><h3>COSMETICS</h3></div>
+      </div>
+      <div class="cat-card" onclick="openCategory('DRONES')">
+        <img src="https://images.unsplash.com/photo-1473968512647-3e447244af8f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Drones">
+        <div class="cat-overlay"><h3>DRONES</h3></div>
+      </div>
+      <div class="cat-card" onclick="openCategory('TOYS')">
+        <img src="https://images.unsplash.com/photo-1559454403-b8fb88521f11?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Toys">
+        <div class="cat-overlay"><h3>TOYS</h3></div>
+      </div>
+      <div class="cat-card" onclick="openCategory('GADGETS')">
+        <img src="https://images.unsplash.com/photo-1526738549149-8e07eca6c147?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Gadgets">
+        <div class="cat-overlay"><h3>GADGETS</h3></div>
+      </div>
+      <div class="cat-card" onclick="openCategory('MOBILES')">
+        <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Mobiles">
+        <div class="cat-overlay"><h3>MOBILES</h3></div>
+      </div>
+      <div class="cat-card" onclick="openCategory('CLOTHING')">
+        <img src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Clothing">
+        <div class="cat-overlay"><h3>CLOTHING</h3></div>
+      </div>
+      <div class="cat-card abaya-card" onclick="openCategory('ABAYAS')">
+        <div class="abaya-shape"></div>
+        <div class="cat-overlay"><h3>ABAYAS</h3></div>
+      </div>
     </div>
   </div>
 </section>
 
 <section id="categoryDetail" class="tab-content">
   <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
-  <div style="display:flex; justify-content:space-between;">
-    <h2 id="catHeaderTitle">DRONES</h2>
-    <button class="admin-only" onclick="openAddProductModal()" style="padding:10px; background:var(--primary-yellow); border:none; border-radius:8px; font-weight:bold;">➕ نیا آئٹم</button>
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:20px;">
+    <h2 id="catHeaderTitle" style="margin:0; text-align:right;">DRONES</h2>
+    <button class="admin-only" onclick="openAddProductModal()" style="padding:10px 20px; background:var(--primary-yellow); color:#000; border:none; border-radius:8px; font-weight:bold; font-family:inherit;">➕ نیا آئٹم</button>
   </div>
   
   <form id="addProductForm" style="display:none;">
     <button class="back-btn" type="button" onclick="closeAddProductModal()">← واپس</button>
+    <h3 style="margin-top:0; color:#facc15;">نیا آئٹم شامل کریں</h3>
     <input type="hidden" id="prodCat" />
     <label>نام <input type="text" id="prodName" required /></label>
     <label>تفصیل <input type="text" id="prodDesc" required /></label>
-    <label>قیمت <input type="number" id="prodPrice" required /></label>
-    <label>تصویر <input type="file" id="prodImg1" accept="image/*" /></label>
-    <button type="submit" style="background:#4ade80;">محفوظ</button>
+    <label>قیمت <input type="number" id="prodPrice" required min="0" /></label>
+    <label>اسٹاک <input type="number" id="prodStock" min="0" value="0" /></label>
+    <label>تصویر 1 <input type="file" id="prodImg1" accept="image/*" style="background:#111; color:#fff;" /></label>
+    <label>تصویر 2 <input type="file" id="prodImg2" accept="image/*" style="background:#111; color:#fff;" /></label>
+    <label>تصویر 3 <input type="file" id="prodImg3" accept="image/*" style="background:#111; color:#fff;" /></label>
+    <label>تصویر 4 <input type="file" id="prodImg4" accept="image/*" style="background:#111; color:#fff;" /></label>
+    <label>تصویر 5 <input type="file" id="prodImg5" accept="image/*" style="background:#111; color:#fff;" /></label>
+    <div style="display:flex; gap:10px; margin-top:10px;">
+      <button type="submit" style="background:#4ade80; color:#000;">محفوظ</button>
+    </div>
   </form>
+
   <div class="product-list" id="productList"></div>
+</section>
+
+<section id="addEmployee" class="tab-content">
+  <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
+  <h2>نیا ایمپلائی شامل کریں</h2>
+  <form id="employeeForm">
+    <button class="back-btn" type="button" onclick="showTab('home')">← واپس</button>
+    <label>آئی ڈی <input type="text" id="empId" readonly /></label>
+    <label>نام <input type="text" id="empName" required /></label>
+    <label>موبائل <input type="tel" id="empMobile" required /></label>
+    <label>سیلری <input type="number" id="empSalary" value="20000" required /></label>
+    <label>ٹارگٹ <input type="number" id="empTarget" value="40" required /></label>
+    <label>پاس ورڈ 
+      <div class="pass-wrapper">
+        <input type="password" id="empPass" required />
+        <span class="toggle-pass" onclick="togglePassword('empPass', this)">👁️</span>
+      </div>
+    </label>
+    <button type="submit">محفوظ کریں</button>
+  </form>
+</section>
+
+<section id="employees" class="tab-content">
+  <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
+  <h2>تمام ایمپلائیز</h2>
+  <div id="employeeList" class="card-grid"></div>
+</section>
+
+<section id="myProfile" class="tab-content">
+  <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
+  <h2>👤 میرا پورٹل</h2>
+  <div id="myProfileBox"></div>
 </section>
 
 <section id="orders" class="tab-content">
   <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
   <h2>تمام آرڈرز</h2>
-  <table id="ordersTable"><thead><tr><th>آرڈر</th><th>کسٹمر</th><th>پروڈکٹ</th><th>رقم</th></tr></thead><tbody></tbody></table>
+  <div style="overflow-x:auto;"><table id="ordersTable"><thead><tr><th>آرڈر</th><th>کسٹمر</th><th>پروڈکٹ</th><th>رقم</th><th>اسٹیٹس</th></tr></thead><tbody></tbody></table></div>
+</section>
+
+<section id="addOrder" class="tab-content">
+  <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
+  <h2>نیا آرڈر</h2>
+  <form id="orderForm">
+    <button class="back-btn" type="button" onclick="showTab('home')">← واپس</button>
+    <label>آرڈر نمبر <input type="text" id="orderNo" readonly /></label>
+    <label>کسٹمر <input type="text" id="customer" required /></label>
+    <label>پروڈکٹ <input type="text" id="product" required /></label>
+    <label>رقم <input type="number" id="amount" required /></label>
+    <button type="submit">محفوظ کریں اور پرنٹ کریں</button>
+  </form>
+</section>
+
+<section id="salary" class="tab-content">
+  <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
+  <h2>💰 سیلری مینجمنٹ</h2>
+  <div id="salaryList" class="card-grid"></div>
+</section>
+
+<section id="reports" class="tab-content">
+  <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
+  <h2>📊 رپورٹس</h2>
+  <div style="overflow-x:auto;"><table id="totalReport"><thead><tr><th>ایمپلائی</th><th>آرڈرز</th><th>رقم</th></tr></thead><tbody></tbody></table></div>
+</section>
+
+<section id="applications" class="tab-content">
+  <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
+  <h2>📋 نئی درخواستیں</h2>
+  <div style="overflow-x:auto;"><table id="applicationsTable"><thead><tr><th>نام</th><th>موبائل</th><th>ایکشن</th></tr></thead><tbody></tbody></table></div>
+</section>
+
+<section id="backup" class="tab-content">
+  <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
+  <h2>💾 بیک اپ / ریسٹور</h2>
+  <div style="background:var(--card-bg); padding:20px; border-radius:15px; border:1px solid #333;">
+    <button onclick="exportBackup()" style="padding:10px 20px; background:var(--green); color:#000; border:none; border-radius:8px; font-weight:bold; margin-bottom:15px;">📥 بیک اپ ڈاؤن لوڈ</button>
+    <br/>
+    <input type="file" id="restoreFile" accept=".json" />
+    <button onclick="importBackup()" style="padding:10px 20px; background:var(--red); color:#fff; border:none; border-radius:8px; font-weight:bold; margin-top:15px;">📤 ریسٹور کریں</button>
+  </div>
 </section>
 
 <section id="hiddenLoginSection" class="tab-content">
   <div class="hidden-login-box" id="hiddenLoginBox">
     <h2>🔐 ایڈمن لاگ ان</h2>
-    <input type="email" id="hiddenLoginId" placeholder="فیضان رضا" />
-    <input type="password" id="hiddenLoginPass" placeholder="المدار 313" />
-    <button onclick="submitHiddenLogin()">لاگ ان</button>
-    <button style="background:#444; margin-top:5px;" onclick="showTab('home')">منسوخ</button>
+    <div class="hidden-login-error" id="hiddenLoginError">❌ غلط ای میل یا پاس ورڈ!</div>
+    <input type="email" id="hiddenLoginId" placeholder="ای میل" dir="ltr" />
+    <div class="pass-wrapper">
+      <input type="password" id="hiddenLoginPass" placeholder="پاس ورڈ" dir="ltr" />
+      <span class="toggle-pass" onclick="togglePassword('hiddenLoginPass', this)">👁️</span>
+    </div>
+    <button onclick="submitHiddenLogin()">لاگ ان کریں</button>
+    <button class="cancel-btn" onclick="showTab('home')">منسوخ کریں</button>
   </div>
 </section>
 
+<section id="empLoginSection" class="tab-content">
+  <div class="hidden-login-box" id="empLoginBox">
+    <h2>🔑 ایمپلائی لاگ ان</h2>
+    <div class="hidden-login-error" id="empLoginError">❌ غلط آئی ڈی یا پاس ورڈ!</div>
+    <input type="text" id="empLoginId" placeholder="ایمپلائی آئی ڈی" dir="ltr" />
+    <div class="pass-wrapper">
+      <input type="password" id="empLoginPass" placeholder="پاس ورڈ" dir="ltr" />
+      <span class="toggle-pass" onclick="togglePassword('empLoginPass', this)">👁️</span>
+    </div>
+    <button onclick="submitEmpLogin()">لاگ ان کریں</button>
+    <button class="cancel-btn" onclick="showTab('home')">منسوخ کریں</button>
+  </div>
+</section>
+
+<div id="receipt-area">
+  <div class="receipt-box">
+    <div class="receipt-header"><h2>FAIZY MART</h2><p>www.faizymart.com</p></div>
+    <div class="receipt-row"><strong>آرڈر:</strong> <span id="r-order-no"></span></div>
+    <div class="receipt-row"><strong>کسٹمر:</strong> <span id="r-customer"></span></div>
+    <div class="receipt-row"><strong>پروڈکٹ:</strong> <span id="r-product"></span></div>
+    <div class="receipt-total"><span>کل:</span><span><span id="r-amount"></span> روپے</span></div>
+    <div class="receipt-footer"><h3>شکریہ!</h3></div>
+  </div>
+</div>
+
 <footer>
-  <h3 style="color:var(--primary-yellow);">FAIZY MART</h3>
-  <p style="color:#9ca3af; margin-top:10px;">© 2026, Faizy Mart. All rights reserved.</p>
+  <div class="footer-content">
+    <div class="footer-col">
+      <h3>FAIZY MART</h3>
+      <p>Best online store for the online orders of the all services to get online at door.</p>
+      <div class="footer-socials">
+        <span>f</span> <span>📷</span> <span>▶</span> <span>t</span> <span>p</span>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h3>Quick links</h3>
+      <a onclick="showTab('home')">Home</a>
+      <a onclick="showTab('home')">Shop</a>
+      <a onclick="applyForJob()">Careers</a>
+      <a>Privacy Policy</a>
+    </div>
+    <div class="footer-col">
+      <h3>Talk to Us</h3>
+      <p>hafizraza11@gmail.com</p>
+      <p>03701304868</p>
+      <p style="margin-top:15px; font-size:12px;">Cash on Delivery All Over Pakistan</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2026, Faizy Mart. All rights reserved.
+  </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
@@ -181,123 +469,290 @@ window.addEventListener('DOMContentLoaded', () => {
     if (window.supabase) {
       supabase = window.supabase.createClient('https://ofjlswkrdrpwapcvwzun.supabase.co', 'sb_publishable_yk51b9Pps15BXSX-tmnBdw_IFsWoUCW');
     }
-  } catch (e) {}
+  } catch (e) { console.warn("Supabase load error:", e); }
 
-  let CATALOG = { "TOYS": [], "GADGETS": [], "ABAYAS": [] };
-  let currentAdmin = null;
-  let currentCategory = "";
+  let employees = JSON.parse(localStorage.getItem("fm_employees")) || [];
+  let orders = JSON.parse(localStorage.getItem("fm_orders")) || [];
+  let salaryPayments = JSON.parse(localStorage.getItem("fm_salary_payments")) || [];
+  let CATALOG = JSON.parse(localStorage.getItem("fm_catalog")) || { "COSMETICS": [], "DRONES": [], "TOYS": [], "GADGETS": [], "HOME PRODUCTS": [], "MOBILES": [], "CLOTHING": [], "ABAYAS": [] };
+  let applications = JSON.parse(localStorage.getItem("fm_applications")) || [];
+  let currentAdmin = JSON.parse(localStorage.getItem("fm_currentAdmin")) || null;
+  let currentEmployee = JSON.parse(localStorage.getItem("fm_currentEmployee")) || null;
 
   async function loadFromSupabase() {
     if (!supabase) return;
     try {
       const { data, error } = await supabase.from('store').select('data').eq('id', 1).single();
-      if (data && data.data && data.data.CATALOG) {
-        CATALOG = data.data.CATALOG;
-        renderAll();
+      if (error && error.code !== 'PGRST116') throw error;
+      if (data && data.data) {
+        const d = data.data;
+        if (d.employees) employees = d.employees;
+        if (d.orders) orders = d.orders;
+        if (d.CATALOG) CATALOG = d.CATALOG;
+        if (d.salaryPayments) salaryPayments = d.salaryPayments;
+        if (d.applications) applications = d.applications;
+        saveLocal(); renderAll();
         console.log("✅ Supabase سے ڈیٹا لوڈ ہو گیا");
       }
-    } catch (e) {}
+    } catch (e) { console.error("❌ Supabase لوڈ میں مسئلہ:", e); }
   }
 
   async function saveToSupabase() {
     if (!supabase) return;
     try {
-      await supabase.from('store').upsert({ id: 1, data: { CATALOG } });
-      console.log("☁️ Supabase میں محفوظ");
-    } catch (e) {}
+      await supabase.from('store').upsert({
+        id: 1,
+        data: { employees, orders, CATALOG, salaryPayments, applications, updatedAt: new Date().toISOString() }
+      });
+      console.log("☁️ Supabase میں ڈیٹا محفوظ");
+    } catch (e) { console.error("❌ Supabase محفوظ میں مسئلہ:", e); }
   }
 
-  function compressImage(file) {
-    return new Promise((resolve) => {
+  function saveLocal() {
+    localStorage.setItem("fm_employees", JSON.stringify(employees));
+    localStorage.setItem("fm_orders", JSON.stringify(orders));
+    localStorage.setItem("fm_catalog", JSON.stringify(CATALOG));
+    localStorage.setItem("fm_salary_payments", JSON.stringify(salaryPayments));
+    localStorage.setItem("fm_applications", JSON.stringify(applications));
+  }
+
+  function saveData() { saveLocal(); saveToSupabase(); }
+
+  function compressImage(file, maxWidth, maxHeight, quality) {
+    return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = event => {
         const img = new Image();
         img.src = event.target.result;
         img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const MAX = 600;
           let width = img.width, height = img.height;
-          if (width > height) { if (width > MAX) { height *= MAX / width; width = MAX; } } 
-          else { if (height > MAX) { width *= MAX / height; height = MAX; } }
+          if (width > height) { if (width > maxWidth) { height = Math.round((height * maxWidth) / width); width = maxWidth; } }
+          else { if (height > maxHeight) { width = Math.round((width * maxHeight) / height); height = maxHeight; } }
+          const canvas = document.createElement('canvas');
           canvas.width = width; canvas.height = height;
           canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-          resolve(canvas.toDataURL('image/jpeg', 0.6));
+          resolve(canvas.toDataURL('image/jpeg', quality));
         };
+        img.onerror = error => reject(error);
       };
+      reader.onerror = error => reject(error);
     });
   }
 
-  window.toggleSidebar = () => document.getElementById("sidebar").classList.toggle("open") || document.getElementById("overlay").classList.toggle("show");
-  
+  window.toggleSidebar = () => {
+    document.getElementById("sidebar").classList.toggle("open");
+    document.getElementById("overlay").classList.toggle("show");
+  }
+
   window.showTab = (name) => {
     document.querySelectorAll(".tab-content").forEach(s => s.classList.remove("active"));
-    if (document.getElementById(name)) document.getElementById(name).classList.add("active");
+    const sec = document.getElementById(name); if (sec) sec.classList.add("active");
+    if (name === "addEmployee") document.getElementById("empId").value = generateNextEmpId();
+    if (name === "addOrder") document.getElementById("orderNo").value = "FM-ORD-" + (orders.length + 1).toString().padStart(3, '0');
+    if (name === "hiddenLoginSection") document.getElementById("hiddenLoginBox").classList.add("show");
+    if (name === "empLoginSection") document.getElementById("empLoginBox").classList.add("show");
+    if (name === "myProfile") renderMyProfile();
+    if (name === "employees") renderEmployees();
+    if (name === "orders") renderOrders();
+    if (name === "salary") renderSalaryList();
+    if (name === "applications") renderApplications();
+    if (name === "reports") renderReports();
     document.getElementById("sidebar").classList.remove("open");
     document.getElementById("overlay").classList.remove("show");
-  };
+  }
 
-  window.handleLogoClick = () => { if (!currentAdmin) showTab("hiddenLoginSection"); };
-  
+  window.togglePassword = (id, el) => {
+    const inp = document.getElementById(id); if (!inp) return;
+    if (inp.type === "password") { inp.type = "text"; el.innerHTML = "🙈"; }
+    else { inp.type = "password"; el.innerHTML = "👁️"; }
+  }
+
+  window.handleLogoClick = () => { if (!currentAdmin) showHiddenLogin(); }
+  window.showHiddenLogin = () => { showTab("hiddenLoginSection"); }
   window.submitHiddenLogin = () => {
-    if (document.getElementById("hiddenLoginId").value === "فیضان رضا" && document.getElementById("hiddenLoginPass").value === "المدار 313") {
-      currentAdmin = true;
+    const id = document.getElementById("hiddenLoginId").value.trim();
+    const pass = document.getElementById("hiddenLoginPass").value;
+    if (id === "فیضان رضا" && pass === "المدار 313") {
+      currentAdmin = { role: "super", name: "Admin" };
+      localStorage.setItem("fm_currentAdmin", JSON.stringify(currentAdmin));
       document.body.classList.add("is-super-admin");
-      showTab('home');
-    } else { alert("غلط پاس ورڈ!"); }
-  };
+      showTab('home'); alert("✅ ایڈمن لاگ ان!");
+    } else { document.getElementById("hiddenLoginError").style.display = "block"; }
+  }
 
-  window.adminLogout = () => { currentAdmin = null; document.body.classList.remove("is-super-admin"); showTab('home'); };
+  window.showEmpLogin = () => { showTab("empLoginSection"); }
+  window.submitEmpLogin = () => {
+    const id = document.getElementById("empLoginId").value.trim();
+    const pass = document.getElementById("empLoginPass").value;
+    const emp = employees.find(e => e.empId === id && e.password === pass);
+    if (emp) {
+      currentEmployee = { empId: emp.empId, name: emp.name };
+      localStorage.setItem("fm_currentEmployee", JSON.stringify(currentEmployee));
+      document.body.classList.add("is-sub-admin");
+      showTab('myProfile'); alert("✅ ایمپلائی لاگ ان!");
+    } else { document.getElementById("empLoginError").style.display = "block"; }
+  }
 
+  window.adminLogout = () => {
+    currentAdmin = null; currentEmployee = null;
+    localStorage.removeItem("fm_currentAdmin"); localStorage.removeItem("fm_currentEmployee");
+    document.body.classList.remove("is-super-admin", "is-sub-admin");
+    showTab('home'); alert("🚪 لاگ آؤٹ!");
+  }
+
+  let currentCategory = "";
   window.openCategory = (cat) => {
     currentCategory = cat;
     document.getElementById("catHeaderTitle").textContent = cat;
     renderProducts(); showTab("categoryDetail");
-  };
+  }
 
   function renderProducts() {
     const list = document.getElementById("productList"); list.innerHTML = "";
     const items = CATALOG[currentCategory] || [];
-    if (items.length === 0) { list.innerHTML = `<div style="grid-column:1/-1; text-align:center;">کوئی آئٹم نہیں</div>`; return; }
-    
-    items.forEach((p, i) => {
+    if (items.length === 0) { list.innerHTML = `<div style="text-align:center; color:#666; grid-column:1/-1;">کوئی آئٹم نہیں</div>`; return; }
+    items.forEach((p, index) => {
       const div = document.createElement("div"); div.className = "product-item";
+      const img = (p.images && p.images.length > 0) ? p.images[0] : "https://via.placeholder.com/200x200?text=No+Image";
       div.innerHTML = `
-        <button class="delete-prod-btn admin-only" onclick="deleteProduct('${currentCategory}', ${i})">🗑️</button>
-        <div class="product-img-box"><img src="${p.images[0] || ''}"></div>
-        <div class="product-info"><h4>${p.name}</h4><span class="price">${p.price} روپے</span></div>`;
+        <button class="delete-prod-btn" onclick="deleteProduct('${currentCategory}', ${index})" title="ڈیلیٹ کریں">🗑️</button>
+        <div class="product-img-box"><img src="${img}" onerror="this.src='https://via.placeholder.com/200x200?text=Error'" /></div>
+        <div class="product-info">
+          <h4>${p.name}</h4>
+          <p>${p.desc}</p>
+          <span class="price">${p.price} روپے</span>
+          <button class="order-btn" onclick="quickOrder('${p.name}', ${p.price})">🛒 آرڈر کریں</button>
+        </div>`;
       list.appendChild(div);
     });
   }
 
   window.deleteProduct = (cat, index) => {
-    if(confirm("ڈیلیٹ کریں؟")) {
+    if(confirm("کیا آپ واقعی یہ پروڈکٹ ڈیلیٹ کرنا چاہتی ہیں؟")) {
       CATALOG[cat].splice(index, 1);
-      saveToSupabase(); renderProducts();
+      saveData(); renderProducts(); alert("✅ پروڈکٹ ڈیلیٹ ہو گئی!");
     }
-  };
+  }
 
-  window.openAddProductModal = () => document.getElementById("addProductForm").style.display = "block";
-  window.closeAddProductModal = () => document.getElementById("addProductForm").style.display = "none";
+  window.openAddProductModal = () => { document.getElementById("addProductForm").style.display = "block"; document.getElementById("prodCat").value = currentCategory; }
+  window.closeAddProductModal = () => { document.getElementById("addProductForm").style.display = "none"; document.getElementById("addProductForm").reset(); }
 
   document.getElementById("addProductForm").addEventListener("submit", async e => {
     e.preventDefault();
-    const cat = currentCategory;
+    const cat = document.getElementById("prodCat").value;
     const name = document.getElementById("prodName").value;
-    const price = document.getElementById("prodPrice").value;
-    const file = document.getElementById("prodImg1").files[0];
-    
-    let imgData = "";
-    if (file) imgData = await compressImage(file);
+    const desc = document.getElementById("prodDesc").value;
+    const price = +document.getElementById("prodPrice").value;
+    const stock = +document.getElementById("prodStock").value;
+    const fileInputs = [1,2,3,4,5].map(n => document.getElementById("prodImg"+n));
+    const files = fileInputs.map(input => input.files[0]).filter(f => f);
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerText;
+    submitBtn.innerText = "تصاویر لوڈ ہو رہی ہیں...";
+    submitBtn.disabled = true;
 
-    CATALOG[cat].push({ name, price, images: [imgData] });
-    await saveToSupabase();
-    renderProducts(); closeAddProductModal(); alert("✅ شامل!");
+    let compressedImages = [];
+    try {
+      if (files.length > 0) {
+        for (let i = 0; i < files.length; i++) {
+          const compressed = await compressImage(files[i], 800, 800, 0.7);
+          compressedImages.push(compressed);
+        }
+      }
+      if (!CATALOG[cat]) CATALOG[cat] = [];
+      CATALOG[cat].push({ name, desc, price, stock, images: compressedImages });
+      saveData(); renderProducts(); closeAddProductModal(); alert("✅ پروڈکٹ کامیابی سے شامل ہو گئی!");
+    } catch (error) {
+      console.error("Image processing error:", error);
+      alert("❌ تصویر لوڈ کرنے میں مسئلہ آیا۔");
+    } finally {
+      submitBtn.innerText = originalBtnText;
+      submitBtn.disabled = false;
+    }
   });
 
-  window.showEmpLogin = () => alert("یہ فیچر جلد آ رہا ہے");
+  window.quickOrder = (name, price) => {
+    showTab('addOrder');
+    setTimeout(() => { document.getElementById('product').value = name; document.getElementById('amount').value = price; }, 200);
+  }
 
-  window.addEventListener('load', () => { loadFromSupabase(); });
+  function generateNextEmpId() { return "FM-" + (employees.length + 1001); }
+  
+  document.getElementById("employeeForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const emp = { empId: document.getElementById("empId").value, name: document.getElementById("empName").value, mobile: document.getElementById("empMobile").value, salary: +document.getElementById("empSalary").value, target: +document.getElementById("empTarget").value, password: document.getElementById("empPass").value, active: true };
+    employees.push(emp); saveData(); renderEmployees(); e.target.reset(); alert("✅ شامل!");
+  });
+
+  function renderEmployees() {
+    const box = document.getElementById("employeeList"); box.innerHTML = "";
+    employees.forEach(emp => { box.innerHTML += `<div class="card"><h3>${emp.name} (${emp.empId})</h3><p>📱 ${emp.mobile}</p><p>💰 سیلری: ${emp.salary}</p><p>🎯 ٹارگٹ: ${emp.target}</p></div>`; });
+  }
+
+  document.getElementById("orderForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const o = { orderNo: document.getElementById("orderNo").value, customer: document.getElementById("customer").value, product: document.getElementById("product").value, amount: +document.getElementById("amount").value, date: new Date().toISOString().slice(0,10) };
+    orders.push(o); saveData(); renderOrders(); e.target.reset(); alert("✅ آرڈر محفوظ!"); printOrder(o.orderNo);
+  });
+
+  function renderOrders() {
+    const tb = document.querySelector("#ordersTable tbody"); tb.innerHTML = "";
+    orders.forEach(o => { tb.innerHTML += `<tr><td>${o.orderNo}</td><td>${o.customer}</td><td>${o.product}</td><td>${o.amount}</td><td>✅</td></tr>`; });
+  }
+
+  function printOrder(no) {
+    const o = orders.find(x => x.orderNo === no);
+    if (!o) return;
+    document.getElementById("r-order-no").textContent = o.orderNo;
+    document.getElementById("r-customer").textContent = o.customer;
+    document.getElementById("r-product").textContent = o.product;
+    document.getElementById("r-amount").textContent = o.amount;
+    window.print();
+  }
+
+  window.applyForJob = () => {
+    const name = prompt("نام:"); if (!name) return;
+    const mobile = prompt("موبائل:"); if (!mobile) return;
+    applications.push({ id: Date.now(), name, mobile });
+    saveData(); alert("✅ درخواست بھیج دی گئی!");
+  }
+
+  function renderApplications() {
+    const tb = document.querySelector("#applicationsTable tbody"); tb.innerHTML = "";
+    applications.forEach(a => { tb.innerHTML += `<tr><td>${a.name}</td><td>${a.mobile}</td><td><button onclick="alert('اپرووڈ')">✅ اپروو</button></td></tr>`; });
+  }
+
+  function renderMyProfile() {
+    if(!currentEmployee) return;
+    document.getElementById("myProfileBox").innerHTML = `<div class="card"><h3>👤 ${currentEmployee.name}</h3><p>خوش آمدید! یہ آپ کا پورٹل ہے۔</p></div>`;
+  }
+
+  function renderSalaryList() {
+    const box = document.getElementById("salaryList"); box.innerHTML = "";
+    if(employees.length === 0) { box.innerHTML = "<div class='card'>کوئی ایمپلائی موجود نہیں ہے۔</div>"; return; }
+    employees.forEach(emp => { 
+      box.innerHTML += `<div class="card"><h3>${emp.name} (${emp.empId})</h3><p>💰 مقررہ سیلری: <b>${emp.salary} روپے</b></p><p>🎯 ٹارگٹ: ${emp.target} آرڈرز</p><button class="order-btn" onclick="alert('سیلری کی ادائیگی کا ریکارڈ جلد شامل ہوگا')">💵 سیلری ادا کریں</button></div>`; 
+    });
+  }
+
+  function renderReports() {
+    const tb = document.querySelector("#totalReport tbody"); tb.innerHTML = "";
+    let totalAmount = 0;
+    orders.forEach(o => { totalAmount += o.amount; });
+    tb.innerHTML += `<tr><td>کل فروخت (Total Sales)</td><td>${orders.length}</td><td>${totalAmount} روپے</td></tr>`;
+  }
+
+  window.exportBackup = () => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify({ employees, orders, CATALOG })], {type:"application/json"})); a.download = "faizymart_backup.json"; a.click(); }
+  window.importBackup = () => { alert("ریسٹور فیچر جلد شامل کیا جائے گا۔"); }
+
+  function renderAll() { renderProducts(); renderEmployees(); renderOrders(); renderSalaryList(); renderApplications(); renderReports(); }
+
+  if (currentAdmin) document.body.classList.add("is-super-admin");
+  if (currentEmployee) document.body.classList.add("is-sub-admin");
+  
+  renderAll();
+  loadFromSupabase();
 });
 </script>
 </body>
