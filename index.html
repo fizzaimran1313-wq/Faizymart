@@ -401,7 +401,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function saveData() { saveLocal(); saveToSupabase(); }
 
-  // تصویر کو کمپریس کرنے کا تیز طریقہ
+  // تصویر کو کمپریس کرنے کا آسان اور تیز طریقہ
   function compressImage(file) {
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -540,8 +540,12 @@ window.addEventListener('DOMContentLoaded', () => {
     const file2 = document.getElementById("prodImg2").files[0];
     let images = [];
 
-    if (file1) images.push(await compressImage(file1));
-    if (file2) images.push(await compressImage(file2));
+    try {
+      if (file1) images.push(await compressImage(file1));
+      if (file2) images.push(await compressImage(file2));
+    } catch (err) {
+      console.error(err);
+    }
 
     if (editIdx === -1) {
       CATALOG[cat].push({ name, desc, price, stock, images });
