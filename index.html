@@ -400,10 +400,9 @@ window.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem("fm_applications", JSON.stringify(applications));
   }
 
-  // saveData اب Supabase کا انتظار نہیں کرے گا، فوراً لوکل میں محفوظ کرے گا اور پیچھے پیچھے Supabase میں بھی بھیج دے گا
   function saveData() {
     saveLocal();
-    saveToSupabase(); // یہ پیچھے پیچھے چلتا رہے گا، بٹن کو نہیں روکے گا
+    saveToSupabase();
   }
 
   function readFileAsDataURL(file) {
@@ -551,7 +550,7 @@ window.addEventListener('DOMContentLoaded', () => {
       alert("✅ ایڈٹ ہو گیا!");
     }
     saveData(); renderProducts(); closeAddProductModal();
-    location.reload(); // ⚠️ صفحہ خود بخود ریفریش ہو جائے گا
+    location.reload();
   });
 
   window.quickOrder = (name, price) => {
