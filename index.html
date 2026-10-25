@@ -175,8 +175,7 @@
     <label>تفصیل <textarea id="prodDesc" rows="3" required></textarea></label>
     <label>قیمت <input type="number" id="prodPrice" required /></label>
     <label>اسٹاک <input type="number" id="prodStock" value="0" required /></label>
-    <label>تصویر 1 <input type="file" id="prodImg1" accept="image/*" /></label>
-    <label>تصویر 2 <input type="file" id="prodImg2" accept="image/*" /></label>
+    <label>تصویر <input type="file" id="prodImg1" accept="image/*" /></label>
     <button type="submit" style="background:#4ade80;">محفوظ</button>
   </form>
   <div class="product-list" id="productList"></div>
@@ -380,15 +379,17 @@ window.addEventListener('DOMContentLoaded', () => {
         if (d.salaryPayments) salaryPayments = d.salaryPayments;
         if (d.applications) applications = d.applications;
         saveLocal(); renderAll();
+        console.log("✅ Supabase سے ڈیٹا لوڈ ہو گیا");
       }
-    } catch (e) {}
+    } catch (e) { console.error("❌ Supabase لوڈ میں مسئلہ:", e); }
   }
 
   async function saveToSupabase() {
     if (!supabase) return;
     try {
       await supabase.from('store').upsert({ id: 1, data: { employees, orders, CATALOG, salaryPayments, applications } });
-    } catch (e) {}
+      console.log("☁️ Supabase میں ڈیٹا محفوظ");
+    } catch (e) { console.error("❌ Supabase محفوظ میں مسئلہ:", e); }
   }
 
   function saveLocal() {
@@ -401,24 +402,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function saveData() { saveLocal(); saveToSupabase(); }
 
-  // تصویر کو کمپریس کرنے کا آسان اور تیز طریقہ
-  function compressImage(file) {
-    return new Promise((resolve) => {
+  function readFileAsDataURL(file) {
+    return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 600;
-          const scaleSize = MAX_WIDTH / img.width;
-          canvas.width = MAX_WIDTH;
-          canvas.height = img.height * scaleSize;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          resolve(canvas.toDataURL('image/jpeg', 0.6));
-        };
-        img.src = e.target.result;
-      };
+      reader.onload = (e) => resolve(e.target.result);
+      reader.onerror = (e) => reject(e);
       reader.readAsDataURL(file);
     });
   }
@@ -536,13 +524,14 @@ window.addEventListener('DOMContentLoaded', () => {
     const stock = document.getElementById("prodStock").value;
     const editIdx = parseInt(document.getElementById("editProdIndex").value);
 
-    const file1 = document.getElementById("prodImg1").files[0];
-    const file2 = document.getElementById("prodImg2").files[0];
+    const file = document.getElementById("prodImg1").files[0];
     let images = [];
 
     try {
-      if (file1) images.push(await compressImage(file1));
-      if (file2) images.push(await compressImage(file2));
+      if (file) {
+        const imgData = await readFileAsDataURL(file);
+        images.push(imgData);
+      }
     } catch (err) {
       console.error(err);
     }
