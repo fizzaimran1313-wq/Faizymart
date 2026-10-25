@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  :root { --primary-yellow: #facc15; --dark-bg: #111827; --card-bg: #1f2937; --text-light: #f3f4f6; --text-muted: #9ca3af; --green: #4ade80; --red: #ef4444; }
+  :root { --primary-yellow: #facc15; --dark-bg: #111827; --card-bg: #1f2937; --text-light: #f3f4f6; --text-muted: #9ca3af; --green: #4ade80; --red: #ef4444; --blue: #3b82f6; --amber: #f59e0b; }
   body { font-family: "Noto Nastaliq Urdu", "Segoe UI", Tahoma, sans-serif; background: var(--dark-bg); color: var(--text-light); line-height: 1.9; min-height: 100vh; display: flex; flex-direction: column; }
   .top-strip { background: var(--primary-yellow); color: #000; padding: 8px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: bold; }
   .main-header { background: #000; border-bottom: 2px solid var(--primary-yellow); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
@@ -51,7 +51,9 @@
   .product-item .stock { font-size: 12px; color: var(--amber); margin-bottom: 5px; }
   .product-item .price { color: var(--primary-yellow); font-weight: 700; }
   .order-btn { width: 100%; margin-top: 10px; padding: 10px; background: var(--primary-yellow); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-  .delete-prod-btn { position: absolute; top: 10px; right: 10px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; z-index: 10; }
+  .edit-prod-btn, .delete-prod-btn { position: absolute; top: 10px; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; z-index: 10; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+  .delete-prod-btn { right: 10px; background: rgba(239, 68, 68, 0.9); color: white; }
+  .edit-prod-btn { right: 50px; background: rgba(59, 130, 246, 0.9); color: white; }
   form { max-width: 700px; background: var(--card-bg); padding: 25px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
   form label { display: block; margin-bottom: 15px; font-weight: 600; color: var(--primary-yellow); }
   form input, form select, form textarea { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #444; border-radius: 8px; background: #111; color: var(--text-light); font-family: inherit; }
@@ -59,6 +61,9 @@
   table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
   th, td { padding: 12px; text-align: right; border-bottom: 1px solid #333; }
   th { background: #000; color: var(--primary-yellow); }
+  .action-btn { padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin: 0 2px; }
+  .edit-btn { background: var(--blue); color: #fff; }
+  .del-btn { background: var(--red); color: #fff; }
   .hidden-login-box { display: none; max-width: 400px; margin: 40px auto; background: var(--card-bg); padding: 30px; border-radius: 15px; border: 2px solid var(--primary-yellow); text-align: center; }
   .hidden-login-box.show { display: block; }
   .hidden-login-box input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #444; border-radius: 8px; background: #111; color: #fff; }
@@ -66,6 +71,7 @@
   .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; }
   .overlay.show { display: block; }
   footer { background: #000; border-top: 2px solid var(--primary-yellow); padding: 40px 20px; margin-top: 40px; text-align: center; }
+  .notif-badge { background: red; color: white; border-radius: 50%; padding: 2px 8px; font-size: 12px; margin-right: 5px; display: none; }
 </style>
 </head>
 <body>
@@ -98,14 +104,15 @@
   <button class="tab-btn customer-only" onclick="showEmpLogin()">🔑 ایمپلائی لاگ ان</button>
   <button class="tab-btn customer-only" onclick="showTab('jobForm')">📝 جاب اپلائی کریں</button>
   <button class="tab-btn customer-only" onclick="showTab('addOrder')">➕ نیا آرڈر</button>
+  <button class="tab-btn customer-only" onclick="showTab('myOrders')">📦 میرے آرڈرز</button>
 
   <button class="tab-btn admin-only" onclick="showTab('addEmployee')">➕ نیا ایمپلائی</button>
   <button class="tab-btn admin-only" onclick="showTab('employees')">👥 تمام ایمپلائیز</button>
-  <button class="tab-btn admin-only" onclick="showTab('orders')">🧾 تمام آرڈرز</button>
+  <button class="tab-btn admin-only" onclick="showTab('orders')">🧾 تمام آرڈرز <span id="orderBadge" class="notif-badge">0</span></button>
   <button class="tab-btn admin-only" onclick="showTab('salary')">💰 سیلری مینجمنٹ</button>
   <button class="tab-btn admin-only" onclick="showTab('reports')">📊 رپورٹس</button>
   <button class="tab-btn admin-only" onclick="showTab('applications')">📋 نئی درخواستیں</button>
-  <button class="tab-btn admin-only" onclick="downloadCSV()">📥 ایکسل ڈاؤن لوڈ</button>
+  <button class="tab-btn admin-only" onclick="showTab('manageExcel')">📊 ایکسل مینجمنٹ</button>
   <button class="tab-btn admin-only" onclick="adminLogout()">🚪 لاگ آؤٹ</button>
   
   <button class="tab-btn sub-admin-only" onclick="showTab('myProfile')">👤 میرا پورٹل</button>
@@ -142,11 +149,12 @@
   <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
   <div style="display:flex; justify-content:space-between;">
     <h2 id="catHeaderTitle">TOYS</h2>
-    <button onclick="openAddProductModal()" style="padding:10px; background:var(--primary-yellow); border:none; border-radius:8px; font-weight:bold;">➕ نیا آئٹم</button>
+    <button class="admin-only" onclick="openAddProductModal()" style="padding:10px; background:var(--primary-yellow); border:none; border-radius:8px; font-weight:bold;">➕ نیا آئٹم</button>
   </div>
   <form id="addProductForm" style="display:none;">
     <button class="back-btn" type="button" onclick="closeAddProductModal()">← واپس</button>
     <input type="hidden" id="prodCat" />
+    <input type="hidden" id="editProdIndex" value="-1" />
     <label>نام <input type="text" id="prodName" required /></label>
     <label>تفصیل <textarea id="prodDesc" rows="3" required></textarea></label>
     <label>قیمت <input type="number" id="prodPrice" required /></label>
@@ -164,10 +172,18 @@
     <label>نام <input type="text" id="jobName" required /></label>
     <label>عمر <input type="number" id="jobAge" required /></label>
     <label>رابطہ نمبر <input type="tel" id="jobMobile" required /></label>
-    <label>صوبہ <input type="text" id="jobProvince" required /></label>
     <label>شہر <input type="text" id="jobCity" required /></label>
     <label>ایڈریس <input type="text" id="jobAddress" required /></label>
-    <label>شناختی کارڈ نمبر <input type="text" id="jobCnic" required /></label>
+    <label>اکاؤنٹ کا نام <input type="text" id="jobAccName" required /></label>
+    <label>اکاؤنٹ کی قسم (جیز کیش / ایزی پیسہ / بینک) 
+      <select id="jobAccType" required>
+        <option value="">منتخب کریں</option>
+        <option value="JazzCash">جیز کیش (JazzCash)</option>
+        <option value="Easypaisa">ایزی پیسہ (Easypaisa)</option>
+        <option value="Bank">بینک اکاؤنٹ (Bank)</option>
+      </select>
+    </label>
+    <label>اکاؤنٹ نمبر <input type="text" id="jobAccNo" required /></label>
     <button type="submit" style="background:#4ade80;">درخواست بھیجیں</button>
   </form>
 </section>
@@ -190,6 +206,9 @@
   <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
   <h2>تمام ایمپلائیز</h2>
   <div id="employeeList" class="card-grid"></div>
+  <button onclick="downloadEmployeesCSV()" style="background:#4ade80; padding:10px; border:none; border-radius:8px; margin-top:10px; font-weight:bold; color:#000;">📥 ایمپلائی ایکسل ڈاؤن لوڈ</button>
+  <input type="file" id="uploadEmployees" accept=".csv" style="margin-top:10px;" onchange="uploadEmployeesCSV(event)">
+  <button onclick="printEmployees()" style="background:#3b82f6; padding:10px; border:none; border-radius:8px; margin-top:10px; font-weight:bold; color:#fff;">🖨️ ایمپلائی پرنٹ کریں</button>
 </section>
 
 <section id="myProfile" class="tab-content">
@@ -198,10 +217,19 @@
   <div id="myProfileBox"></div>
 </section>
 
+<section id="myOrders" class="tab-content">
+  <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
+  <h2>📦 میرے آرڈرز</h2>
+  <table id="myOrdersTable"><thead><tr><th>آرڈر</th><th>پروڈکٹ</th><th>رقم</th><th>اسٹیٹس</th><th>ایکشن</th></tr></thead><tbody></tbody></table>
+</section>
+
 <section id="orders" class="tab-content">
   <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
   <h2>تمام آرڈرز</h2>
-  <table id="ordersTable"><thead><tr><th>آرڈر</th><th>کسٹمر</th><th>پروڈکٹ</th><th>رقم</th></tr></thead><tbody></tbody></table>
+  <table id="ordersTable"><thead><tr><th>آرڈر</th><th>کسٹمر</th><th>پروڈکٹ</th><th>رقم</th><th>اسٹیٹس</th><th>ایکشن</th></tr></thead><tbody></tbody></table>
+  <button onclick="downloadOrdersCSV()" style="background:#4ade80; padding:10px; border:none; border-radius:8px; margin-top:10px; font-weight:bold; color:#000;">📥 آرڈرز ایکسل ڈاؤن لوڈ</button>
+  <input type="file" id="uploadOrders" accept=".csv" style="margin-top:10px;" onchange="uploadOrdersCSV(event)">
+  <button onclick="printOrders()" style="background:#3b82f6; padding:10px; border:none; border-radius:8px; margin-top:10px; font-weight:bold; color:#fff;">🖨️ آرڈرز پرنٹ کریں</button>
 </section>
 
 <section id="addOrder" class="tab-content">
@@ -209,10 +237,24 @@
   <h2>نیا آرڈر</h2>
   <form id="orderForm">
     <label>آرڈر نمبر <input type="text" id="orderNo" readonly /></label>
-    <label>کسٹمر <input type="text" id="customer" required /></label>
+    <label>کسٹمر کا نام <input type="text" id="customer" required /></label>
+    <label>موبائل نمبر <input type="tel" id="custMobile" required /></label>
+    <label>شہر <input type="text" id="custCity" required /></label>
+    <label>ایڈریس <input type="text" id="custAddress" required /></label>
     <label>پروڈکٹ <input type="text" id="product" required /></label>
     <label>رقم <input type="number" id="amount" required /></label>
-    <button type="submit">محفوظ کریں</button>
+    <label>اکاؤنٹ کا نام <input type="text" id="custAccName" required /></label>
+    <label>اکاؤنٹ کی قسم (جیز کیش / ایزی پیسہ / بینک) 
+      <select id="custAccType" required>
+        <option value="">منتخب کریں</option>
+        <option value="JazzCash">جیز کیش (JazzCash)</option>
+        <option value="Easypaisa">ایزی پیسہ (Easypaisa)</option>
+        <option value="Bank">بینک اکاؤنٹ (Bank)</option>
+      </select>
+    </label>
+    <label>اکاؤنٹ نمبر <input type="text" id="custAccNo" required /></label>
+    <label>ایمپلائی آئی ڈی (اگر ہے تو لکھیں، ورنہ خالی چھوڑ دیں) <input type="text" id="empRefId" placeholder="FM-1001" /></label>
+    <button type="submit">آرڈر کریں</button>
   </form>
 </section>
 
@@ -220,18 +262,39 @@
   <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
   <h2>💰 سیلری مینجمنٹ</h2>
   <div id="salaryList" class="card-grid"></div>
+  <button onclick="downloadSalaryCSV()" style="background:#4ade80; padding:10px; border:none; border-radius:8px; margin-top:10px; font-weight:bold; color:#000;">📥 سیلری ایکسل ڈاؤن لوڈ</button>
+  <button onclick="printSalary()" style="background:#3b82f6; padding:10px; border:none; border-radius:8px; margin-top:10px; font-weight:bold; color:#fff;">🖨️ سیلری پرنٹ کریں</button>
 </section>
 
 <section id="reports" class="tab-content">
   <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
   <h2>📊 رپورٹس</h2>
-  <table id="totalReport"><thead><tr><th>ایمپلائی</th><th>آرڈرز</th><th>رقم</th></tr></thead><tbody></tbody></table>
+  <table id="totalReport"><thead><tr><th>ایمپلائی</th><th>آرڈرز</th><th>رقم</th><th>ایکشن</th></tr></thead><tbody></tbody></table>
+  <button onclick="downloadReportsCSV()" style="background:#4ade80; padding:10px; border:none; border-radius:8px; margin-top:10px; font-weight:bold; color:#000;">📥 رپورٹس ایکسل ڈاؤن لوڈ</button>
+  <button onclick="printReports()" style="background:#3b82f6; padding:10px; border:none; border-radius:8px; margin-top:10px; font-weight:bold; color:#fff;">🖨️ رپورٹس پرنٹ کریں</button>
 </section>
 
 <section id="applications" class="tab-content">
   <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
   <h2>📋 نئی درخواستیں</h2>
-  <table id="applicationsTable"><thead><tr><th>نام</th><th>موبائل</th><th>شہر</th><th>CNIC</th></tr></thead><tbody></tbody></table>
+  <table id="applicationsTable"><thead><tr><th>نام</th><th>موبائل</th><th>شہر</th><th>اکاؤنٹ</th><th>ایکشن</th></tr></thead><tbody></tbody></table>
+</section>
+
+<section id="manageExcel" class="tab-content">
+  <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
+  <h2>📊 ایکسل مینجمنٹ</h2>
+  <div style="background:var(--card-bg); padding:20px; border-radius:15px; border:1px solid #333;">
+    <h3 style="color:var(--primary-yellow);">آرڈرز ایکسل</h3>
+    <button onclick="downloadOrdersCSV()" style="padding:10px; background:var(--green); color:#000; border:none; border-radius:8px; font-weight:bold; margin:5px;">📥 ڈاؤن لوڈ</button>
+    <input type="file" id="uploadOrders2" accept=".csv" style="margin:5px;" onchange="uploadOrdersCSV(event)">
+    
+    <h3 style="color:var(--primary-yellow); margin-top:20px;">ایمپلائی ایکسل</h3>
+    <button onclick="downloadEmployeesCSV()" style="padding:10px; background:var(--green); color:#000; border:none; border-radius:8px; font-weight:bold; margin:5px;">📥 ڈاؤن لوڈ</button>
+    <input type="file" id="uploadEmployees2" accept=".csv" style="margin:5px;" onchange="uploadEmployeesCSV(event)">
+
+    <h3 style="color:var(--primary-yellow); margin-top:20px;">سیلری ایکسل</h3>
+    <button onclick="downloadSalaryCSV()" style="padding:10px; background:var(--green); color:#000; border:none; border-radius:8px; font-weight:bold; margin:5px;">📥 ڈاؤن لوڈ</button>
+  </div>
 </section>
 
 <section id="hiddenLoginSection" class="tab-content">
@@ -345,10 +408,11 @@ window.addEventListener('DOMContentLoaded', () => {
     if (name === "empLoginSection") document.getElementById("empLoginBox").classList.add("show");
     if (name === "myProfile") renderMyProfile();
     if (name === "employees") renderEmployees();
-    if (name === "orders") renderOrders();
+    if (name === "orders") { renderOrders(); updateOrderBadge(); }
     if (name === "salary") renderSalaryList();
     if (name === "applications") renderApplications();
     if (name === "reports") renderReports();
+    if (name === "myOrders") renderMyOrders();
     document.getElementById("sidebar").classList.remove("open");
     document.getElementById("overlay").classList.remove("show");
   }
@@ -396,7 +460,8 @@ window.addEventListener('DOMContentLoaded', () => {
     items.forEach((p, index) => {
       const div = document.createElement("div"); div.className = "product-item";
       div.innerHTML = `
-        <button class="delete-prod-btn" onclick="deleteProduct('${currentCategory}', ${index})" title="ڈیلیٹ کریں">🗑️</button>
+        <button class="edit-prod-btn admin-only" onclick="editProduct('${currentCategory}', ${index})" title="ایڈٹ کریں">✏️</button>
+        <button class="delete-prod-btn admin-only" onclick="deleteProduct('${currentCategory}', ${index})" title="ڈیلیٹ کریں">🗑️</button>
         <div class="product-img-box"><img src="${p.images[0] || ''}" onerror="this.src='https://via.placeholder.com/200x200?text=Error'" /></div>
         <div class="product-info">
           <h4>${p.name}</h4>
@@ -413,24 +478,51 @@ window.addEventListener('DOMContentLoaded', () => {
     if(confirm("ڈیلیٹ کریں؟")) { CATALOG[cat].splice(index, 1); saveData(); renderProducts(); }
   }
 
+  window.editProduct = (cat, index) => {
+    const p = CATALOG[cat][index];
+    document.getElementById("prodName").value = p.name;
+    document.getElementById("prodDesc").value = p.desc || '';
+    document.getElementById("prodPrice").value = p.price;
+    document.getElementById("prodStock").value = p.stock || 0;
+    document.getElementById("editProdIndex").value = index;
+    document.getElementById("prodCat").value = cat;
+    document.getElementById("addProductForm").style.display = "block";
+  }
+
   window.openAddProductModal = () => {
     if (!currentAdmin) { alert("پہلے ایڈمن لاگ ان کریں!"); return; }
+    document.getElementById("editProdIndex").value = -1;
+    document.getElementById("addProductForm").reset();
     document.getElementById("addProductForm").style.display = "block";
   }
   window.closeAddProductModal = () => document.getElementById("addProductForm").style.display = "none";
 
   document.getElementById("addProductForm").addEventListener("submit", async e => {
     e.preventDefault();
-    const cat = currentCategory;
+    const cat = document.getElementById("prodCat").value;
     const name = document.getElementById("prodName").value;
     const desc = document.getElementById("prodDesc").value;
     const price = document.getElementById("prodPrice").value;
     const stock = document.getElementById("prodStock").value;
     const file = document.getElementById("prodImg1").files[0];
+    const editIdx = parseInt(document.getElementById("editProdIndex").value);
+
     let imgData = "";
-    if (file) imgData = await compressImage(file);
-    CATALOG[cat].push({ name, desc, price, stock, images: [imgData] });
-    saveData(); renderProducts(); closeAddProductModal(); alert("✅ شامل!");
+    if (file) {
+      imgData = await compressImage(file);
+    }
+
+    if (editIdx === -1) {
+      // نیا پروڈکٹ
+      CATALOG[cat].push({ name, desc, price, stock, images: imgData ? [imgData] : [] });
+      alert("✅ شامل!");
+    } else {
+      // پروڈکٹ ایڈٹ
+      const oldImg = CATALOG[cat][editIdx].images[0];
+      CATALOG[cat][editIdx] = { name, desc, price, stock, images: imgData ? [imgData] : (oldImg ? [oldImg] : []) };
+      alert("✅ ایڈٹ ہو گیا!");
+    }
+    saveData(); renderProducts(); closeAddProductModal();
   });
 
   window.quickOrder = (name, price) => {
@@ -448,18 +540,140 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function renderEmployees() {
     const box = document.getElementById("employeeList"); box.innerHTML = "";
-    employees.forEach(emp => { box.innerHTML += `<div class="card"><h3>${emp.name} (${emp.empId})</h3><p>📱 ${emp.mobile}</p><p>💰 سیلری: ${emp.salary}</p><p>🎯 ٹارگٹ: ${emp.target}</p></div>`; });
+    employees.forEach((emp, i) => { 
+      box.innerHTML += `<div class="card">
+        <h3>${emp.name} (${emp.empId})</h3>
+        <p>📱 ${emp.mobile}</p>
+        <p>💰 سیلری: ${emp.salary}</p>
+        <button class="action-btn edit-btn" onclick="editEmployee(${i})">✏️ ایڈٹ</button>
+        <button class="action-btn del-btn" onclick="deleteEmployee(${i})">🗑️ ڈیلیٹ</button>
+      </div>`; 
+    });
+  }
+
+  window.editEmployee = (i) => {
+    const emp = employees[i];
+    const newName = prompt("نیا نام:", emp.name);
+    const newMobile = prompt("نیا موبائل:", emp.mobile);
+    const newSalary = prompt("نئی سیلری:", emp.salary);
+    if (newName && newMobile && newSalary) {
+      employees[i] = { ...emp, name: newName, mobile: newMobile, salary: +newSalary };
+      saveData(); renderEmployees();
+    }
+  }
+
+  window.deleteEmployee = (i) => {
+    if(confirm("ڈیلیٹ کریں؟")) { employees.splice(i, 1); saveData(); renderEmployees(); }
   }
 
   document.getElementById("orderForm").addEventListener("submit", e => {
     e.preventDefault();
-    const o = { orderNo: document.getElementById("orderNo").value, customer: document.getElementById("customer").value, product: document.getElementById("product").value, amount: +document.getElementById("amount").value, empId: currentEmployee ? currentEmployee.empId : null };
-    orders.push(o); saveData(); renderOrders(); e.target.reset(); alert("✅ آرڈر محفوظ!");
+    const empRef = document.getElementById("empRefId").value.trim();
+    const o = { 
+      orderNo: document.getElementById("orderNo").value, 
+      customer: document.getElementById("customer").value, 
+      mobile: document.getElementById("custMobile").value,
+      city: document.getElementById("custCity").value,
+      address: document.getElementById("custAddress").value,
+      product: document.getElementById("product").value, 
+      amount: +document.getElementById("amount").value, 
+      accName: document.getElementById("custAccName").value,
+      accType: document.getElementById("custAccType").value,
+      accNo: document.getElementById("custAccNo").value,
+      empId: empRef || (currentEmployee ? currentEmployee.empId : null),
+      status: "pending"
+    };
+    orders.push(o); saveData(); renderOrders(); e.target.reset(); alert("✅ آرڈر محفوظ!"); updateOrderBadge();
   });
 
   function renderOrders() {
     const tb = document.querySelector("#ordersTable tbody"); tb.innerHTML = "";
-    orders.forEach(o => { tb.innerHTML += `<tr><td>${o.orderNo}</td><td>${o.customer}</td><td>${o.product}</td><td>${o.amount}</td></tr>`; });
+    orders.forEach((o, i) => { 
+      tb.innerHTML += `<tr>
+        <td>${o.orderNo}</td>
+        <td>${o.customer}</td>
+        <td>${o.product}</td>
+        <td>${o.amount}</td>
+        <td>${o.status === 'pending' ? '⏳ پینڈنگ' : (o.status === 'confirmed' ? '✅ کنفرم' : '📦 ڈیلیور')}</td>
+        <td>
+          ${o.status === 'pending' ? `<button class="action-btn" onclick="confirmOrder(${i})" style="background:var(--green); color:#000;">✅ کنفرم</button>` : ''}
+          ${o.status === 'confirmed' ? `<button class="action-btn" onclick="deliverOrder(${i})" style="background:var(--blue); color:#fff;">📦 ڈیلیور</button>` : ''}
+          <button class="action-btn del-btn" onclick="deleteOrder(${i})">🗑️</button>
+        </td>
+      </tr>`; 
+    });
+  }
+
+  window.confirmOrder = (index) => {
+    orders[index].status = 'confirmed';
+    saveData(); renderOrders(); updateOrderBadge(); alert("✅ آرڈر کنفرم ہو گیا! کسٹمر کو رسید بھیج دی گئی ہے۔");
+  }
+
+  window.deliverOrder = (index) => {
+    orders[index].status = 'delivered';
+    saveData(); renderOrders();
+  }
+
+  window.deleteOrder = (i) => {
+    if(confirm("ڈیلیٹ کریں؟")) { orders.splice(i, 1); saveData(); renderOrders(); }
+  }
+
+  window.cancelOrder = (index) => {
+    if (orders[index].status === 'pending') {
+      orders.splice(index, 1);
+      saveData(); renderOrders(); renderMyOrders(); alert("✅ آرڈر کینسل ہو گیا!");
+    } else {
+      alert("❌ یہ آرڈر کنفرم ہو چکا ہے، اب کینسل نہیں ہو سکتا!");
+    }
+  }
+
+  function renderMyOrders() {
+    const tb = document.querySelector("#myOrdersTable tbody"); tb.innerHTML = "";
+    const my = orders.filter(o => o.empId === currentEmployee?.empId || o.customer === currentEmployee?.name);
+    my.forEach((o) => {
+      const originalIndex = orders.indexOf(o);
+      tb.innerHTML += `<tr>
+        <td>${o.orderNo}</td>
+        <td>${o.product}</td>
+        <td>${o.amount}</td>
+        <td>${o.status === 'pending' ? '⏳ پینڈنگ' : (o.status === 'confirmed' ? '✅ کنفرم' : '📦 ڈیلیور')}</td>
+        <td>
+          ${o.status === 'pending' ? `<button class="action-btn del-btn" onclick="cancelOrder(${originalIndex})">❌ کینسل</button>` : ''}
+          ${o.status === 'confirmed' ? `<button class="action-btn" onclick="printReceipt(${originalIndex})" style="background:var(--green); color:#000;">🖨️ رسید</button>` : ''}
+        </td>
+      </tr>`;
+    });
+  }
+
+  window.printReceipt = (i) => {
+    const o = orders[i];
+    const win = window.open('', '', 'width=600,height=800');
+    win.document.write(`
+      <html><head><title>رسید</title>
+      <style>body{font-family:"Noto Nastaliq Urdu",sans-serif; text-align:right; padding:20px;} table{width:100%; border-collapse:collapse;} td,th{border:1px solid #000; padding:8px;}</style>
+      </head><body>
+      <h2 style="text-align:center;">FAIZY MART</h2>
+      <p style="text-align:center;">شکریہ! آپ کا آرڈر کنفرم ہو گیا ہے۔</p>
+      <hr>
+      <p><strong>آرڈر نمبر:</strong> ${o.orderNo}</p>
+      <p><strong>کسٹمر:</strong> ${o.customer}</p>
+      <p><strong>پروڈکٹ:</strong> ${o.product}</p>
+      <p><strong>رقم:</strong> ${o.amount} روپے</p>
+      <p><strong>شہر:</strong> ${o.city}</p>
+      <p><strong>ایڈریس:</strong> ${o.address}</p>
+      <hr>
+      <p style="text-align:center;">© 2026 Faizy Mart</p>
+      </body></html>
+    `);
+    win.document.close();
+    win.print();
+  }
+
+  function updateOrderBadge() {
+    const pending = orders.filter(o => o.status === 'pending').length;
+    const badge = document.getElementById("orderBadge");
+    badge.textContent = pending;
+    badge.style.display = pending > 0 ? "inline-block" : "none";
   }
 
   document.getElementById("jobApplicationForm").addEventListener("submit", e => {
@@ -468,61 +682,171 @@ window.addEventListener('DOMContentLoaded', () => {
       name: document.getElementById("jobName").value,
       age: document.getElementById("jobAge").value,
       mobile: document.getElementById("jobMobile").value,
-      province: document.getElementById("jobProvince").value,
       city: document.getElementById("jobCity").value,
       address: document.getElementById("jobAddress").value,
-      cnic: document.getElementById("jobCnic").value
+      accName: document.getElementById("jobAccName").value,
+      accType: document.getElementById("jobAccType").value,
+      accNo: document.getElementById("jobAccNo").value
     };
     applications.push(job); saveData(); e.target.reset(); alert("✅ درخواست بھیج دی گئی!"); showTab('home');
   });
 
   function renderApplications() {
     const tb = document.querySelector("#applicationsTable tbody"); tb.innerHTML = "";
-    applications.forEach(a => { 
-      tb.innerHTML += `<tr><td>${a.name}</td><td>${a.mobile}</td><td>${a.city}</td><td>${a.cnic}</td></tr>`; 
+    applications.forEach((a, i) => { 
+      tb.innerHTML += `<tr>
+        <td>${a.name}</td><td>${a.mobile}</td><td>${a.city}</td><td>${a.accType} - ${a.accNo}</td>
+        <td><button class="action-btn del-btn" onclick="deleteApplication(${i})">🗑️</button></td>
+      </tr>`; 
     });
+  }
+
+  window.deleteApplication = (i) => {
+    if(confirm("ڈیلیٹ کریں؟")) { applications.splice(i, 1); saveData(); renderApplications(); }
   }
 
   function renderMyProfile() {
     if(currentEmployee) {
+      const myOrders = orders.filter(o => o.empId === currentEmployee.empId);
+      const myTotal = myOrders.reduce((sum, o) => sum + o.amount, 0);
       document.getElementById("myProfileBox").innerHTML = `<div class="card">
         <h3>👤 ${currentEmployee.name} (${currentEmployee.empId})</h3>
         <p>خوش آمدید! یہ آپ کا پورٹل ہے۔</p>
         <h4 style="margin-top: 15px; color: var(--primary-yellow);">میری کارکردگی</h4>
-        <p>میرے آرڈرز: ${orders.filter(o => o.empId === currentEmployee.empId).length}</p>
-        <p>میری کمائی: ${orders.filter(o => o.empId === currentEmployee.empId).reduce((sum, o) => sum + o.amount, 0)} روپے</p>
+        <p>میرے آرڈرز: ${myOrders.length}</p>
+        <p>میری کمائی: ${myTotal} روپے</p>
       </div>`;
     }
   }
 
   function renderSalaryList() {
     const box = document.getElementById("salaryList"); box.innerHTML = "";
-    employees.forEach(emp => { box.innerHTML += `<div class="card"><h3>${emp.name}</h3><p>💰 سیلری: ${emp.salary} روپے</p></div>`; });
+    employees.forEach((emp, i) => { 
+      box.innerHTML += `<div class="card">
+        <h3>${emp.name}</h3>
+        <p>💰 سیلری: ${emp.salary} روپے</p>
+        <button class="action-btn edit-btn" onclick="editSalary(${i})">✏️ ایڈٹ</button>
+      </div>`; 
+    });
+  }
+
+  window.editSalary = (i) => {
+    const newSal = prompt("نئی سیلری:", employees[i].salary);
+    if (newSal) { employees[i].salary = +newSal; saveData(); renderSalaryList(); }
   }
 
   function renderReports() {
     const tb = document.querySelector("#totalReport tbody"); tb.innerHTML = "";
     let total = 0; orders.forEach(o => total += o.amount);
-    tb.innerHTML += `<tr><td>کل فروخت</td><td>${orders.length}</td><td>${total} روپے</td></tr>`;
-    employees.forEach(emp => {
+    tb.innerHTML += `<tr><td>کل فروخت</td><td>${orders.length}</td><td>${total} روپے</td><td>—</td></tr>`;
+    employees.forEach((emp, i) => {
       const empOrders = orders.filter(o => o.empId === emp.empId);
       const empTotal = empOrders.reduce((sum, o) => sum + o.amount, 0);
-      tb.innerHTML += `<tr><td>${emp.name} (${emp.empId})</td><td>${empOrders.length}</td><td>${empTotal} روپے</td></tr>`;
+      tb.innerHTML += `<tr><td>${emp.name} (${emp.empId})</td><td>${empOrders.length}</td><td>${empTotal} روپے</td>
+        <td><button class="action-btn edit-btn" onclick="editEmployee(${i})">✏️</button></td></tr>`;
     });
   }
 
-  window.downloadCSV = () => {
-    let csv = "Type,Name,Detail,Amount\n";
-    orders.forEach(o => { csv += `Order,${o.customer},${o.product},${o.amount}\n`; });
-    employees.forEach(emp => { csv += `Employee,${emp.name},${emp.empId},${emp.salary}\n`; });
+  window.downloadOrdersCSV = () => {
+    let csv = "OrderNo,Customer,Mobile,City,Address,Product,Amount,AccName,AccType,AccNo,EmpID,Status\n";
+    orders.forEach(o => { csv += `${o.orderNo},${o.customer},${o.mobile},${o.city},${o.address},${o.product},${o.amount},${o.accName},${o.accType},${o.accNo},${o.empId || '-'},${o.status}\n`; });
     const blob = new Blob([csv], { type: 'text/csv' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'FaizyMart_Data.csv';
-    a.click();
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Orders.csv'; a.click();
   }
 
-  function renderAll() { renderProducts(); renderEmployees(); renderOrders(); renderSalaryList(); renderApplications(); renderReports(); }
+  window.downloadEmployeesCSV = () => {
+    let csv = "ID,Name,Mobile,Salary,Target\n";
+    employees.forEach(emp => { csv += `${emp.empId},${emp.name},${emp.mobile},${emp.salary},${emp.target}\n`; });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Employees.csv'; a.click();
+  }
+
+  window.downloadSalaryCSV = () => {
+    let csv = "Name,Salary\n";
+    employees.forEach(emp => { csv += `${emp.name},${emp.salary}\n`; });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Salary.csv'; a.click();
+  }
+
+  window.downloadReportsCSV = () => {
+    let csv = "Employee,Orders,Total\n";
+    orders.forEach(o => { csv += `Order,${o.customer},${o.amount}\n`; });
+    employees.forEach(emp => {
+      const empOrders = orders.filter(o => o.empId === emp.empId);
+      const empTotal = empOrders.reduce((sum, o) => sum + o.amount, 0);
+      csv += `${emp.name} (${emp.empId}),${empOrders.length},${empTotal}\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Reports.csv'; a.click();
+  }
+
+  window.printOrders = () => {
+    let content = "<h2>تمام آرڈرز</h2><table border='1'><tr><th>آرڈر</th><th>کسٹمر</th><th>پروڈکٹ</th><th>رقم</th><th>اسٹیٹس</th></tr>";
+    orders.forEach(o => { content += `<tr><td>${o.orderNo}</td><td>${o.customer}</td><td>${o.product}</td><td>${o.amount}</td><td>${o.status}</td></tr>`; });
+    content += "</table>";
+    const win = window.open('', '', 'width=800,height=600'); win.document.write(content); win.print();
+  }
+
+  window.printEmployees = () => {
+    let content = "<h2>تمام ایمپلائیز</h2><table border='1'><tr><th>ID</th><th>نام</th><th>موبائل</th><th>سیلری</th></tr>";
+    employees.forEach(emp => { content += `<tr><td>${emp.empId}</td><td>${emp.name}</td><td>${emp.mobile}</td><td>${emp.salary}</td></tr>`; });
+    content += "</table>";
+    const win = window.open('', '', 'width=800,height=600'); win.document.write(content); win.print();
+  }
+
+  window.printSalary = () => {
+    let content = "<h2>سیلری مینجمنٹ</h2><table border='1'><tr><th>نام</th><th>سیلری</th></tr>";
+    employees.forEach(emp => { content += `<tr><td>${emp.name}</td><td>${emp.salary}</td></tr>`; });
+    content += "</table>";
+    const win = window.open('', '', 'width=800,height=600'); win.document.write(content); win.print();
+  }
+
+  window.printReports = () => {
+    let content = "<h2>رپورٹس</h2><table border='1'><tr><th>نام</th><th>آرڈرز</th><th>رقم</th></tr>";
+    employees.forEach(emp => {
+      const empOrders = orders.filter(o => o.empId === emp.empId);
+      const empTotal = empOrders.reduce((sum, o) => sum + o.amount, 0);
+      content += `<tr><td>${emp.name} (${emp.empId})</td><td>${empOrders.length}</td><td>${empTotal}</td></tr>`;
+    });
+    content += "</table>";
+    const win = window.open('', '', 'width=800,height=600'); win.document.write(content); win.print();
+  }
+
+  window.uploadOrdersCSV = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const lines = e.target.result.split('\n');
+      lines.slice(1).forEach(line => {
+        const [orderNo, customer, mobile, city, address, product, amount, accName, accType, accNo, empId, status] = line.split(',');
+        if (orderNo) {
+          orders.push({ orderNo, customer, mobile, city, address, product, amount: +amount, accName, accType, accNo, empId, status: status || 'pending' });
+        }
+      });
+      saveData(); renderOrders(); alert("✅ آرڈرز اپلوڈ ہو گئے!");
+    };
+    reader.readAsText(file);
+  }
+
+  window.uploadEmployeesCSV = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const lines = e.target.result.split('\n');
+      lines.slice(1).forEach(line => {
+        const [id, name, mobile, salary, target] = line.split(',');
+        if (id) {
+          employees.push({ empId: id, name, mobile, salary: +salary, target: +target });
+        }
+      });
+      saveData(); renderEmployees(); alert("✅ ایمپلائی اپلوڈ ہو گئے!");
+    };
+    reader.readAsText(file);
+  }
+
+  function renderAll() { renderProducts(); renderEmployees(); renderOrders(); renderSalaryList(); renderApplications(); renderReports(); updateOrderBadge(); }
 
   if (currentAdmin) document.body.classList.add("is-super-admin");
   if (currentEmployee) document.body.classList.add("is-sub-admin");
