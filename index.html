@@ -469,7 +469,7 @@ window.addEventListener('DOMContentLoaded', () => {
     if (window.supabase) {
       const SUPABASE_URL = 'https://ofjlswkrdrpwapcvwzun.supabase.co';
       // ⚠️ یہاں اپنی صحیح anon/public والی API Key پیسٹ کریں ⚠️
-      const SUPABASE_KEY = 'sb_publishable_yk51b9Pps15BXSX-tmnBdw_IFsWoUCW
+      const SUPABASE_KEY = 'sb_publishable_yk51b9Pps15BXSX-tmnBdw_IFsWoUCW'; 
       supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     }
   } catch (e) { console.warn("Supabase load error:", e); }
@@ -504,8 +504,8 @@ window.addEventListener('DOMContentLoaded', () => {
     if (!supabase) return;
     try {
       await supabase.from('store').upsert({
-   data: { employees, orders, CATALOG, salaryPayments, applications, updatedAt: new Date().toISOString() }
-});
+        data: { employees, orders, CATALOG, salaryPayments, applications, updatedAt: new Date().toISOString() }
+      });
       console.log("☁️ Supabase میں ڈیٹا محفوظ");
     } catch (e) { console.error("❌ Supabase محفوظ میں مسئلہ:", e); }
   }
