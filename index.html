@@ -551,6 +551,7 @@ window.addEventListener('DOMContentLoaded', () => {
       alert("✅ ایڈٹ ہو گیا!");
     }
     saveData(); renderProducts(); closeAddProductModal();
+    location.reload(); // ⚠️ صفحہ خود بخود ریفریش ہو جائے گا
   });
 
   window.quickOrder = (name, price) => {
