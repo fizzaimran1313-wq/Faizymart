@@ -177,9 +177,6 @@
     <label>اسٹاک <input type="number" id="prodStock" value="0" required /></label>
     <label>تصویر 1 <input type="file" id="prodImg1" accept="image/*" /></label>
     <label>تصویر 2 <input type="file" id="prodImg2" accept="image/*" /></label>
-    <label>تصویر 3 <input type="file" id="prodImg3" accept="image/*" /></label>
-    <label>تصویر 4 <input type="file" id="prodImg4" accept="image/*" /></label>
-    <label>تصویر 5 <input type="file" id="prodImg5" accept="image/*" /></label>
     <button type="submit" style="background:#4ade80;">محفوظ</button>
   </form>
   <div class="product-list" id="productList"></div>
@@ -404,7 +401,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function saveData() { saveLocal(); saveToSupabase(); }
 
-  // کمپریس امیج فنکشن (5 تصویروں کے لیے)
+  // تصویر کو کمپریس کرنے کا تیز طریقہ
   function compressImage(file) {
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -539,15 +536,12 @@ window.addEventListener('DOMContentLoaded', () => {
     const stock = document.getElementById("prodStock").value;
     const editIdx = parseInt(document.getElementById("editProdIndex").value);
 
-    // 5 تصویریں لوڈ کرنے کا نیا طریقہ
-    const fileInputs = [1,2,3,4,5].map(n => document.getElementById("prodImg"+n));
-    const files = fileInputs.map(input => input.files[0]).filter(f => f);
+    const file1 = document.getElementById("prodImg1").files[0];
+    const file2 = document.getElementById("prodImg2").files[0];
     let images = [];
 
-    for (let i = 0; i < files.length; i++) {
-      const compressed = await compressImage(files[i]);
-      images.push(compressed);
-    }
+    if (file1) images.push(await compressImage(file1));
+    if (file2) images.push(await compressImage(file2));
 
     if (editIdx === -1) {
       CATALOG[cat].push({ name, desc, price, stock, images });
