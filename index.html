@@ -140,7 +140,7 @@
   <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
   <div style="display:flex; justify-content:space-between;">
     <h2 id="catHeaderTitle">TOYS</h2>
-    <button class="admin-only" onclick="openAddProductModal()" style="padding:10px; background:var(--primary-yellow); border:none; border-radius:8px; font-weight:bold;">➕ نیا آئٹم</button>
+    <button onclick="openAddProductModal()" style="padding:10px; background:var(--primary-yellow); border:none; border-radius:8px; font-weight:bold;">➕ نیا آئٹم</button>
   </div>
   <form id="addProductForm" style="display:none;">
     <button class="back-btn" type="button" onclick="closeAddProductModal()">← واپس</button>
@@ -403,7 +403,10 @@ window.addEventListener('DOMContentLoaded', () => {
     if(confirm("ڈیلیٹ کریں؟")) { CATALOG[cat].splice(index, 1); saveData(); renderProducts(); }
   }
 
-  window.openAddProductModal = () => document.getElementById("addProductForm").style.display = "block";
+  window.openAddProductModal = () => {
+    if (!currentAdmin) { alert("پہلے ایڈمن لاگ ان کریں!"); return; }
+    document.getElementById("addProductForm").style.display = "block";
+  }
   window.closeAddProductModal = () => document.getElementById("addProductForm").style.display = "none";
 
   document.getElementById("addProductForm").addEventListener("submit", async e => {
