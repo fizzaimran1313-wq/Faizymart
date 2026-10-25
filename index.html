@@ -400,7 +400,11 @@ window.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem("fm_applications", JSON.stringify(applications));
   }
 
-  function saveData() { saveLocal(); saveToSupabase(); }
+  // saveData اب Supabase کا انتظار نہیں کرے گا، فوراً لوکل میں محفوظ کرے گا اور پیچھے پیچھے Supabase میں بھی بھیج دے گا
+  function saveData() {
+    saveLocal();
+    saveToSupabase(); // یہ پیچھے پیچھے چلتا رہے گا، بٹن کو نہیں روکے گا
+  }
 
   function readFileAsDataURL(file) {
     return new Promise((resolve, reject) => {
@@ -535,6 +539,9 @@ window.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       console.error(err);
     }
+
+    // ⚠️ سب سے اہم تبدیلی: اگر CATALOG میں یہ کیٹگری موجود نہ ہو تو پہلے اسے خالی بنا دو
+    if (!CATALOG[cat]) CATALOG[cat] = [];
 
     if (editIdx === -1) {
       CATALOG[cat].push({ name, desc, price, stock, images });
