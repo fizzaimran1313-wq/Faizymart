@@ -103,6 +103,7 @@
   <button class="tab-btn admin-only" onclick="showTab('salary')">💰 سیلری مینجمنٹ</button>
   <button class="tab-btn admin-only" onclick="showTab('reports')">📊 رپورٹس</button>
   <button class="tab-btn admin-only" onclick="showTab('applications')">📋 نئی درخواستیں</button>
+  <button class="tab-btn admin-only" onclick="downloadCSV()">📥 ایکسل ڈاؤن لوڈ</button>
   <button class="tab-btn admin-only" onclick="adminLogout()">🚪 لاگ آؤٹ</button>
   
   <button class="tab-btn sub-admin-only" onclick="showTab('myProfile')">👤 میرا پورٹل</button>
@@ -432,12 +433,12 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function renderEmployees() {
     const box = document.getElementById("employeeList"); box.innerHTML = "";
-    employees.forEach(emp => { box.innerHTML += `<div class="card"><h3>${emp.name} (${emp.empId})</h3><p>📱 ${emp.mobile}</p><p>💰 سیلری: ${emp.salary}</p></div>`; });
+    employees.forEach(emp => { box.innerHTML += `<div class="card"><h3>${emp.name} (${emp.empId})</h3><p>📱 ${emp.mobile}</p><p>💰 سیلری: ${emp.salary}</p><p>🎯 ٹارگٹ: ${emp.target}</p></div>`; });
   }
 
   document.getElementById("orderForm").addEventListener("submit", e => {
     e.preventDefault();
-    const o = { orderNo: document.getElementById("orderNo").value, customer: document.getElementById("customer").value, product: document.getElementById("product").value, amount: +document.getElementById("amount").value };
+    const o = { orderNo: document.getElementById("orderNo").value, customer: document.getElementById("customer").value, product: document.getElementById("product").value, amount: +document.getElementById("amount").value, empId: currentEmployee ? currentEmployee.empId : null };
     orders.push(o); saveData(); renderOrders(); e.target.reset(); alert("✅ آرڈر محفوظ!");
   });
 
@@ -468,7 +469,15 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderMyProfile() {
-    if(currentEmployee) document.getElementById("myProfileBox").innerHTML = `<div class="card"><h3>👤 ${currentEmployee.name}</h3><p>خوش آمدید!</p></div>`;
+    if(currentEmployee) {
+      document.getElementById("myProfileBox").innerHTML = `<div class="card">
+        <h3>👤 ${currentEmployee.name} (${currentEmployee.empId})</h3>
+        <p>خوش آمدید! یہ آپ کا پورٹل ہے۔</p>
+        <h4 style="margin-top: 15px; color: var(--primary-yellow);">میری کارکردگی</h4>
+        <p>میرے آرڈرز: ${orders.filter(o => o.empId === currentEmployee.empId).length}</p>
+        <p>میری کمائی: ${orders.filter(o => o.empId === currentEmployee.empId).reduce((sum, o) => sum + o.amount, 0)} روپے</p>
+      </div>`;
+    }
   }
 
   function renderSalaryList() {
@@ -480,6 +489,22 @@ window.addEventListener('DOMContentLoaded', () => {
     const tb = document.querySelector("#totalReport tbody"); tb.innerHTML = "";
     let total = 0; orders.forEach(o => total += o.amount);
     tb.innerHTML += `<tr><td>کل فروخت</td><td>${orders.length}</td><td>${total} روپے</td></tr>`;
+    employees.forEach(emp => {
+      const empOrders = orders.filter(o => o.empId === emp.empId);
+      const empTotal = empOrders.reduce((sum, o) => sum + o.amount, 0);
+      tb.innerHTML += `<tr><td>${emp.name} (${emp.empId})</td><td>${empOrders.length}</td><td>${empTotal} روپے</td></tr>`;
+    });
+  }
+
+  window.downloadCSV = () => {
+    let csv = "Type,Name,Detail,Amount\n";
+    orders.forEach(o => { csv += `Order,${o.customer},${o.product},${o.amount}\n`; });
+    employees.forEach(emp => { csv += `Employee,${emp.name},${emp.empId},${emp.salary}\n`; });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'FaizyMart_Data.csv';
+    a.click();
   }
 
   function renderAll() { renderProducts(); renderEmployees(); renderOrders(); renderSalaryList(); renderApplications(); renderReports(); }
