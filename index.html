@@ -400,9 +400,9 @@ window.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem("fm_applications", JSON.stringify(applications));
   }
 
-  function saveData() {
+  async function saveData() {
     saveLocal();
-    saveToSupabase();
+    await saveToSupabase();
   }
 
   function readFileAsDataURL(file) {
@@ -514,14 +514,14 @@ window.addEventListener('DOMContentLoaded', () => {
     if (!currentAdmin) { alert("پہلے ایڈمن لاگ ان کریں!"); return; }
     document.getElementById("editProdIndex").value = -1;
     document.getElementById("addProductForm").reset();
-    document.getElementById("prodCat").value = currentCategory; // ✅ تبدیلی 1
+    document.getElementById("prodCat").value = currentCategory;
     document.getElementById("addProductForm").style.display = "block";
   }
   window.closeAddProductModal = () => document.getElementById("addProductForm").style.display = "none";
 
   document.getElementById("addProductForm").addEventListener("submit", async e => {
     e.preventDefault();
-    const cat = document.getElementById("prodCat").value || currentCategory; // ✅ تبدیلی 2
+    const cat = document.getElementById("prodCat").value || currentCategory;
     const name = document.getElementById("prodName").value;
     const desc = document.getElementById("prodDesc").value;
     const price = document.getElementById("prodPrice").value;
@@ -550,8 +550,8 @@ window.addEventListener('DOMContentLoaded', () => {
       CATALOG[cat][editIdx] = { name, desc, price, stock, images: images.length > 0 ? images : oldImages };
       alert("✅ ایڈٹ ہو گیا!");
     }
-    saveData(); renderProducts(); closeAddProductModal();
-    // location.reload();  ❌ ہٹا دیا گیا (تبدیلی 2)
+    await saveData(); // ✅ یہ لائن ابھی شامل کی گئی ہے
+    renderProducts(); closeAddProductModal();
   });
 
   window.quickOrder = (name, price) => {
