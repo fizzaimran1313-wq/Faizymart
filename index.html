@@ -52,7 +52,7 @@
   .delete-prod-btn { position: absolute; top: 10px; right: 10px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; z-index: 10; }
   form { max-width: 700px; background: var(--card-bg); padding: 25px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
   form label { display: block; margin-bottom: 15px; font-weight: 600; color: var(--primary-yellow); }
-  form input { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #444; border-radius: 8px; background: #111; color: var(--text-light); }
+  form input, form select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #444; border-radius: 8px; background: #111; color: var(--text-light); }
   form button { width: 100%; padding: 14px; background: var(--primary-yellow); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; font-family: inherit; }
   table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
   th, td { padding: 12px; text-align: right; border-bottom: 1px solid #333; }
@@ -94,7 +94,7 @@
   <button class="tab-btn customer-only" onclick="showTab('home')">🏠 ہوم</button>
   <button class="tab-btn customer-only" onclick="showHiddenLogin()">🔐 ایڈمن لاگ ان</button>
   <button class="tab-btn customer-only" onclick="showEmpLogin()">🔑 ایمپلائی لاگ ان</button>
-  <button class="tab-btn customer-only" onclick="applyForJob()">📝 جاب اپلائی کریں</button>
+  <button class="tab-btn customer-only" onclick="showTab('jobForm')">📝 جاب اپلائی کریں</button>
   <button class="tab-btn customer-only" onclick="showTab('addOrder')">➕ نیا آرڈر</button>
 
   <button class="tab-btn admin-only" onclick="showTab('addEmployee')">➕ نیا ایمپلائی</button>
@@ -150,6 +150,21 @@
     <button type="submit" style="background:#4ade80;">محفوظ</button>
   </form>
   <div class="product-list" id="productList"></div>
+</section>
+
+<section id="jobForm" class="tab-content">
+  <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
+  <h2>📝 جاب اپلائی کریں</h2>
+  <form id="jobApplicationForm">
+    <label>نام <input type="text" id="jobName" required /></label>
+    <label>عمر <input type="number" id="jobAge" required /></label>
+    <label>رابطہ نمبر <input type="tel" id="jobMobile" required /></label>
+    <label>صوبہ <input type="text" id="jobProvince" required /></label>
+    <label>شہر <input type="text" id="jobCity" required /></label>
+    <label>ایڈریس <input type="text" id="jobAddress" required /></label>
+    <label>شناختی کارڈ نمبر <input type="text" id="jobCnic" required /></label>
+    <button type="submit" style="background:#4ade80;">درخواست بھیجیں</button>
+  </form>
 </section>
 
 <section id="addEmployee" class="tab-content">
@@ -211,7 +226,7 @@
 <section id="applications" class="tab-content">
   <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
   <h2>📋 نئی درخواستیں</h2>
-  <table id="applicationsTable"><thead><tr><th>نام</th><th>موبائل</th><th>ایکشن</th></tr></thead><tbody></tbody></table>
+  <table id="applicationsTable"><thead><tr><th>نام</th><th>موبائل</th><th>شہر</th><th>CNIC</th></tr></thead><tbody></tbody></table>
 </section>
 
 <section id="hiddenLoginSection" class="tab-content">
@@ -431,15 +446,25 @@ window.addEventListener('DOMContentLoaded', () => {
     orders.forEach(o => { tb.innerHTML += `<tr><td>${o.orderNo}</td><td>${o.customer}</td><td>${o.product}</td><td>${o.amount}</td></tr>`; });
   }
 
-  window.applyForJob = () => {
-    const name = prompt("نام:"); if (!name) return;
-    const mobile = prompt("موبائل:"); if (!mobile) return;
-    applications.push({ name, mobile }); saveData(); alert("✅ درخواست بھیج دی گئی!");
-  }
+  document.getElementById("jobApplicationForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const job = {
+      name: document.getElementById("jobName").value,
+      age: document.getElementById("jobAge").value,
+      mobile: document.getElementById("jobMobile").value,
+      province: document.getElementById("jobProvince").value,
+      city: document.getElementById("jobCity").value,
+      address: document.getElementById("jobAddress").value,
+      cnic: document.getElementById("jobCnic").value
+    };
+    applications.push(job); saveData(); e.target.reset(); alert("✅ درخواست بھیج دی گئی!"); showTab('home');
+  });
 
   function renderApplications() {
     const tb = document.querySelector("#applicationsTable tbody"); tb.innerHTML = "";
-    applications.forEach(a => { tb.innerHTML += `<tr><td>${a.name}</td><td>${a.mobile}</td><td>✅ اپروو</td></tr>`; });
+    applications.forEach(a => { 
+      tb.innerHTML += `<tr><td>${a.name}</td><td>${a.mobile}</td><td>${a.city}</td><td>${a.cnic}</td></tr>`; 
+    });
   }
 
   function renderMyProfile() {
