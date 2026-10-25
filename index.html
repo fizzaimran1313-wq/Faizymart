@@ -387,7 +387,7 @@ window.addEventListener('DOMContentLoaded', () => {
   async function saveToSupabase() {
     if (!supabase) return;
     try {
-      await supabase.from('store').upsert({ data: { employees, orders, CATALOG, salaryPayments, applications } });
+      await supabase.from('store').upsert({ id: 1, data: { employees, orders, CATALOG, salaryPayments, applications } }, { onConflict: 'id' });
       console.log("☁️ Supabase میں ڈیٹا محفوظ");
     } catch (e) { console.error("❌ Supabase محفوظ میں مسئلہ:", e); }
   }
