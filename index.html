@@ -58,12 +58,10 @@
   form label { display: block; margin-bottom: 15px; font-weight: 600; color: var(--primary-yellow); }
   form input, form select, form textarea { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #444; border-radius: 8px; background: #111; color: var(--text-light); font-family: inherit; }
   form button { width: 100%; padding: 14px; background: var(--primary-yellow); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; font-family: inherit; }
-  
   .table-container { width: 100%; overflow-x: auto; display: block; }
   table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 10px; overflow: hidden; margin-bottom: 20px; min-width: 600px; }
   th, td { padding: 12px; text-align: right; border-bottom: 1px solid #333; white-space: nowrap; }
   th { background: #000; color: var(--primary-yellow); }
-  
   .action-btn { padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin: 0 2px; }
   .edit-btn { background: var(--blue); color: #fff; }
   .del-btn { background: var(--red); color: #fff; }
@@ -75,7 +73,6 @@
   .overlay.show { display: block; }
   footer { background: #000; border-top: 2px solid var(--primary-yellow); padding: 40px 20px; margin-top: 40px; text-align: center; }
   .notif-badge { background: red; color: white; border-radius: 50%; padding: 2px 8px; font-size: 12px; margin-right: 5px; display: none; }
-
   @media (max-width: 768px) {
     .hero-text h1 { font-size: 28px; }
     .main-header .nav-links { display: none; }
@@ -121,7 +118,6 @@
   <button class="tab-btn customer-only" onclick="showTab('jobForm')">📝 جاب اپلائی کریں</button>
   <button class="tab-btn customer-only" onclick="showTab('addOrder')">➕ نیا آرڈر</button>
   <button class="tab-btn customer-only" onclick="showTab('myOrders')">📦 میرے آرڈرز</button>
-
   <button class="tab-btn admin-only" onclick="showTab('addEmployee')">➕ نیا ایمپلائی</button>
   <button class="tab-btn admin-only" onclick="showTab('employees')">👥 تمام ایمپلائیز</button>
   <button class="tab-btn admin-only" onclick="showTab('orders')">🧾 تمام آرڈرز <span id="orderBadge" class="notif-badge">0</span></button>
@@ -130,7 +126,6 @@
   <button class="tab-btn admin-only" onclick="showTab('applications')">📋 نئی درخواستیں</button>
   <button class="tab-btn admin-only" onclick="showTab('manageExcel')">📊 ایکسل مینجمنٹ</button>
   <button class="tab-btn admin-only" onclick="adminLogout()">🚪 لاگ آؤٹ</button>
-  
   <button class="tab-btn sub-admin-only" onclick="showTab('myProfile')">👤 میرا پورٹل</button>
   <button class="tab-btn sub-admin-only" onclick="adminLogout()">🚪 لاگ آؤٹ</button>
 </aside>
@@ -146,7 +141,6 @@
       <img src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&w=1000&q=80">
     </div>
   </div>
-
   <div id="categories" style="margin-top: 40px;">
     <h2>Shop by Category</h2>
     <div class="category-grid">
@@ -314,11 +308,9 @@
     <h3 style="color:var(--primary-yellow);">آرڈرز ایکسل</h3>
     <button onclick="downloadOrdersCSV()" style="padding:10px; background:var(--green); color:#000; border:none; border-radius:8px; font-weight:bold; margin:5px;">📥 ڈاؤن لوڈ</button>
     <input type="file" id="uploadOrders2" accept=".csv" style="margin:5px;" onchange="uploadOrdersCSV(event)">
-    
     <h3 style="color:var(--primary-yellow); margin-top:20px;">ایمپلائی ایکسل</h3>
     <button onclick="downloadEmployeesCSV()" style="padding:10px; background:var(--green); color:#000; border:none; border-radius:8px; font-weight:bold; margin:5px;">📥 ڈاؤن لوڈ</button>
     <input type="file" id="uploadEmployees2" accept=".csv" style="margin:5px;" onchange="uploadEmployeesCSV(event)">
-
     <h3 style="color:var(--primary-yellow); margin-top:20px;">سیلری ایکسل</h3>
     <button onclick="downloadSalaryCSV()" style="padding:10px; background:var(--green); color:#000; border:none; border-radius:8px; font-weight:bold; margin:5px;">📥 ڈاؤن لوڈ</button>
   </div>
@@ -349,15 +341,19 @@
   <p style="color:#9ca3af; margin-top:10px;">© 2026, Faizy Mart. All rights reserved.</p>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-window.addEventListener('DOMContentLoaded', () => {
+// Wait for supabase lib without 'defer' race — retry a few times
+function initApp() {
   let supabase = null;
   try {
     if (window.supabase) {
-      supabase = window.supabase.createClient('https://ofjlswkrdrpwapcvwzun.supabase.co', 'sb_publishable_yk51b9Pps15BXSX-tmnBdw_IFsWoUCW');
+      supabase = window.supabase.createClient(
+        'https://ofjlswkrdrpwapcvwzun.supabase.co',
+        'sb_publishable_yk51b9Pps15BXSX-tmnBdw_IFsWoUCW'
+      );
     }
-  } catch (e) {}
+  } catch (e) { console.error('Supabase init failed', e); }
 
   let employees = JSON.parse(localStorage.getItem("fm_employees")) || [];
   let orders = JSON.parse(localStorage.getItem("fm_orders")) || [];
@@ -368,28 +364,56 @@ window.addEventListener('DOMContentLoaded', () => {
   let currentEmployee = JSON.parse(localStorage.getItem("fm_currentEmployee")) || null;
 
   async function loadFromSupabase() {
-    if (!supabase) return;
+    if (!supabase) { console.warn("Supabase null — cloud load skipped"); return; }
     try {
-      const { data, error } = await supabase.from('store').select('data').limit(1).single();
-      if (data && data.data) {
-        const d = data.data;
-        if (d.employees) employees = d.employees;
-        if (d.orders) orders = d.orders;
-        if (d.CATALOG) CATALOG = d.CATALOG;
-        if (d.salaryPayments) salaryPayments = d.salaryPayments;
-        if (d.applications) applications = d.applications;
-        saveLocal(); renderAll();
-        console.log("✅ Supabase سے ڈیٹا لوڈ ہو گیا");
+      const { data, error } = await supabase
+        .from('store')
+        .select('data')
+        .eq('id', 1)
+        .single();
+
+      if (error) { console.warn("Supabase read:", error.message); return; }
+      if (!data || !data.data) return;
+
+      const d = data.data;
+      // Only overwrite sections that actually have content in the cloud
+      if (Array.isArray(d.employees) && d.employees.length) employees = d.employees;
+      if (Array.isArray(d.orders) && d.orders.length) orders = d.orders;
+      if (Array.isArray(d.salaryPayments) && d.salaryPayments.length) salaryPayments = d.salaryPayments;
+      if (Array.isArray(d.applications) && d.applications.length) applications = d.applications;
+      if (d.CATALOG && typeof d.CATALOG === 'object') {
+        for (const cat of Object.keys(d.CATALOG)) {
+          if (Array.isArray(d.CATALOG[cat]) && d.CATALOG[cat].length) {
+            CATALOG[cat] = d.CATALOG[cat];
+          }
+        }
       }
+      saveLocal();
+      renderAll();
+      console.log("✅ Supabase سے ڈیٹا لوڈ ہو گیا");
     } catch (e) { console.error("❌ Supabase لوڈ میں مسئلہ:", e); }
   }
 
   async function saveToSupabase() {
-    if (!supabase) return;
+    if (!supabase) { console.warn("Supabase null — cloud save skipped"); return false; }
     try {
-      await supabase.from('store').upsert({ id: 1, data: { employees, orders, CATALOG, salaryPayments, applications } }, { onConflict: 'id' });
-      console.log("☁️ Supabase میں ڈیٹا محفوظ");
-    } catch (e) { console.error("❌ Supabase محفوظ میں مسئلہ:", e); }
+      const { data, error } = await supabase
+        .from('store')
+        .upsert(
+          { id: 1, data: { employees, orders, CATALOG, salaryPayments, applications } },
+          { onConflict: 'id' }
+        )
+        .select();
+      if (error) {
+        console.error("❌ Supabase upsert error:", error.message, error.details, error.hint);
+        return false;
+      }
+      console.log("☁️ Supabase میں ڈیٹا محفوظ ✔", data);
+      return true;
+    } catch (e) {
+      console.error("❌ Supabase exception:", e);
+      return false;
+    }
   }
 
   function saveLocal() {
@@ -402,7 +426,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   async function saveData() {
     saveLocal();
-    await saveToSupabase();
+    return await saveToSupabase();
   }
 
   function readFileAsDataURL(file) {
@@ -495,8 +519,13 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  window.deleteProduct = (cat, index) => {
-    if(confirm("ڈیلیٹ کریں؟")) { CATALOG[cat].splice(index, 1); saveData(); renderProducts(); }
+  window.deleteProduct = async (cat, index) => {
+    if(confirm("ڈیلیٹ کریں؟")) {
+      CATALOG[cat].splice(index, 1);
+      const ok = await saveData();
+      renderProducts();
+      if (!ok) alert("⚠️ براؤزر سے ڈیلیٹ ہو گیا، کلاؤڈ سے نہیں۔ Supabase permissions چیک کریں۔");
+    }
   }
 
   window.editProduct = (cat, index) => {
@@ -530,27 +559,26 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const file = document.getElementById("prodImg1").files[0];
     let images = [];
-
     try {
       if (file) {
         const imgData = await readFileAsDataURL(file);
         images.push(imgData);
       }
-    } catch (err) {
-      console.error(err);
-    }
+    } catch (err) { console.error(err); }
 
     if (!CATALOG[cat]) CATALOG[cat] = [];
 
     if (editIdx === -1) {
       CATALOG[cat].push({ name, desc, price, stock, images });
-      alert("✅ شامل!");
     } else {
       const oldImages = CATALOG[cat][editIdx].images || [];
       CATALOG[cat][editIdx] = { name, desc, price, stock, images: images.length > 0 ? images : oldImages };
-      alert("✅ ایڈٹ ہو گیا!");
     }
-    await saveData(); // ✅ یہ لائن ابھی شامل کی گئی ہے
+
+    const ok = await saveData();
+    if (ok) alert("✅ کلاؤڈ میں بھی محفوظ ہو گیا!");
+    else alert("⚠️ براؤزر میں محفوظ ہو گیا، لیکن کلاؤڈ میں نہیں گیا۔ Supabase table/permissions چیک کریں (Console میں error دیکھیں)۔");
+
     renderProducts(); closeAddProductModal();
   });
 
@@ -560,64 +588,66 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   function generateNextEmpId() { return "FM-" + (employees.length + 1001); }
-  
-  document.getElementById("employeeForm").addEventListener("submit", e => {
+
+  document.getElementById("employeeForm").addEventListener("submit", async e => {
     e.preventDefault();
     const emp = { empId: document.getElementById("empId").value, name: document.getElementById("empName").value, mobile: document.getElementById("empMobile").value, salary: +document.getElementById("empSalary").value, target: +document.getElementById("empTarget").value, password: document.getElementById("empPass").value };
-    employees.push(emp); saveData(); renderEmployees(); e.target.reset(); alert("✅ شامل!");
+    employees.push(emp);
+    await saveData(); renderEmployees(); e.target.reset(); alert("✅ شامل!");
   });
 
   function renderEmployees() {
     const box = document.getElementById("employeeList"); box.innerHTML = "";
-    employees.forEach((emp, i) => { 
+    employees.forEach((emp, i) => {
       box.innerHTML += `<div class="card">
         <h3>${emp.name} (${emp.empId})</h3>
         <p>📱 ${emp.mobile}</p>
         <p>💰 سیلری: ${emp.salary}</p>
         <button class="action-btn edit-btn" onclick="editEmployee(${i})">✏️ ایڈٹ</button>
         <button class="action-btn del-btn" onclick="deleteEmployee(${i})">🗑️ ڈیلیٹ</button>
-      </div>`; 
+      </div>`;
     });
   }
 
-  window.editEmployee = (i) => {
+  window.editEmployee = async (i) => {
     const emp = employees[i];
     const newName = prompt("نیا نام:", emp.name);
     const newMobile = prompt("نیا موبائل:", emp.mobile);
     const newSalary = prompt("نئی سیلری:", emp.salary);
     if (newName && newMobile && newSalary) {
       employees[i] = { ...emp, name: newName, mobile: newMobile, salary: +newSalary };
-      saveData(); renderEmployees();
+      await saveData(); renderEmployees();
     }
   }
 
-  window.deleteEmployee = (i) => {
-    if(confirm("ڈیلیٹ کریں؟")) { employees.splice(i, 1); saveData(); renderEmployees(); }
+  window.deleteEmployee = async (i) => {
+    if(confirm("ڈیلیٹ کریں؟")) { employees.splice(i, 1); await saveData(); renderEmployees(); }
   }
 
-  document.getElementById("orderForm").addEventListener("submit", e => {
+  document.getElementById("orderForm").addEventListener("submit", async e => {
     e.preventDefault();
     const empRef = document.getElementById("empRefId").value.trim();
-    const o = { 
-      orderNo: document.getElementById("orderNo").value, 
-      customer: document.getElementById("customer").value, 
+    const o = {
+      orderNo: document.getElementById("orderNo").value,
+      customer: document.getElementById("customer").value,
       mobile: document.getElementById("custMobile").value,
       city: document.getElementById("custCity").value,
       address: document.getElementById("custAddress").value,
-      product: document.getElementById("product").value, 
-      amount: +document.getElementById("amount").value, 
+      product: document.getElementById("product").value,
+      amount: +document.getElementById("amount").value,
       accName: document.getElementById("custAccName").value,
       accType: document.getElementById("custAccType").value,
       accNo: document.getElementById("custAccNo").value,
       empId: empRef || (currentEmployee ? currentEmployee.empId : null),
       status: "pending"
     };
-    orders.push(o); saveData(); renderOrders(); e.target.reset(); alert("✅ آرڈر محفوظ!"); updateOrderBadge();
+    orders.push(o);
+    await saveData(); renderOrders(); e.target.reset(); alert("✅ آرڈر محفوظ!"); updateOrderBadge();
   });
 
   function renderOrders() {
     const tb = document.querySelector("#ordersTable tbody"); tb.innerHTML = "";
-    orders.forEach((o, i) => { 
+    orders.forEach((o, i) => {
       tb.innerHTML += `<tr>
         <td>${o.orderNo}</td>
         <td>${o.customer}</td>
@@ -629,28 +659,28 @@ window.addEventListener('DOMContentLoaded', () => {
           ${o.status === 'confirmed' ? `<button class="action-btn" onclick="deliverOrder(${i})" style="background:var(--blue); color:#fff;">📦 ڈیلیور</button>` : ''}
           <button class="action-btn del-btn" onclick="deleteOrder(${i})">🗑️</button>
         </td>
-      </tr>`; 
+      </tr>`;
     });
   }
 
-  window.confirmOrder = (index) => {
+  window.confirmOrder = async (index) => {
     orders[index].status = 'confirmed';
-    saveData(); renderOrders(); updateOrderBadge(); alert("✅ آرڈر کنفرم ہو گیا! کسٹمر کو رسید بھیج دی گئی ہے۔");
+    await saveData(); renderOrders(); updateOrderBadge(); alert("✅ آرڈر کنفرم ہو گیا!");
   }
 
-  window.deliverOrder = (index) => {
+  window.deliverOrder = async (index) => {
     orders[index].status = 'delivered';
-    saveData(); renderOrders();
+    await saveData(); renderOrders();
   }
 
-  window.deleteOrder = (i) => {
-    if(confirm("ڈیلیٹ کریں؟")) { orders.splice(i, 1); saveData(); renderOrders(); }
+  window.deleteOrder = async (i) => {
+    if(confirm("ڈیلیٹ کریں؟")) { orders.splice(i, 1); await saveData(); renderOrders(); }
   }
 
-  window.cancelOrder = (index) => {
+  window.cancelOrder = async (index) => {
     if (orders[index].status === 'pending') {
       orders.splice(index, 1);
-      saveData(); renderOrders(); renderMyOrders(); alert("✅ آرڈر کینسل ہو گیا!");
+      await saveData(); renderOrders(); renderMyOrders(); alert("✅ آرڈر کینسل ہو گیا!");
     } else {
       alert("❌ یہ آرڈر کنفرم ہو چکا ہے، اب کینسل نہیں ہو سکتا!");
     }
@@ -705,7 +735,7 @@ window.addEventListener('DOMContentLoaded', () => {
     badge.style.display = pending > 0 ? "inline-block" : "none";
   }
 
-  document.getElementById("jobApplicationForm").addEventListener("submit", e => {
+  document.getElementById("jobApplicationForm").addEventListener("submit", async e => {
     e.preventDefault();
     const job = {
       name: document.getElementById("jobName").value,
@@ -717,21 +747,22 @@ window.addEventListener('DOMContentLoaded', () => {
       accType: document.getElementById("jobAccType").value,
       accNo: document.getElementById("jobAccNo").value
     };
-    applications.push(job); saveData(); e.target.reset(); alert("✅ درخواست بھیج دی گئی!"); showTab('home');
+    applications.push(job);
+    await saveData(); e.target.reset(); alert("✅ درخواست بھیج دی گئی!"); showTab('home');
   });
 
   function renderApplications() {
     const tb = document.querySelector("#applicationsTable tbody"); tb.innerHTML = "";
-    applications.forEach((a, i) => { 
+    applications.forEach((a, i) => {
       tb.innerHTML += `<tr>
         <td>${a.name}</td><td>${a.mobile}</td><td>${a.city}</td><td>${a.accType} - ${a.accNo}</td>
         <td><button class="action-btn del-btn" onclick="deleteApplication(${i})">🗑️</button></td>
-      </tr>`; 
+      </tr>`;
     });
   }
 
-  window.deleteApplication = (i) => {
-    if(confirm("ڈیلیٹ کریں؟")) { applications.splice(i, 1); saveData(); renderApplications(); }
+  window.deleteApplication = async (i) => {
+    if(confirm("ڈیلیٹ کریں؟")) { applications.splice(i, 1); await saveData(); renderApplications(); }
   }
 
   function renderMyProfile() {
@@ -750,18 +781,18 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function renderSalaryList() {
     const box = document.getElementById("salaryList"); box.innerHTML = "";
-    employees.forEach((emp, i) => { 
+    employees.forEach((emp, i) => {
       box.innerHTML += `<div class="card">
         <h3>${emp.name}</h3>
         <p>💰 سیلری: ${emp.salary} روپے</p>
         <button class="action-btn edit-btn" onclick="editSalary(${i})">✏️ ایڈٹ</button>
-      </div>`; 
+      </div>`;
     });
   }
 
-  window.editSalary = (i) => {
+  window.editSalary = async (i) => {
     const newSal = prompt("نئی سیلری:", employees[i].salary);
-    if (newSal) { employees[i].salary = +newSal; saveData(); renderSalaryList(); }
+    if (newSal) { employees[i].salary = +newSal; await saveData(); renderSalaryList(); }
   }
 
   function renderReports() {
@@ -849,11 +880,11 @@ window.addEventListener('DOMContentLoaded', () => {
     const win = window.open('', '', 'width=800,height=600'); win.document.write(content); win.print();
   }
 
-  window.uploadOrdersCSV = (event) => {
+  window.uploadOrdersCSV = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const lines = e.target.result.split('\n');
       lines.slice(1).forEach(line => {
         const [orderNo, customer, mobile, city, address, product, amount, accName, accType, accNo, empId, status] = line.split(',');
@@ -861,16 +892,16 @@ window.addEventListener('DOMContentLoaded', () => {
           orders.push({ orderNo, customer, mobile, city, address, product, amount: +amount, accName, accType, accNo, empId, status: status || 'pending' });
         }
       });
-      saveData(); renderOrders(); alert("✅ آرڈرز اپلوڈ ہو گئے!");
+      await saveData(); renderOrders(); alert("✅ آرڈرز اپلوڈ ہو گئے!");
     };
     reader.readAsText(file);
   }
 
-  window.uploadEmployeesCSV = (event) => {
+  window.uploadEmployeesCSV = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const lines = e.target.result.split('\n');
       lines.slice(1).forEach(line => {
         const [id, name, mobile, salary, target] = line.split(',');
@@ -878,7 +909,7 @@ window.addEventListener('DOMContentLoaded', () => {
           employees.push({ empId: id, name, mobile, salary: +salary, target: +target });
         }
       });
-      saveData(); renderEmployees(); alert("✅ ایمپلائی اپلوڈ ہو گئے!");
+      await saveData(); renderEmployees(); alert("✅ ایمپلائی اپلوڈ ہو گئے!");
     };
     reader.readAsText(file);
   }
@@ -887,9 +918,23 @@ window.addEventListener('DOMContentLoaded', () => {
 
   if (currentAdmin) document.body.classList.add("is-super-admin");
   if (currentEmployee) document.body.classList.add("is-sub-admin");
-  
+
+  // First show local data instantly, THEN try to load cloud (which won't overwrite with empty)
   renderAll();
   loadFromSupabase();
+}
+
+// Supabase script loads first; call init after window load, with retry fallback
+window.addEventListener('load', () => {
+  if (window.supabase) initApp();
+  else {
+    let tries = 0;
+    const t = setInterval(() => {
+      tries++;
+      if (window.supabase) { clearInterval(t); initApp(); }
+      else if (tries > 20) { clearInterval(t); console.warn("Supabase library failed to load"); initApp(); }
+    }, 150);
+  }
 });
 </script>
 </body>
