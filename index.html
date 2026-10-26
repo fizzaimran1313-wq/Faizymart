@@ -364,6 +364,15 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+// ✅ یہ لائنیں آپ کے براؤزر کا خراب ڈیٹا صاف کر دیں گی
+localStorage.removeItem("fm_employees");
+localStorage.removeItem("fm_orders");
+localStorage.removeItem("fm_catalog");
+localStorage.removeItem("fm_salary_payments");
+localStorage.removeItem("fm_applications");
+localStorage.removeItem("lastCustomerName");
+localStorage.removeItem("lastOrderNo");
+
 function togglePassword(inputId, icon) {
   const input = document.getElementById(inputId);
   if (input.type === "password") {
@@ -767,13 +776,12 @@ function initApp() {
     });
   }
 
-  // ✅ جاب اپروو کرنے کا نیا فنکشن
   window.approveApplication = async (i) => {
     if (!currentAdmin) { alert("صرف ایڈمن اپروو کر سکتا ہے!"); return; }
     const app = applications[i];
     
     const newEmpId = generateNextEmpId();
-    const newPass = "pass" + Math.floor(1000 + Math.random() * 9000); // رینڈم پاس ورڈ
+    const newPass = "pass" + Math.floor(1000 + Math.random() * 9000);
     
     const newEmp = {
       empId: newEmpId,
@@ -796,11 +804,9 @@ function initApp() {
     renderEmployees();
     renderApplications();
     
-    // پرنٹ رسید کا فنکشن کال کریں
     printJoiningSlip(newEmp);
   };
 
-  // ✅ پرنٹ رسید کا نیا فنکشن
   window.printJoiningSlip = (emp) => {
     const win = window.open('', '', 'width=600,height=800');
     win.document.write(`
