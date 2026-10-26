@@ -74,7 +74,6 @@
   footer { background: #000; border-top: 2px solid var(--primary-yellow); padding: 40px 20px; margin-top: 40px; text-align: center; }
   .notif-badge { background: red; color: white; border-radius: 50%; padding: 2px 8px; font-size: 12px; margin-right: 5px; display: none; }
   
-  /* پاس ورڈ شو آئیکن کی سیٹنگ */
   .pass-wrapper { position: relative; display: flex; align-items: center; }
   .pass-wrapper input { padding-left: 40px; }
   .toggle-pass { position: absolute; left: 10px; cursor: pointer; color: var(--primary-yellow); font-size: 18px; user-select: none; }
@@ -479,7 +478,6 @@ function initApp() {
 
   window.showEmpLogin = () => { showTab("empLoginSection"); }
   
-  // ✅ یہاں ایمپلائی لاگ ان کا مسئلہ ٹھیک کیا ہے
   window.submitEmpLogin = () => {
     const enteredId = document.getElementById("empLoginId").value.trim();
     const enteredPass = document.getElementById("empLoginPass").value.trim();
@@ -638,7 +636,6 @@ function initApp() {
     };
     orders.push(o); 
     await saveData(); 
-    // ✅ کسٹمر کا نام محفوظ کر رہے ہیں تاکہ اسے اپنے آرڈرز مل سکیں
     localStorage.setItem("lastCustomerName", o.customer);
     localStorage.setItem("lastOrderNo", o.orderNo);
     
@@ -686,10 +683,8 @@ function initApp() {
     }
   }
 
-  // ✅ یہاں "میرے آرڈرز" کا مسئلہ ٹھیک کیا ہے
   function renderMyOrders() {
     const tb = document.querySelector("#myOrdersTable tbody"); tb.innerHTML = "";
-    // اب یہ صرف لاگ ان ایمپلائی کے بجائے، ہر وہ آرڈر دکھائے گا جو اس براؤزر سے ڈالا گیا ہو
     const my = orders.filter(o => o.empId === currentEmployee?.empId || o.customer === currentEmployee?.name || o.customer === localStorage.getItem("lastCustomerName") || o.orderNo === localStorage.getItem("lastOrderNo"));
     
     if (my.length === 0) {
@@ -764,10 +759,80 @@ function initApp() {
     applications.forEach((a, i) => { 
       tb.innerHTML += `<tr>
         <td>${a.name}</td><td>${a.mobile}</td><td>${a.city}</td><td>${a.accType} - ${a.accNo}</td>
-        <td><button class="action-btn del-btn" onclick="deleteApplication(${i})">🗑️</button></td>
+        <td>
+          <button class="action-btn" onclick="approveApplication(${i})" style="background:var(--green); color:#000;">✅ اپروو</button>
+          <button class="action-btn del-btn" onclick="deleteApplication(${i})">🗑️</button>
+        </td>
       </tr>`; 
     });
   }
+
+  // ✅ جاب اپروو کرنے کا نیا فنکشن
+  window.approveApplication = async (i) => {
+    if (!currentAdmin) { alert("صرف ایڈمن اپروو کر سکتا ہے!"); return; }
+    const app = applications[i];
+    
+    const newEmpId = generateNextEmpId();
+    const newPass = "pass" + Math.floor(1000 + Math.random() * 9000); // رینڈم پاس ورڈ
+    
+    const newEmp = {
+      empId: newEmpId,
+      name: app.name,
+      mobile: app.mobile,
+      salary: 20000,
+      target: 40,
+      password: newPass,
+      city: app.city,
+      address: app.address,
+      accName: app.accName,
+      accType: app.accType,
+      accNo: app.accNo
+    };
+
+    employees.push(newEmp);
+    applications.splice(i, 1);
+    
+    await saveData();
+    renderEmployees();
+    renderApplications();
+    
+    // پرنٹ رسید کا فنکشن کال کریں
+    printJoiningSlip(newEmp);
+  };
+
+  // ✅ پرنٹ رسید کا نیا فنکشن
+  window.printJoiningSlip = (emp) => {
+    const win = window.open('', '', 'width=600,height=800');
+    win.document.write(`
+      <html><head><title>ایمپلائی جوائننگ سلپ</title>
+      <style>
+        body{font-family:"Noto Nastaliq Urdu",sans-serif; text-align:center; padding:40px; color:#000;}
+        .box { border: 2px solid #000; padding: 30px; border-radius: 10px; max-width: 500px; margin: auto; }
+        h2 { color: #d4af37; margin-bottom: 5px; }
+        h3 { margin-bottom: 20px; }
+        .details { text-align: right; font-size: 18px; line-height: 2.5; margin-top: 20px; }
+        .details strong { display: inline-block; width: 130px; }
+        .footer { margin-top: 30px; font-size: 12px; color: #555; border-top: 1px solid #ccc; padding-top: 10px;}
+      </style>
+      </head><body>
+      <div class="box">
+        <h2>FAIZY MART</h2>
+        <p>فیضی مارٹ میں خوش آمدید!</p>
+        <h3>🎉 ایمپلائی جوائننگ سلپ 🎉</h3>
+        <div class="details">
+          <p><strong>نام:</strong> ${emp.name}</p>
+          <p><strong>عہدہ:</strong> ایمپلائی</p>
+          <p><strong>آئی ڈی:</strong> <span style="font-size: 22px; font-weight: bold; color: #000;">${emp.empId}</span></p>
+          <p><strong>پاس ورڈ:</strong> <span style="font-size: 22px; font-weight: bold; color: #d4af37;">${emp.password}</span></p>
+        </div>
+        <p style="margin-top: 20px; font-size: 14px;">یہ رسید محفوظ رکھیں۔ لاگ ان کرنے کے لیے آئی ڈی اور پاس ورڈ استعمال کریں۔</p>
+        <div class="footer">© 2026 Faizy Mart. All rights reserved.</div>
+      </div>
+      </body></html>
+    `);
+    win.document.close();
+    win.print();
+  };
 
   window.deleteApplication = async (i) => {
     if(confirm("ڈیلیٹ کریں؟")) { applications.splice(i, 1); await saveData(); renderApplications(); }
