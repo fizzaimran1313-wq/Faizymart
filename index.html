@@ -7,7 +7,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  :root { --primary-yellow: #facc15; --dark-bg: #111827; --card-bg: #1f2937; --text-light: #f3f4f6; --text-muted: #9ca3af; --green: #4ade80; --red: #ef4444; --blue: #3b82f6; --amber: #f59e0b; }
+  :root {
+    --primary-yellow: #facc15; --dark-bg: #111827; --card-bg: #1f2937;
+    --text-light: #f3f4f6; --text-muted: #9ca3af; --green: #4ade80;
+    --red: #ef4444; --blue: #3b82f6; --amber: #f59e0b;
+  }
   body { font-family: "Noto Nastaliq Urdu", "Segoe UI", Tahoma, sans-serif; background: var(--dark-bg); color: var(--text-light); line-height: 1.9; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
   .top-strip { background: var(--primary-yellow); color: #000; padding: 8px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: bold; }
   .main-header { background: #000; border-bottom: 2px solid var(--primary-yellow); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
@@ -29,7 +33,8 @@
   .sidebar { position: fixed; top: 0; right: -300px; width: 280px; height: 100vh; background: #000; border-left: 2px solid var(--primary-yellow); z-index: 1000; transition: right 0.3s ease; padding: 20px; overflow-y: auto; }
   .sidebar.open { right: 0; }
   .sidebar .tab-btn { display: block; width: 100%; padding: 12px 15px; margin-bottom: 8px; background: transparent; color: var(--text-light); border: none; border-radius: 8px; text-align: right; font-family: inherit; font-size: 15px; cursor: pointer; }
-  .sidebar .admin-only, .sidebar .sub-admin-only, .sidebar .super-only, .admin-only { display: none !important; }
+  .sidebar .tab-btn:hover { background: #1f2937; }
+  .sidebar .admin-only, .sidebar .sub-admin-only, .sidebar .super-only { display: none !important; }
   body.is-sub-admin .sidebar .sub-admin-only { display: block !important; }
   body.is-super-admin .sidebar .admin-only, body.is-super-admin .sidebar .super-only { display: block !important; }
   body.is-super-admin .sidebar .customer-only, body.is-sub-admin .sidebar .customer-only { display: none !important; }
@@ -42,7 +47,7 @@
   .cat-card img { width: 100%; height: 100%; object-fit: cover; }
   .cat-card .cat-overlay { position: absolute; bottom: 0; width: 100%; background: linear-gradient(transparent, rgba(0,0,0,0.9)); padding: 20px; text-align: center; }
   .cat-card h3 { color: var(--primary-yellow); font-size: 20px; }
-  .product-item { background: var(--card-bg); border-radius: 12px; border: 1px solid #333; position: relative; }
+  .product-item { background: var(--card-bg); border-radius: 12px; border: 1px solid #333; position: relative; overflow: hidden; }
   .product-img-box { width: 100%; height: 200px; background: #000; overflow: hidden; }
   .product-img-box img { width: 100%; height: 100%; object-fit: cover; }
   .product-info { padding: 15px; }
@@ -51,7 +56,8 @@
   .product-item .stock { font-size: 12px; color: var(--amber); margin-bottom: 5px; }
   .product-item .price { color: var(--primary-yellow); font-weight: 700; }
   .order-btn { width: 100%; margin-top: 10px; padding: 10px; background: var(--primary-yellow); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-  .edit-prod-btn, .delete-prod-btn { position: absolute; top: 10px; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; z-index: 10; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+  .edit-prod-btn, .delete-prod-btn { position: absolute; top: 10px; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; z-index: 10; font-size: 16px; display: none; align-items: center; justify-content: center; }
+  body.is-super-admin .edit-prod-btn, body.is-super-admin .delete-prod-btn { display: flex; }
   .delete-prod-btn { right: 10px; background: rgba(239, 68, 68, 0.9); color: white; }
   .edit-prod-btn { right: 50px; background: rgba(59, 130, 246, 0.9); color: white; }
   form { max-width: 700px; background: var(--card-bg); padding: 25px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
@@ -65,22 +71,25 @@
   .action-btn { padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin: 0 2px; }
   .edit-btn { background: var(--blue); color: #fff; }
   .del-btn { background: var(--red); color: #fff; }
-  .hidden-login-box { display: none; max-width: 400px; margin: 40px auto; background: var(--card-bg); padding: 30px; border-radius: 15px; border: 2px solid var(--primary-yellow); text-align: center; }
-  .hidden-login-box.show { display: block; }
+  .hidden-login-box { display: block; max-width: 400px; margin: 40px auto; background: var(--card-bg); padding: 30px; border-radius: 15px; border: 2px solid var(--primary-yellow); text-align: center; }
   .hidden-login-box input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #444; border-radius: 8px; background: #111; color: #fff; }
-  .hidden-login-box button { width: 100%; padding: 12px; background: var(--primary-yellow); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+  .hidden-login-box button { width: 100%; padding: 12px; background: var(--primary-yellow); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 8px; }
   .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; }
   .overlay.show { display: block; }
   footer { background: #000; border-top: 2px solid var(--primary-yellow); padding: 40px 20px; margin-top: 40px; text-align: center; }
   .notif-badge { background: red; color: white; border-radius: 50%; padding: 2px 8px; font-size: 12px; margin-right: 5px; display: none; }
-  
   .pass-wrapper { position: relative; display: flex; align-items: center; }
   .pass-wrapper input { padding-left: 40px; }
   .toggle-pass { position: absolute; left: 10px; cursor: pointer; color: var(--primary-yellow); font-size: 18px; user-select: none; }
-
+  .card { background: var(--card-bg); border: 1px solid #333; border-radius: 12px; padding: 20px; }
+  .card h3 { color: var(--primary-yellow); margin-bottom: 8px; }
+  .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--green); color: #000; padding: 12px 24px; border-radius: 8px; font-weight: bold; z-index: 9999; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+  .toast.show { display: block; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from { opacity: 0; transform: translate(-50%, 20px); } to { opacity: 1; transform: translate(-50%, 0); } }
+  .status-banner { background: var(--amber); color: #000; padding: 8px 15px; border-radius: 8px; margin: 10px 20px; font-weight: bold; text-align: center; display: none; }
+  .status-banner.show { display: block; }
   @media (max-width: 768px) {
     .hero-text h1 { font-size: 28px; }
-    .main-header .nav-links { display: none; }
     .main-header { padding: 10px; }
     .main-header .logo span { font-size: 18px; }
     .main-header .logo .logo-img { width: 40px; height: 40px; font-size: 20px; }
@@ -95,6 +104,8 @@
 <body>
 
 <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+<div class="toast" id="toast"></div>
+<div class="status-banner" id="statusBanner"></div>
 
 <div class="top-strip">
   <div>Cash on Delivery All Over Pakistan</div>
@@ -118,8 +129,8 @@
 <aside class="sidebar" id="sidebar">
   <h3>مینو</h3>
   <button class="tab-btn customer-only" onclick="showTab('home')">🏠 ہوم</button>
-  <button class="tab-btn customer-only" onclick="showHiddenLogin()">🔐 ایڈمن لاگ ان</button>
-  <button class="tab-btn customer-only" onclick="showEmpLogin()">🔑 ایمپلائی لاگ ان</button>
+  <button class="tab-btn customer-only" onclick="showTab('hiddenLoginSection')">🔐 ایڈمن لاگ ان</button>
+  <button class="tab-btn customer-only" onclick="showTab('empLoginSection')">🔑 ایمپلائی لاگ ان</button>
   <button class="tab-btn customer-only" onclick="showTab('jobForm')">📝 جاب اپلائی کریں</button>
   <button class="tab-btn customer-only" onclick="showTab('addOrder')">➕ نیا آرڈر</button>
   <button class="tab-btn customer-only" onclick="showTab('myOrders')">📦 میرے آرڈرز</button>
@@ -132,7 +143,7 @@
   <button class="tab-btn admin-only" onclick="showTab('applications')">📋 نئی درخواستیں</button>
   <button class="tab-btn admin-only" onclick="showTab('manageExcel')">📊 ایکسل مینجمنٹ</button>
   <button class="tab-btn admin-only" onclick="adminLogout()">🚪 لاگ آؤٹ</button>
-  
+
   <button class="tab-btn sub-admin-only" onclick="showTab('myProfile')">👤 میرا پورٹل</button>
   <button class="tab-btn sub-admin-only" onclick="adminLogout()">🚪 لاگ آؤٹ</button>
 </aside>
@@ -145,29 +156,29 @@
       <button onclick="document.getElementById('categories').scrollIntoView({behavior: 'smooth'})">Shop Now</button>
     </div>
     <div class="hero-image">
-      <img src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&w=1000&q=80">
+      <img src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&w=1000&q=80" alt="Hero">
     </div>
   </div>
 
   <div id="categories" style="margin-top: 40px;">
     <h2>Shop by Category</h2>
     <div class="category-grid">
-      <div class="cat-card" onclick="openCategory('COSMETICS')"><img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=500&q=80"><div class="cat-overlay"><h3>COSMETICS</h3></div></div>
-      <div class="cat-card" onclick="openCategory('DRONES')"><img src="https://images.unsplash.com/photo-1473968512647-3e447244af8f?auto=format&fit=crop&w=500&q=80"><div class="cat-overlay"><h3>DRONES</h3></div></div>
-      <div class="cat-card" onclick="openCategory('TOYS')"><img src="https://images.unsplash.com/photo-1559454403-b8fb88521f11?auto=format&fit=crop&w=500&q=80"><div class="cat-overlay"><h3>TOYS</h3></div></div>
-      <div class="cat-card" onclick="openCategory('GADGETS')"><img src="https://images.unsplash.com/photo-1526738549149-8e07eca6c147?auto=format&fit=crop&w=500&q=80"><div class="cat-overlay"><h3>GADGETS</h3></div></div>
-      <div class="cat-card" onclick="openCategory('MOBILES')"><img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=500&q=80"><div class="cat-overlay"><h3>MOBILES</h3></div></div>
-      <div class="cat-card" onclick="openCategory('CLOTHING')"><img src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=500&q=80"><div class="cat-overlay"><h3>CLOTHING</h3></div></div>
-      <div class="cat-card" onclick="openCategory('ABAYAS')"><img src="https://images.unsplash.com/photo-1583391733958-6d0e7e5d1f1e?auto=format&fit=crop&w=500&q=80"><div class="cat-overlay"><h3>ABAYAS</h3></div></div>
+      <div class="cat-card" onclick="openCategory('COSMETICS')"><img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=500&q=80" alt="Cosmetics"><div class="cat-overlay"><h3>COSMETICS</h3></div></div>
+      <div class="cat-card" onclick="openCategory('DRONES')"><img src="https://images.unsplash.com/photo-1473968512647-3e447244af8f?auto=format&fit=crop&w=500&q=80" alt="Drones"><div class="cat-overlay"><h3>DRONES</h3></div></div>
+      <div class="cat-card" onclick="openCategory('TOYS')"><img src="https://images.unsplash.com/photo-1559454403-b8fb88521f11?auto=format&fit=crop&w=500&q=80" alt="Toys"><div class="cat-overlay"><h3>TOYS</h3></div></div>
+      <div class="cat-card" onclick="openCategory('GADGETS')"><img src="https://images.unsplash.com/photo-1526738549149-8e07eca6c147?auto=format&fit=crop&w=500&q=80" alt="Gadgets"><div class="cat-overlay"><h3>GADGETS</h3></div></div>
+      <div class="cat-card" onclick="openCategory('MOBILES')"><img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=500&q=80" alt="Mobiles"><div class="cat-overlay"><h3>MOBILES</h3></div></div>
+      <div class="cat-card" onclick="openCategory('CLOTHING')"><img src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=500&q=80" alt="Clothing"><div class="cat-overlay"><h3>CLOTHING</h3></div></div>
+      <div class="cat-card" onclick="openCategory('ABAYAS')"><img src="https://images.unsplash.com/photo-1583391733958-6d0e7e5d1f1e?auto=format&fit=crop&w=500&q=80" alt="Abayas"><div class="cat-overlay"><h3>ABAYAS</h3></div></div>
     </div>
   </div>
 </section>
 
 <section id="categoryDetail" class="tab-content">
   <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
-  <div style="display:flex; justify-content:space-between;">
-    <h2 id="catHeaderTitle">TOYS</h2>
-    <button onclick="openAddProductModal()" class="admin-only" style="padding:10px; background:var(--primary-yellow); border:none; border-radius:8px; font-weight:bold;">➕ نیا آئٹم</button>
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+    <h2 id="catHeaderTitle" style="margin:0;">TOYS</h2>
+    <button class="admin-only" onclick="openAddProductModal()" style="padding:10px; background:var(--primary-yellow); border:none; border-radius:8px; font-weight:bold; cursor:pointer;">➕ نیا آئٹم</button>
   </div>
   <form id="addProductForm" style="display:none;">
     <button class="back-btn" type="button" onclick="closeAddProductModal()">← واپس</button>
@@ -193,7 +204,7 @@
     <label>شہر <input type="text" id="jobCity" required /></label>
     <label>ایڈریس <input type="text" id="jobAddress" required /></label>
     <label>اکاؤنٹ کا نام <input type="text" id="jobAccName" required /></label>
-    <label>اکاؤنٹ کی قسم (جیز کیش / ایزی پیسہ / بینک) 
+    <label>اکاؤنٹ کی قسم
       <select id="jobAccType" required>
         <option value="">منتخب کریں</option>
         <option value="JazzCash">جیز کیش (JazzCash)</option>
@@ -215,7 +226,7 @@
     <label>موبائل <input type="tel" id="empMobile" required /></label>
     <label>سیلری <input type="number" id="empSalary" value="20000" required /></label>
     <label>ٹارگٹ <input type="number" id="empTarget" value="40" required /></label>
-    <label>پاس ورڈ 
+    <label>پاس ورڈ
       <div class="pass-wrapper">
         <input type="password" id="empPass" required />
         <span class="toggle-pass" onclick="togglePassword('empPass', this)">👁️</span>
@@ -229,9 +240,11 @@
   <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
   <h2>تمام ایمپلائیز</h2>
   <div id="employeeList" class="card-grid"></div>
-  <button onclick="downloadEmployeesCSV()" style="background:#4ade80; padding:10px; border:none; border-radius:8px; margin-top:10px; font-weight:bold; color:#000;">📥 ایمپلائی ایکسل ڈاؤن لوڈ</button>
-  <input type="file" id="uploadEmployees" accept=".csv" style="margin-top:10px;" onchange="uploadEmployeesCSV(event)">
-  <button onclick="printEmployees()" style="background:#3b82f6; padding:10px; border:none; border-radius:8px; margin-top:10px; font-weight:bold; color:#fff;">🖨️ ایمپلائی پرنٹ کریں</button>
+  <div style="margin-top:15px; display:flex; gap:10px; flex-wrap:wrap;">
+    <button onclick="downloadEmployeesCSV()" style="background:#4ade80; padding:10px; border:none; border-radius:8px; font-weight:bold; color:#000; cursor:pointer;">📥 ایمپلائی ایکسل ڈاؤن لوڈ</button>
+    <input type="file" id="uploadEmployees" accept=".csv" style="padding:8px; color:#fff;" onchange="uploadEmployeesCSV(event)">
+    <button onclick="printEmployees()" style="background:#3b82f6; padding:10px; border:none; border-radius:8px; font-weight:bold; color:#fff; cursor:pointer;">🖨️ ایمپلائی پرنٹ کریں</button>
+  </div>
 </section>
 
 <section id="myProfile" class="tab-content">
@@ -254,9 +267,11 @@
   <div class="table-container">
     <table id="ordersTable"><thead><tr><th>آرڈر</th><th>کسٹمر</th><th>پروڈکٹ</th><th>رقم</th><th>اسٹیٹس</th><th>ایکشن</th></tr></thead><tbody></tbody></table>
   </div>
-  <button onclick="downloadOrdersCSV()" style="background:#4ade80; padding:10px; border:none; border-radius:8px; margin-top:10px; font-weight:bold; color:#000;">📥 آرڈرز ایکسل ڈاؤن لوڈ</button>
-  <input type="file" id="uploadOrders" accept=".csv" style="margin-top:10px;" onchange="uploadOrdersCSV(event)">
-  <button onclick="printOrders()" style="background:#3b82f6; padding:10px; border:none; border-radius:8px; margin-top:10px; font-weight:bold; color:#fff;">🖨️ آرڈرز پرنٹ کریں</button>
+  <div style="margin-top:15px; display:flex; gap:10px; flex-wrap:wrap;">
+    <button onclick="downloadOrdersCSV()" style="background:#4ade80; padding:10px; border:none; border-radius:8px; font-weight:bold; color:#000; cursor:pointer;">📥 آرڈرز ایکسل ڈاؤن لوڈ</button>
+    <input type="file" id="uploadOrders" accept=".csv" style="padding:8px; color:#fff;" onchange="uploadOrdersCSV(event)">
+    <button onclick="printOrders()" style="background:#3b82f6; padding:10px; border:none; border-radius:8px; font-weight:bold; color:#fff; cursor:pointer;">🖨️ آرڈرز پرنٹ کریں</button>
+  </div>
 </section>
 
 <section id="addOrder" class="tab-content">
@@ -271,7 +286,7 @@
     <label>پروڈکٹ <input type="text" id="product" required /></label>
     <label>رقم <input type="number" id="amount" required /></label>
     <label>اکاؤنٹ کا نام <input type="text" id="custAccName" required /></label>
-    <label>اکاؤنٹ کی قسم (جیز کیش / ایزی پیسہ / بینک) 
+    <label>اکاؤنٹ کی قسم
       <select id="custAccType" required>
         <option value="">منتخب کریں</option>
         <option value="JazzCash">جیز کیش (JazzCash)</option>
@@ -280,7 +295,7 @@
       </select>
     </label>
     <label>اکاؤنٹ نمبر <input type="text" id="custAccNo" required /></label>
-    <label>ایمپلائی آئی ڈی (اگر ہے تو لکھیں، ورنہ خالی چھوڑ دیں) <input type="text" id="empRefId" placeholder="FM-1001" /></label>
+    <label>ایمپلائی آئی ڈی (اختیاری) <input type="text" id="empRefId" placeholder="FM-1001" /></label>
     <button type="submit">آرڈر کریں</button>
   </form>
 </section>
@@ -289,8 +304,10 @@
   <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
   <h2>💰 سیلری مینجمنٹ</h2>
   <div id="salaryList" class="card-grid"></div>
-  <button onclick="downloadSalaryCSV()" style="background:#4ade80; padding:10px; border:none; border-radius:8px; margin-top:10px; font-weight:bold; color:#000;">📥 سیلری ایکسل ڈاؤن لوڈ</button>
-  <button onclick="printSalary()" style="background:#3b82f6; padding:10px; border:none; border-radius:8px; margin-top:10px; font-weight:bold; color:#fff;">🖨️ سیلری پرنٹ کریں</button>
+  <div style="margin-top:15px; display:flex; gap:10px; flex-wrap:wrap;">
+    <button onclick="downloadSalaryCSV()" style="background:#4ade80; padding:10px; border:none; border-radius:8px; font-weight:bold; color:#000; cursor:pointer;">📥 سیلری ایکسل ڈاؤن لوڈ</button>
+    <button onclick="printSalary()" style="background:#3b82f6; padding:10px; border:none; border-radius:8px; font-weight:bold; color:#fff; cursor:pointer;">🖨️ سیلری پرنٹ کریں</button>
+  </div>
 </section>
 
 <section id="reports" class="tab-content">
@@ -302,8 +319,10 @@
   <div class="table-container">
     <table id="totalReport"><thead><tr><th>ایمپلائی</th><th>آرڈرز</th><th>رقم</th><th>ایکشن</th></tr></thead><tbody></tbody></table>
   </div>
-  <button onclick="downloadReportsCSV()" style="background:#4ade80; padding:10px; border:none; border-radius:8px; margin-top:10px; font-weight:bold; color:#000;">📥 رپورٹس ایکسل ڈاؤن لوڈ</button>
-  <button onclick="printReports()" style="background:#3b82f6; padding:10px; border:none; border-radius:8px; margin-top:10px; font-weight:bold; color:#fff;">🖨️ رپورٹس پرنٹ کریں</button>
+  <div style="margin-top:15px; display:flex; gap:10px; flex-wrap:wrap;">
+    <button onclick="downloadReportsCSV()" style="background:#4ade80; padding:10px; border:none; border-radius:8px; font-weight:bold; color:#000; cursor:pointer;">📥 رپورٹس ایکسل ڈاؤن لوڈ</button>
+    <button onclick="printReports()" style="background:#3b82f6; padding:10px; border:none; border-radius:8px; font-weight:bold; color:#fff; cursor:pointer;">🖨️ رپورٹس پرنٹ کریں</button>
+  </div>
 </section>
 
 <section id="applications" class="tab-content">
@@ -319,33 +338,33 @@
   <h2>📊 ایکسل مینجمنٹ</h2>
   <div style="background:var(--card-bg); padding:20px; border-radius:15px; border:1px solid #333;">
     <h3 style="color:var(--primary-yellow);">آرڈرز ایکسل</h3>
-    <button onclick="downloadOrdersCSV()" style="padding:10px; background:var(--green); color:#000; border:none; border-radius:8px; font-weight:bold; margin:5px;">📥 ڈاؤن لوڈ</button>
-    <input type="file" id="uploadOrders2" accept=".csv" style="margin:5px;" onchange="uploadOrdersCSV(event)">
-    
+    <button onclick="downloadOrdersCSV()" style="padding:10px; background:var(--green); color:#000; border:none; border-radius:8px; font-weight:bold; margin:5px; cursor:pointer;">📥 ڈاؤن لوڈ</button>
+    <input type="file" id="uploadOrders2" accept=".csv" style="margin:5px; color:#fff;" onchange="uploadOrdersCSV(event)">
+
     <h3 style="color:var(--primary-yellow); margin-top:20px;">ایمپلائی ایکسل</h3>
-    <button onclick="downloadEmployeesCSV()" style="padding:10px; background:var(--green); color:#000; border:none; border-radius:8px; font-weight:bold; margin:5px;">📥 ڈاؤن لوڈ</button>
-    <input type="file" id="uploadEmployees2" accept=".csv" style="margin:5px;" onchange="uploadEmployeesCSV(event)">
+    <button onclick="downloadEmployeesCSV()" style="padding:10px; background:var(--green); color:#000; border:none; border-radius:8px; font-weight:bold; margin:5px; cursor:pointer;">📥 ڈاؤن لوڈ</button>
+    <input type="file" id="uploadEmployees2" accept=".csv" style="margin:5px; color:#fff;" onchange="uploadEmployeesCSV(event)">
 
     <h3 style="color:var(--primary-yellow); margin-top:20px;">سیلری ایکسل</h3>
-    <button onclick="downloadSalaryCSV()" style="padding:10px; background:var(--green); color:#000; border:none; border-radius:8px; font-weight:bold; margin:5px;">📥 ڈاؤن لوڈ</button>
+    <button onclick="downloadSalaryCSV()" style="padding:10px; background:var(--green); color:#000; border:none; border-radius:8px; font-weight:bold; margin:5px; cursor:pointer;">📥 ڈاؤن لوڈ</button>
   </div>
 </section>
 
 <section id="hiddenLoginSection" class="tab-content">
-  <div class="hidden-login-box" id="hiddenLoginBox">
+  <div class="hidden-login-box">
     <h2>🔐 ایڈمن لاگ ان</h2>
-    <input type="email" id="hiddenLoginId" placeholder="ای میل" dir="ltr" />
+    <input type="text" id="adminId" placeholder="ایڈمن آئی ڈی" dir="ltr" />
     <div class="pass-wrapper">
-      <input type="password" id="hiddenLoginPass" placeholder="پاس ورڈ" dir="ltr" />
-      <span class="toggle-pass" onclick="togglePassword('hiddenLoginPass', this)">👁️</span>
+      <input type="password" id="adminPass" placeholder="پاس ورڈ" dir="ltr" />
+      <span class="toggle-pass" onclick="togglePassword('adminPass', this)">👁️</span>
     </div>
-    <button onclick="submitHiddenLogin()">لاگ ان</button>
-    <button style="background:#444; margin-top:5px;" onclick="showTab('home')">منسوخ</button>
+    <button onclick="submitAdminLogin()">لاگ ان</button>
+    <button style="background:#444;" onclick="showTab('home')">منسوخ</button>
   </div>
 </section>
 
 <section id="empLoginSection" class="tab-content">
-  <div class="hidden-login-box" id="empLoginBox">
+  <div class="hidden-login-box">
     <h2>🔑 ایمپلائی لاگ ان</h2>
     <input type="text" id="empLoginId" placeholder="ایمپلائی آئی ڈی" dir="ltr" />
     <div class="pass-wrapper">
@@ -353,7 +372,7 @@
       <span class="toggle-pass" onclick="togglePassword('empLoginPass', this)">👁️</span>
     </div>
     <button onclick="submitEmpLogin()">لاگ ان کریں</button>
-    <button style="background:#444; margin-top:5px;" onclick="showTab('home')">منسوخ کریں</button>
+    <button style="background:#444;" onclick="showTab('home')">منسوخ کریں</button>
   </div>
 </section>
 
@@ -364,684 +383,1001 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-window.togglePassword = function(inputId, icon) {
-  const input = document.getElementById(inputId);
-  if (input.type === "password") {
-    input.type = "text";
-    icon.textContent = "🙈";
-  } else {
-    input.type = "password";
-    icon.textContent = "👁️";
+/* ============================================================
+   Supabase Configuration - آپ کی key شامل ہے
+   ============================================================ */
+const SUPABASE_URL = 'https://ofjlswkrdrpwapcvwzun.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_yk51b9Pps15BXSX-tmnBdw_IFsWoUCW';
+
+/* ایڈمن کی تفصیلات (تبدیل کریں اگر چاہیں) */
+const ADMIN_ID = 'فیضان رضا';
+const ADMIN_PASS = 'المدار 313';
+
+/* ============================================================ */
+
+let supabaseClient = null;
+try {
+  if (window.supabase) {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   }
+} catch (e) { console.error('Supabase init failed', e); }
+
+/* ---------- State ---------- */
+let employees = [];
+let orders = [];
+let salaryPayments = [];
+let applications = [];
+let CATALOG = { "COSMETICS": [], "DRONES": [], "TOYS": [], "GADGETS": [], "MOBILES": [], "CLOTHING": [], "ABAYAS": [] };
+let currentAdmin = null;
+let currentEmployee = null;
+let currentCategory = "";
+let isSyncing = false;
+
+/* ---------- Customer session (per browser) ---------- */
+function getCustomerSession() {
+  let s = localStorage.getItem('fm_customer_session');
+  if (!s) {
+    s = 'CUST-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10);
+    localStorage.setItem('fm_customer_session', s);
+  }
+  return s;
 }
 
-window.initApp = function() {
-  let supabaseClient = null;
+/* ---------- Helpers ---------- */
+function toast(msg, color = '#4ade80') {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.style.background = color;
+  t.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function showStatus(msg, type = 'info') {
+  const b = document.getElementById('statusBanner');
+  if (!b) return;
+  b.textContent = msg;
+  b.style.background = type === 'error' ? '#ef4444' : '#f59e0b';
+  b.style.color = type === 'error' ? '#fff' : '#000';
+  b.classList.add('show');
+  setTimeout(() => b.classList.remove('show'), 5000);
+}
+
+function withTimeout(promise, ms = 12000) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), ms))
+  ]);
+}
+
+function safeArr(x) { return Array.isArray(x) ? x : []; }
+function safeNum(x) { const n = Number(x); return isNaN(n) ? 0 : n; }
+
+function saveLocal() {
   try {
-    if (window.supabase) {
-      supabaseClient = window.supabase.createClient(
-        'https://ofjlswkrdrpwapcvwzun.supabase.co',
-        'sb_publishable_yk51b9Pps15BXSX-tmnBdw_IFsWoUCW' 
-      );
-    }
-  } catch (e) { 
-    console.error('Supabase init failed', e); 
-    alert("سسٹم ایرر: " + e.message);
-  }
-
-  let employees = JSON.parse(localStorage.getItem("fm_employees")) || [];
-  let orders = JSON.parse(localStorage.getItem("fm_orders")) || [];
-  let salaryPayments = JSON.parse(localStorage.getItem("fm_salary_payments")) || [];
-  let CATALOG = JSON.parse(localStorage.getItem("fm_catalog")) || { "COSMETICS": [], "DRONES": [], "TOYS": [], "GADGETS": [], "MOBILES": [], "CLOTHING": [], "ABAYAS": [] };
-  let applications = JSON.parse(localStorage.getItem("fm_applications")) || [];
-  let currentAdmin = JSON.parse(localStorage.getItem("fm_currentAdmin")) || null;
-  let currentEmployee = JSON.parse(localStorage.getItem("fm_currentEmployee")) || null;
-
-  function withTimeout(promise, ms = 8000) {
-    return Promise.race([
-      promise,
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), ms))
-    ]);
-  }
-
-  async function loadFromSupabase() {
-    if (!supabaseClient) {
-      alert("⚠️ Supabase سے کنیکٹ نہیں ہو سکا۔ (Key غلط ہے)");
-      return;
-    }
-    try {
-      const { data, error } = await withTimeout(
-        supabaseClient.from('store').select('data').eq('id', 1).single()
-      );
-      
-      // 🌟 یہاں ایرر پکڑنے کا نیا سسٹم لگایا ہے
-      if (error) { 
-        alert("❌ Supabase Error: " + error.message + "\n\nبراہ کرم Supabase میں SQL چیک کریں۔");
-        return; 
-      }
-      
-      if (!data || !data.data) return;
-      
-      const d = data.data;
-      if (Array.isArray(d.employees) && d.employees.length) employees = d.employees;
-      if (Array.isArray(d.orders) && d.orders.length) orders = d.orders;
-      if (Array.isArray(d.salaryPayments) && d.salaryPayments.length) salaryPayments = d.salaryPayments;
-      if (Array.isArray(d.applications) && d.applications.length) applications = d.applications;
-      if (d.CATALOG && typeof d.CATALOG === 'object') {
-        for (const cat of Object.keys(d.CATALOG)) {
-          if (Array.isArray(d.CATALOG[cat]) && d.CATALOG[cat].length) CATALOG[cat] = d.CATALOG[cat];
-        }
-      }
-      saveLocal(); 
-      setTimeout(() => { renderAll(); }, 100);
-    } catch (e) { 
-      alert("❌ کنیکشن کا مسئلہ: " + e.message);
-      console.error("Load failed:", e); 
-    }
-  }
-
-  async function saveToSupabase() {
-    if (!supabaseClient) return false;
-    try {
-      const { data, error } = await withTimeout(
-        supabaseClient.from('store').upsert({ id: 1, data: { employees, orders, CATALOG, salaryPayments, applications } }, { onConflict: 'id' }).select()
-      );
-      if (error) { 
-        alert("❌ محفوظ نہیں ہو سکا: " + error.message);
-        console.error("Save error:", error.message); 
-        return false; 
-      }
-      return true;
-    } catch (e) { 
-      alert("❌ محفوظ کرنے میں مسئلہ: " + e.message);
-      console.error("Save failed:", e); 
-      return false; 
-    }
-  }
-
-  function saveLocal() {
     localStorage.setItem("fm_employees", JSON.stringify(employees));
     localStorage.setItem("fm_orders", JSON.stringify(orders));
     localStorage.setItem("fm_catalog", JSON.stringify(CATALOG));
     localStorage.setItem("fm_salary_payments", JSON.stringify(salaryPayments));
     localStorage.setItem("fm_applications", JSON.stringify(applications));
-  }
+  } catch (e) { console.error('localStorage save failed:', e); }
+}
 
-  async function saveData() { saveLocal(); return await saveToSupabase(); }
-
-  function readFileAsDataURL(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => resolve(e.target.result);
-      reader.onerror = (e) => reject(e);
-      reader.readAsDataURL(file);
-    });
-  }
-
-  window.toggleSidebar = () => {
-    document.getElementById("sidebar").classList.toggle("open");
-    document.getElementById("overlay").classList.toggle("show");
-  }
-
-  window.showTab = (name) => {
-    document.querySelectorAll(".tab-content").forEach(s => s.classList.remove("active"));
-    const sec = document.getElementById(name); if (sec) sec.classList.add("active");
-    if (name === "addEmployee") document.getElementById("empId").value = generateNextEmpId();
-    if (name === "addOrder") document.getElementById("orderNo").value = "FM-ORD-" + (orders.length + 1).toString().padStart(3, '0');
-    if (name === "hiddenLoginSection") document.getElementById("hiddenLoginBox").classList.add("show");
-    if (name === "empLoginSection") document.getElementById("empLoginBox").classList.add("show");
-    if (name === "myProfile") renderMyProfile();
-    if (name === "employees") renderEmployees();
-    if (name === "orders") { renderOrders(); updateOrderBadge(); }
-    if (name === "salary") renderSalaryList();
-    if (name === "applications") renderApplications();
-    if (name === "reports") renderReports();
-    if (name === "myOrders") renderMyOrders();
-    document.getElementById("sidebar").classList.remove("open");
-    document.getElementById("overlay").classList.remove("show");
-  }
-
-  window.handleLogoClick = () => { if (!currentAdmin) showHiddenLogin(); }
-  window.showHiddenLogin = () => { showTab("hiddenLoginSection"); }
-  window.submitHiddenLogin = () => {
-    if (document.getElementById("hiddenLoginId").value === "فیضان رضا" && document.getElementById("hiddenLoginPass").value === "المدار 313") {
-      currentAdmin = { role: "super", name: "Admin" };
-      localStorage.setItem("fm_currentAdmin", JSON.stringify(currentAdmin));
-      document.body.classList.add("is-super-admin");
-      showTab('home'); alert("✅ ایڈمن لاگ ان!");
-    } else { alert("غلط پاس ورڈ!"); }
-  }
-
-  window.showEmpLogin = () => { showTab("empLoginSection"); }
-  
-  window.submitEmpLogin = () => {
-    const enteredId = document.getElementById("empLoginId").value.trim();
-    const enteredPass = document.getElementById("empLoginPass").value.trim();
-    const emp = employees.find(e => String(e.empId).trim() === enteredId && String(e.password).trim() === enteredPass);
-    if (emp) {
-      currentEmployee = { empId: emp.empId, name: emp.name };
-      localStorage.setItem("fm_currentEmployee", JSON.stringify(currentEmployee));
-      document.body.classList.add("is-sub-admin");
-      showTab('myProfile'); alert("✅ ایمپلائی لاگ ان!");
-    } else { alert("غلط تفصیلات! دوبارہ چیک کریں۔"); }
-  }
-
-  window.adminLogout = () => {
-    currentAdmin = null; currentEmployee = null;
-    localStorage.removeItem("fm_currentAdmin"); localStorage.removeItem("fm_currentEmployee");
-    document.body.classList.remove("is-super-admin", "is-sub-admin");
-    showTab('home'); alert("🚪 لاگ آؤٹ!");
-  }
-
-  let currentCategory = "";
-  window.openCategory = (cat) => {
-    currentCategory = cat;
-    document.getElementById("catHeaderTitle").textContent = cat;
-    renderProducts(); showTab("categoryDetail");
-  }
-
-  function renderProducts() {
-    const list = document.getElementById("productList"); list.innerHTML = "";
-    const items = CATALOG[currentCategory] || [];
-    if (items.length === 0) { list.innerHTML = `<div style="text-align:center; grid-column:1/-1;">کوئی آئٹم نہیں</div>`; return; }
-    items.forEach((p, index) => {
-      const div = document.createElement("div"); div.className = "product-item";
-      const img = (p.images && p.images.length > 0) ? p.images[0] : "https://via.placeholder.com/200x200?text=No+Image";
-      div.innerHTML = `
-        <button class="edit-prod-btn admin-only" style="display: ${currentAdmin ? 'flex' : 'none'}" onclick="editProduct('${currentCategory}', ${index})" title="ایڈٹ کریں">✏️</button>
-        <button class="delete-prod-btn admin-only" style="display: ${currentAdmin ? 'flex' : 'none'}" onclick="deleteProduct('${currentCategory}', ${index})" title="ڈیلیٹ کریں">🗑️</button>
-        <div class="product-img-box"><img src="${img}" onerror="this.src='https://via.placeholder.com/200x200?text=Error'" /></div>
-        <div class="product-info">
-          <h4>${p.name}</h4>
-          <div class="desc">${p.desc || 'کوئی تفصیل نہیں'}</div>
-          <div class="stock">اسٹاک: ${p.stock || 0}</div>
-          <span class="price">${p.price} روپے</span>
-          <button class="order-btn" onclick="quickOrder('${p.name}', ${p.price})">🛒 آرڈر کریں</button>
-        </div>`;
-      list.appendChild(div);
-    });
-  }
-
-  window.deleteProduct = async (cat, index) => {
-    if (!currentAdmin) { alert("صرف ایڈمن یہ کام کر سکتا ہے!"); return; }
-    if(confirm("ڈیلیٹ کریں؟")) { CATALOG[cat].splice(index, 1); await saveData(); renderProducts(); }
-  }
-
-  window.editProduct = (cat, index) => {
-    if (!currentAdmin) { alert("صرف ایڈمن یہ کام کر سکتا ہے!"); return; }
-    const p = CATALOG[cat][index];
-    document.getElementById("prodName").value = p.name;
-    document.getElementById("prodDesc").value = p.desc || '';
-    document.getElementById("prodPrice").value = p.price;
-    document.getElementById("prodStock").value = p.stock || 0;
-    document.getElementById("editProdIndex").value = index;
-    document.getElementById("prodCat").value = cat;
-    document.getElementById("addProductForm").style.display = "block";
-  }
-
-  window.openAddProductModal = () => {
-    if (!currentAdmin) { alert("پہلے ایڈمن لاگ ان کریں!"); return; }
-    document.getElementById("editProdIndex").value = -1;
-    document.getElementById("addProductForm").reset();
-    document.getElementById("prodCat").value = currentCategory;
-    document.getElementById("addProductForm").style.display = "block";
-  }
-  window.closeAddProductModal = () => document.getElementById("addProductForm").style.display = "none";
-
-  document.getElementById("addProductForm").addEventListener("submit", async e => {
-    e.preventDefault();
-    const cat = document.getElementById("prodCat").value || currentCategory;
-    const name = document.getElementById("prodName").value;
-    const desc = document.getElementById("prodDesc").value;
-    const price = document.getElementById("prodPrice").value;
-    const stock = document.getElementById("prodStock").value;
-    const editIdx = parseInt(document.getElementById("editProdIndex").value);
-
-    const file = document.getElementById("prodImg1").files[0];
-    let images = [];
-    try { if (file) { const imgData = await readFileAsDataURL(file); images.push(imgData); } } catch (err) { console.error(err); }
-
-    if (!CATALOG[cat]) CATALOG[cat] = [];
-
-    if (editIdx === -1) {
-      CATALOG[cat].push({ name, desc, price, stock, images });
-    } else {
-      const oldImages = CATALOG[cat][editIdx].images || [];
-      CATALOG[cat][editIdx] = { name, desc, price, stock, images: images.length > 0 ? images : oldImages };
+function loadLocal() {
+  try {
+    employees = safeArr(JSON.parse(localStorage.getItem("fm_employees")));
+    orders = safeArr(JSON.parse(localStorage.getItem("fm_orders")));
+    salaryPayments = safeArr(JSON.parse(localStorage.getItem("fm_salary_payments")));
+    applications = safeArr(JSON.parse(localStorage.getItem("fm_applications")));
+    const c = JSON.parse(localStorage.getItem("fm_catalog"));
+    if (c && typeof c === 'object') {
+      for (const k of Object.keys(CATALOG)) {
+        if (Array.isArray(c[k])) CATALOG[k] = c[k];
+      }
     }
-    await saveData();
-    renderProducts(); closeAddProductModal();
-  });
+  } catch (e) { console.error('localStorage load failed:', e); }
+}
 
-  window.quickOrder = (name, price) => {
-    showTab('addOrder');
-    setTimeout(() => { document.getElementById("product").value = name; document.getElementById("amount").value = price; }, 200);
+/* ---------- Supabase sync ---------- */
+async function loadFromSupabase() {
+  if (!supabaseClient) {
+    showStatus('⚠️ Supabase کنیکٹ نہیں — ڈیٹا صرف اس براؤزر میں رہے گا', 'error');
+    return;
   }
-
-  function generateNextEmpId() { return "FM-" + (employees.length + 1001); }
-
-  document.getElementById("employeeForm").addEventListener("submit", async e => {
-    e.preventDefault();
-    const emp = { empId: document.getElementById("empId").value, name: document.getElementById("empName").value, mobile: document.getElementById("empMobile").value, salary: +document.getElementById("empSalary").value, target: +document.getElementById("empTarget").value, password: document.getElementById("empPass").value };
-    employees.push(emp);
-    await saveData(); renderEmployees(); e.target.reset(); alert("✅ شامل!");
-  });
-
-  function renderEmployees() {
-    const box = document.getElementById("employeeList"); box.innerHTML = "";
-    employees.forEach((emp, i) => { 
-      box.innerHTML += `<div class="card">
-        <h3>${emp.name} (${emp.empId})</h3>
-        <p>📱 ${emp.mobile}</p>
-        <p>💰 سیلری: ${emp.salary}</p>
-        <button class="action-btn edit-btn" onclick="editEmployee(${i})">✏️ ایڈٹ</button>
-        <button class="action-btn del-btn" onclick="deleteEmployee(${i})">🗑️ ڈیلیٹ</button>
-      </div>`; 
-    });
-  }
-
-  window.editEmployee = async (i) => {
-    const emp = employees[i];
-    const newName = prompt("نیا نام:", emp.name);
-    const newMobile = prompt("نیا موبائل:", emp.mobile);
-    const newSalary = prompt("نئی سیلری:", emp.salary);
-    if (newName && newMobile && newSalary) {
-      employees[i] = { ...emp, name: newName, mobile: newMobile, salary: +newSalary };
-      await saveData(); renderEmployees();
+  try {
+    const { data, error } = await withTimeout(
+      supabaseClient.from('store').select('data').eq('id', 1).maybeSingle()
+    );
+    if (error) {
+      console.warn('Supabase load error:', error.message);
+      if (error.message.includes('relation') || error.message.includes('does not exist')) {
+        showStatus('⚠️ store table موجود نہیں — SQL چلائیں', 'error');
+      } else {
+        showStatus('⚠️ ڈیٹا لوڈ نہیں ہو سکا: ' + error.message, 'error');
+      }
+      return;
     }
-  }
-
-  window.deleteEmployee = async (i) => {
-    if(confirm("ڈیلیٹ کریں؟")) { employees.splice(i, 1); await saveData(); renderEmployees(); }
-  }
-
-  document.getElementById("orderForm").addEventListener("submit", async e => {
-    e.preventDefault();
-    const empRef = document.getElementById("empRefId").value.trim();
-    const o = { 
-      orderNo: document.getElementById("orderNo").value, 
-      customer: document.getElementById("customer").value, 
-      mobile: document.getElementById("custMobile").value,
-      city: document.getElementById("custCity").value,
-      address: document.getElementById("custAddress").value,
-      product: document.getElementById("product").value, 
-      amount: +document.getElementById("amount").value, 
-      accName: document.getElementById("custAccName").value,
-      accType: document.getElementById("custAccType").value,
-      accNo: document.getElementById("custAccNo").value,
-      empId: empRef || (currentEmployee ? currentEmployee.empId : null),
-      status: "pending"
-    };
-    orders.push(o); 
-    await saveData(); 
-    localStorage.setItem("lastCustomerName", o.customer);
-    localStorage.setItem("lastOrderNo", o.orderNo);
-    
-    renderOrders(); e.target.reset(); alert("✅ آرڈر محفوظ!"); updateOrderBadge();
-  });
-
-  function renderOrders() {
-    const tb = document.querySelector("#ordersTable tbody"); tb.innerHTML = "";
-    orders.forEach((o, i) => { 
-      tb.innerHTML += `<tr>
-        <td>${o.orderNo}</td>
-        <td>${o.customer}</td>
-        <td>${o.product}</td>
-        <td>${o.amount}</td>
-        <td>${o.status === 'pending' ? '⏳ پینڈنگ' : (o.status === 'confirmed' ? '✅ کنفرم' : '📦 ڈیلیور')}</td>
-        <td>
-          ${o.status === 'pending' ? `<button class="action-btn" onclick="confirmOrder(${i})" style="background:var(--green); color:#000;">✅ کنفرم</button>` : ''}
-          ${o.status === 'confirmed' ? `<button class="action-btn" onclick="deliverOrder(${i})" style="background:var(--blue); color:#fff;">📦 ڈیلیور</button>` : ''}
-          <button class="action-btn del-btn" onclick="deleteOrder(${i})">🗑️</button>
-        </td>
-      </tr>`; 
-    });
-  }
-
-  window.confirmOrder = async (index) => {
-    orders[index].status = 'confirmed';
-    await saveData(); renderOrders(); updateOrderBadge(); alert("✅ آرڈر کنفرم ہو گیا! کسٹمر کو رسید بھیج دی گئی ہے۔");
-  }
-
-  window.deliverOrder = async (index) => {
-    orders[index].status = 'delivered';
-    await saveData(); renderOrders();
-  }
-
-  window.deleteOrder = async (i) => {
-    if(confirm("ڈیلیٹ کریں؟")) { orders.splice(i, 1); await saveData(); renderOrders(); }
-  }
-
-  window.cancelOrder = async (index) => {
-    if (orders[index].status === 'pending') {
-      orders.splice(index, 1);
-      await saveData(); renderOrders(); renderMyOrders(); alert("✅ آرڈر کینسل ہو گیا!");
-    } else {
-      alert("❌ یہ آرڈر کنفرم ہو چکا ہے، اب کینسل نہیں ہو سکتا!");
-    }
-  }
-
-  function renderMyOrders() {
-    const tb = document.querySelector("#myOrdersTable tbody"); tb.innerHTML = "";
-    const my = orders.filter(o => o.empId === currentEmployee?.empId || o.customer === currentEmployee?.name || o.customer === localStorage.getItem("lastCustomerName") || o.orderNo === localStorage.getItem("lastOrderNo"));
-    
-    if (my.length === 0) {
-      tb.innerHTML = `<tr><td colspan="5" style="text-align:center;">آپ نے ابھی تک کوئی آرڈر نہیں دیا۔</td></tr>`;
+    if (!data || !data.data) {
+      console.log('No data yet — fresh start');
       return;
     }
 
-    my.forEach((o) => {
-      const originalIndex = orders.indexOf(o);
-      tb.innerHTML += `<tr>
-        <td>${o.orderNo}</td>
-        <td>${o.product}</td>
-        <td>${o.amount}</td>
-        <td>${o.status === 'pending' ? '⏳ پینڈنگ' : (o.status === 'confirmed' ? '✅ کنفرم' : '📦 ڈیلیور')}</td>
-        <td>
-          ${o.status === 'pending' ? `<button class="action-btn del-btn" onclick="cancelOrder(${originalIndex})">❌ کینسل</button>` : ''}
-          ${o.status === 'confirmed' ? `<button class="action-btn" onclick="printReceipt(${originalIndex})" style="background:var(--green); color:#000;">🖨️ رسید</button>` : ''}
-          ${o.status === 'delivered' ? `<button class="action-btn" onclick="printReceipt(${originalIndex})" style="background:var(--green); color:#000;">🖨️ رسید</button>` : ''}
-        </td>
-      </tr>`;
-    });
-  }
-
-  window.printReceipt = (i) => {
-    const o = orders[i];
-    const win = window.open('', '', 'width=600,height=800');
-    win.document.write(`
-      <html><head><title>رسید</title>
-      <style>body{font-family:"Noto Nastaliq Urdu",sans-serif; text-align:right; padding:20px;} table{width:100%; border-collapse:collapse;} td,th{border:1px solid #000; padding:8px;}</style>
-      </head><body>
-      <h2 style="text-align:center;">FAIZY MART</h2>
-      <p style="text-align:center;">شکریہ! آپ کا آرڈر کنفرم ہو گیا ہے۔</p>
-      <hr>
-      <p><strong>آرڈر نمبر:</strong> ${o.orderNo}</p>
-      <p><strong>کسٹمر:</strong> ${o.customer}</p>
-      <p><strong>پروڈکٹ:</strong> ${o.product}</p>
-      <p><strong>رقم:</strong> ${o.amount} روپے</p>
-      <p><strong>شہر:</strong> ${o.city}</p>
-      <p><strong>ایڈریس:</strong> ${o.address}</p>
-      <hr>
-      <p style="text-align:center;">© 2026 Faizy Mart</p>
-      </body></html>
-    `);
-    win.document.close();
-    win.print();
-  }
-
-  function updateOrderBadge() {
-    const pending = orders.filter(o => o.status === 'pending').length;
-    const badge = document.getElementById("orderBadge");
-    badge.textContent = pending;
-    badge.style.display = pending > 0 ? "inline-block" : "none";
-  }
-
-  document.getElementById("jobApplicationForm").addEventListener("submit", async e => {
-    e.preventDefault();
-    const job = {
-      name: document.getElementById("jobName").value,
-      age: document.getElementById("jobAge").value,
-      mobile: document.getElementById("jobMobile").value,
-      city: document.getElementById("jobCity").value,
-      address: document.getElementById("jobAddress").value,
-      accName: document.getElementById("jobAccName").value,
-      accType: document.getElementById("jobAccType").value,
-      accNo: document.getElementById("jobAccNo").value
-    };
-    applications.push(job); await saveData(); e.target.reset(); alert("✅ درخواست بھیج دی گئی!"); showTab('home');
-  });
-
-  function renderApplications() {
-    const tb = document.querySelector("#applicationsTable tbody"); tb.innerHTML = "";
-    applications.forEach((a, i) => { 
-      tb.innerHTML += `<tr>
-        <td>${a.name}</td><td>${a.mobile}</td><td>${a.city}</td><td>${a.accType} - ${a.accNo}</td>
-        <td>
-          <button class="action-btn" onclick="approveApplication(${i})" style="background:var(--green); color:#000;">✅ اپروو</button>
-          <button class="action-btn del-btn" onclick="deleteApplication(${i})">🗑️</button>
-        </td>
-      </tr>`; 
-    });
-  }
-
-  window.approveApplication = async (i) => {
-    if (!currentAdmin) { alert("صرف ایڈمن اپروو کر سکتا ہے!"); return; }
-    const app = applications[i];
-    
-    const newEmpId = generateNextEmpId();
-    const newPass = "pass" + Math.floor(1000 + Math.random() * 9000);
-    
-    const newEmp = {
-      empId: newEmpId,
-      name: app.name,
-      mobile: app.mobile,
-      salary: 20000,
-      target: 40,
-      password: newPass,
-      city: app.city,
-      address: app.address,
-      accName: app.accName,
-      accType: app.accType,
-      accNo: app.accNo
-    };
-
-    employees.push(newEmp);
-    applications.splice(i, 1);
-    
-    await saveData();
-    renderEmployees();
-    renderApplications();
-    
-    printJoiningSlip(newEmp);
-  };
-
-  window.printJoiningSlip = (emp) => {
-    const win = window.open('', '', 'width=600,height=800');
-    win.document.write(`
-      <html><head><title>ایمپلائی جوائننگ سلپ</title>
-      <style>
-        body{font-family:"Noto Nastaliq Urdu",sans-serif; text-align:center; padding:40px; color:#000;}
-        .box { border: 2px solid #000; padding: 30px; border-radius: 10px; max-width: 500px; margin: auto; }
-        h2 { color: #d4af37; margin-bottom: 5px; }
-        h3 { margin-bottom: 20px; }
-        .details { text-align: right; font-size: 18px; line-height: 2.5; margin-top: 20px; }
-        .details strong { display: inline-block; width: 130px; }
-        .footer { margin-top: 30px; font-size: 12px; color: #555; border-top: 1px solid #ccc; padding-top: 10px;}
-      </style>
-      </head><body>
-      <div class="box">
-        <h2>FAIZY MART</h2>
-        <p>فیضی مارٹ میں خوش آمدید!</p>
-        <h3>🎉 ایمپلائی جوائننگ سلپ 🎉</h3>
-        <div class="details">
-          <p><strong>نام:</strong> ${emp.name}</p>
-          <p><strong>عہدہ:</strong> ایمپلائی</p>
-          <p><strong>آئی ڈی:</strong> <span style="font-size: 22px; font-weight: bold; color: #000;">${emp.empId}</span></p>
-          <p><strong>پاس ورڈ:</strong> <span style="font-size: 22px; font-weight: bold; color: #d4af37;">${emp.password}</span></p>
-        </div>
-        <p style="margin-top: 20px; font-size: 14px;">یہ رسید محفوظ رکھیں۔ لاگ ان کرنے کے لیے آئی ڈی اور پاس ورڈ استعمال کریں۔</p>
-        <div class="footer">© 2026 Faizy Mart. All rights reserved.</div>
-      </div>
-      </body></html>
-    `);
-    win.document.close();
-    win.print();
-  };
-
-  window.deleteApplication = async (i) => {
-    if(confirm("ڈیلیٹ کریں؟")) { applications.splice(i, 1); await saveData(); renderApplications(); }
-  }
-
-  function renderMyProfile() {
-    if(currentEmployee) {
-      const myOrders = orders.filter(o => o.empId === currentEmployee.empId);
-      const myTotal = myOrders.reduce((sum, o) => sum + o.amount, 0);
-      document.getElementById("myProfileBox").innerHTML = `<div class="card">
-        <h3>👤 ${currentEmployee.name} (${currentEmployee.empId})</h3>
-        <p>خوش آمدید! یہ آپ کا پورٹل ہے۔</p>
-        <h4 style="margin-top: 15px; color: var(--primary-yellow);">میری کارکردگی</h4>
-        <p>میرے آرڈرز: ${myOrders.length}</p>
-        <p>میری کمائی: ${myTotal} روپے</p>
-      </div>`;
+    const d = data.data;
+    if (Array.isArray(d.employees)) employees = d.employees;
+    if (Array.isArray(d.orders)) orders = d.orders;
+    if (Array.isArray(d.salaryPayments)) salaryPayments = d.salaryPayments;
+    if (Array.isArray(d.applications)) applications = d.applications;
+    if (d.CATALOG && typeof d.CATALOG === 'object') {
+      for (const cat of Object.keys(d.CATALOG)) {
+        if (Array.isArray(d.CATALOG[cat])) CATALOG[cat] = d.CATALOG[cat];
+      }
     }
+    saveLocal();
+    renderAll();
+    console.log('✅ Supabase سے ڈیٹا لوڈ ہو گیا');
+  } catch (e) {
+    console.error("Load failed:", e);
+    showStatus('⚠️ لوڈ ناکام: ' + e.message, 'error');
   }
-
-  function renderSalaryList() {
-    const box = document.getElementById("salaryList"); box.innerHTML = "";
-    employees.forEach((emp, i) => { 
-      box.innerHTML += `<div class="card">
-        <h3>${emp.name}</h3>
-        <p>💰 سیلری: ${emp.salary} روپے</p>
-        <button class="action-btn edit-btn" onclick="editSalary(${i})">✏️ ایڈٹ</button>
-      </div>`; 
-    });
-  }
-
-  window.editSalary = async (i) => {
-    const newSal = prompt("نئی سیلری:", employees[i].salary);
-    if (newSal) { employees[i].salary = +newSal; await saveData(); renderSalaryList(); }
-  }
-
-  function renderReports() {
-    const tb = document.querySelector("#totalReport tbody"); tb.innerHTML = "";
-    let total = 0; orders.forEach(o => total += o.amount);
-    tb.innerHTML += `<tr><td>کل فروخت</td><td>${orders.length}</td><td>${total} روپے</td><td>—</td></tr>`;
-    employees.forEach((emp, i) => {
-      const empOrders = orders.filter(o => o.empId === emp.empId);
-      const empTotal = empOrders.reduce((sum, o) => sum + o.amount, 0);
-      tb.innerHTML += `<tr><td>${emp.name} (${emp.empId})</td><td>${empOrders.length}</td><td>${empTotal} روپے</td>
-        <td><button class="action-btn edit-btn" onclick="editEmployee(${i})">✏️</button></td></tr>`;
-    });
-  }
-
-  window.filterReports = () => {
-    const val = document.getElementById("searchEmployee").value.toLowerCase();
-    const rows = document.querySelectorAll("#totalReport tbody tr");
-    rows.forEach(row => {
-      row.style.display = row.innerText.toLowerCase().includes(val) ? "" : "none";
-    });
-  }
-
-  window.downloadOrdersCSV = () => {
-    let csv = "OrderNo,Customer,Mobile,City,Address,Product,Amount,AccName,AccType,AccNo,EmpID,Status\n";
-    orders.forEach(o => { csv += `${o.orderNo},${o.customer},${o.mobile},${o.city},${o.address},${o.product},${o.amount},${o.accName},${o.accType},${o.accNo},${o.empId || '-'},${o.status}\n`; });
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Orders.csv'; a.click();
-  }
-
-  window.downloadEmployeesCSV = () => {
-    let csv = "ID,Name,Mobile,Salary,Target\n";
-    employees.forEach(emp => { csv += `${emp.empId},${emp.name},${emp.mobile},${emp.salary},${emp.target}\n`; });
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Employees.csv'; a.click();
-  }
-
-  window.downloadSalaryCSV = () => {
-    let csv = "Name,Salary\n";
-    employees.forEach(emp => { csv += `${emp.name},${emp.salary}\n`; });
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Salary.csv'; a.click();
-  }
-
-  window.downloadReportsCSV = () => {
-    let csv = "Employee,Orders,Total\n";
-    orders.forEach(o => { csv += `Order,${o.customer},${o.amount}\n`; });
-    employees.forEach(emp => {
-      const empOrders = orders.filter(o => o.empId === emp.empId);
-      const empTotal = empOrders.reduce((sum, o) => sum + o.amount, 0);
-      csv += `${emp.name} (${emp.empId}),${empOrders.length},${empTotal}\n`;
-    });
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Reports.csv'; a.click();
-  }
-
-  window.printOrders = () => {
-    let content = "<h2>تمام آرڈرز</h2><table border='1'><tr><th>آرڈر</th><th>کسٹمر</th><th>پروڈکٹ</th><th>رقم</th><th>اسٹیٹس</th></tr>";
-    orders.forEach(o => { content += `<tr><td>${o.orderNo}</td><td>${o.customer}</td><td>${o.product}</td><td>${o.amount}</td><td>${o.status}</td></tr>`; });
-    content += "</table>";
-    const win = window.open('', '', 'width=800,height=600'); win.document.write(content); win.print();
-  }
-
-  window.printEmployees = () => {
-    let content = "<h2>تمام ایمپلائیز</h2><table border='1'><tr><th>ID</th><th>نام</th><th>موبائل</th><th>سیلری</th></tr>";
-    employees.forEach(emp => { content += `<tr><td>${emp.empId}</td><td>${emp.name}</td><td>${emp.mobile}</td><td>${emp.salary}</td></tr>`; });
-    content += "</table>";
-    const win = window.open('', '', 'width=800,height=600'); win.document.write(content); win.print();
-  }
-
-  window.printSalary = () => {
-    let content = "<h2>سیلری مینجمنٹ</h2><table border='1'><tr><th>نام</th><th>سیلری</th></tr>";
-    employees.forEach(emp => { content += `<tr><td>${emp.name}</td><td>${emp.salary}</td></tr>`; });
-    content += "</table>";
-    const win = window.open('', '', 'width=800,height=600'); win.document.write(content); win.print();
-  }
-
-  window.printReports = () => {
-    let content = "<h2>رپورٹس</h2><table border='1'><tr><th>نام</th><th>آرڈرز</th><th>رقم</th></tr>";
-    employees.forEach(emp => {
-      const empOrders = orders.filter(o => o.empId === emp.empId);
-      const empTotal = empOrders.reduce((sum, o) => sum + o.amount, 0);
-      content += `<tr><td>${emp.name} (${emp.empId})</td><td>${empOrders.length}</td><td>${empTotal}</td></tr>`;
-    });
-    content += "</table>";
-    const win = window.open('', '', 'width=800,height=600'); win.document.write(content); win.print();
-  }
-
-  window.uploadOrdersCSV = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const lines = e.target.result.split('\n');
-      lines.slice(1).forEach(line => {
-        const [orderNo, customer, mobile, city, address, product, amount, accName, accType, accNo, empId, status] = line.split(',');
-        if (orderNo) {
-          orders.push({ orderNo, customer, mobile, city, address, product, amount: +amount, accName, accType, accNo, empId, status: status || 'pending' });
-        }
-      });
-      await saveData(); renderOrders(); alert("✅ آرڈرز اپلوڈ ہو گئے!");
-    };
-    reader.readAsText(file);
-  }
-
-  window.uploadEmployeesCSV = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const lines = e.target.result.split('\n');
-      lines.slice(1).forEach(line => {
-        const [id, name, mobile, salary, target] = line.split(',');
-        if (id) {
-          employees.push({ empId: id, name, mobile, salary: +salary, target: +target });
-        }
-      });
-      await saveData(); renderEmployees(); alert("✅ ایمپلائی اپلوڈ ہو گئے!");
-    };
-    reader.readAsText(file);
-  }
-
-  function renderAll() { renderProducts(); renderEmployees(); renderOrders(); renderSalaryList(); renderApplications(); renderReports(); updateOrderBadge(); }
-
-  if (currentAdmin) document.body.classList.add("is-super-admin");
-  if (currentEmployee) document.body.classList.add("is-sub-admin");
-  
-  renderAll();
-  loadFromSupabase();
 }
 
-window.addEventListener('load', () => {
-  if (window.supabase) window.initApp();
-  else {
-    let tries = 0;
-    const t = setInterval(() => {
-      tries++;
-      if (window.supabase) { clearInterval(t); window.initApp(); }
-      else if (tries > 20) { clearInterval(t); window.initApp(); }
-    }, 150);
+async function saveToSupabase() {
+  if (!supabaseClient) return false;
+  if (isSyncing) return false;
+  isSyncing = true;
+  try {
+    const { error } = await withTimeout(
+      supabaseClient.from('store').upsert(
+        { id: 1, data: { employees, orders, CATALOG, salaryPayments, applications } },
+        { onConflict: 'id' }
+      )
+    );
+    if (error) {
+      console.error("Save error:", error.message);
+      showStatus('⚠️ محفوظ نہیں ہو سکا: ' + error.message, 'error');
+      return false;
+    }
+    console.log('✅ Supabase میں محفوظ');
+    return true;
+  } catch (e) {
+    console.error("Save failed:", e);
+    showStatus('⚠️ محفوظ ناکام: ' + e.message, 'error');
+    return false;
+  } finally {
+    isSyncing = false;
   }
+}
+
+async function saveData() {
+  saveLocal();
+  return await saveToSupabase();
+}
+
+/* ---------- Sidebar / tabs ---------- */
+window.toggleSidebar = function () {
+  document.getElementById("sidebar").classList.toggle("open");
+  document.getElementById("overlay").classList.toggle("show");
+};
+
+window.togglePassword = function (inputId, icon) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  if (input.type === "password") { input.type = "text"; icon.textContent = "🙈"; }
+  else { input.type = "password"; icon.textContent = "👁️"; }
+};
+
+window.showTab = function (name) {
+  document.querySelectorAll(".tab-content").forEach(s => s.classList.remove("active"));
+  const sec = document.getElementById(name);
+  if (sec) sec.classList.add("active");
+
+  if (name === "addEmployee") {
+    const el = document.getElementById("empId");
+    if (el) el.value = generateNextEmpId();
+  }
+  if (name === "addOrder") {
+    const el = document.getElementById("orderNo");
+    if (el) el.value = "FM-ORD-" + Date.now().toString(36).toUpperCase();
+  }
+  if (name === "myProfile") renderMyProfile();
+  if (name === "employees") renderEmployees();
+  if (name === "orders") { renderOrders(); updateOrderBadge(); }
+  if (name === "salary") renderSalaryList();
+  if (name === "applications") renderApplications();
+  if (name === "reports") renderReports();
+  if (name === "myOrders") renderMyOrders();
+
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("overlay").classList.remove("show");
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+window.handleLogoClick = function () { if (!currentAdmin) showTab("hiddenLoginSection"); };
+window.showHiddenLogin = function () { showTab("hiddenLoginSection"); };
+window.showEmpLogin = function () { showTab("empLoginSection"); };
+
+/* ---------- Admin Login (local credentials) ---------- */
+window.submitAdminLogin = function () {
+  const id = document.getElementById("adminId").value.trim();
+  const pass = document.getElementById("adminPass").value.trim();
+
+  if (id === ADMIN_ID && pass === ADMIN_PASS) {
+    currentAdmin = { role: 'super', name: 'Admin' };
+    localStorage.setItem('fm_currentAdmin', JSON.stringify(currentAdmin));
+    document.body.classList.add('is-super-admin');
+    document.getElementById('adminId').value = '';
+    document.getElementById('adminPass').value = '';
+    showTab('home');
+    toast('✅ ایڈمن لاگ ان!');
+  } else {
+    toast('غلط آئی ڈی یا پاس ورڈ!', '#ef4444');
+  }
+};
+
+/* ---------- Employee login ---------- */
+window.submitEmpLogin = function () {
+  const enteredId = document.getElementById("empLoginId").value.trim();
+  const enteredPass = document.getElementById("empLoginPass").value.trim();
+  const emp = employees.find(e =>
+    String(e.empId).trim() === enteredId &&
+    String(e.password || '').trim() === enteredPass
+  );
+  if (emp) {
+    currentEmployee = { empId: emp.empId, name: emp.name };
+    localStorage.setItem('fm_currentEmployee', JSON.stringify(currentEmployee));
+    document.body.classList.add('is-sub-admin');
+    document.getElementById('empLoginId').value = '';
+    document.getElementById('empLoginPass').value = '';
+    showTab('myProfile');
+    toast('✅ ایمپلائی لاگ ان!');
+  } else {
+    toast('غلط تفصیلات! دوبارہ چیک کریں۔', '#ef4444');
+  }
+};
+
+window.adminLogout = function () {
+  currentAdmin = null;
+  currentEmployee = null;
+  localStorage.removeItem('fm_currentAdmin');
+  localStorage.removeItem('fm_currentEmployee');
+  document.body.classList.remove('is-super-admin', 'is-sub-admin');
+  showTab('home');
+  toast('🚪 لاگ آؤٹ!');
+};
+
+/* ---------- Products ---------- */
+window.openCategory = function (cat) {
+  currentCategory = cat;
+  const el = document.getElementById("catHeaderTitle");
+  if (el) el.textContent = cat;
+  renderProducts();
+  showTab("categoryDetail");
+};
+
+function renderProducts() {
+  const list = document.getElementById("productList");
+  if (!list) return;
+  list.innerHTML = "";
+  const items = CATALOG[currentCategory] || [];
+  if (items.length === 0) {
+    list.innerHTML = `<div style="text-align:center; grid-column:1/-1; padding:30px; color:#9ca3af;">کوئی آئٹم نہیں</div>`;
+    return;
+  }
+  items.forEach((p, index) => {
+    const div = document.createElement("div");
+    div.className = "product-item";
+    const img = (p.images && p.images.length > 0) ? p.images[0] : "https://via.placeholder.com/200x200?text=No+Image";
+    div.innerHTML = `
+      <button class="edit-prod-btn" onclick="editProduct('${currentCategory}', ${index})" title="ایڈٹ کریں">✏️</button>
+      <button class="delete-prod-btn" onclick="deleteProduct('${currentCategory}', ${index})" title="ڈیلیٹ کریں">🗑️</button>
+      <div class="product-img-box"><img src="${img}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/200x200?text=Error'" /></div>
+      <div class="product-info">
+        <h4>${p.name}</h4>
+        <div class="desc">${p.desc || 'کوئی تفصیل نہیں'}</div>
+        <div class="stock">اسٹاک: ${p.stock || 0}</div>
+        <span class="price">${p.price} روپے</span>
+        <button class="order-btn" onclick="quickOrder('${String(p.name).replace(/'/g, "\\'")}', ${safeNum(p.price)})">🛒 آرڈر کریں</button>
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+window.deleteProduct = async function (cat, index) {
+  if (!currentAdmin) { toast('صرف ایڈمن ڈیلیٹ کر سکتا ہے!', '#ef4444'); return; }
+  if (!CATALOG[cat] || !CATALOG[cat][index]) return;
+  if (confirm("ڈیلیٹ کریں؟")) {
+    CATALOG[cat].splice(index, 1);
+    await saveData();
+    renderProducts();
+    toast('✅ پروڈکٹ ڈیلیٹ ہو گیا');
+  }
+};
+
+window.editProduct = function (cat, index) {
+  if (!currentAdmin) { toast('صرف ایڈمن ایڈٹ کر سکتا ہے!', '#ef4444'); return; }
+  const p = CATALOG[cat][index];
+  if (!p) return;
+  document.getElementById("prodName").value = p.name;
+  document.getElementById("prodDesc").value = p.desc || '';
+  document.getElementById("prodPrice").value = p.price;
+  document.getElementById("prodStock").value = p.stock || 0;
+  document.getElementById("editProdIndex").value = index;
+  document.getElementById("prodCat").value = cat;
+  document.getElementById("addProductForm").style.display = "block";
+};
+
+window.openAddProductModal = function () {
+  if (!currentAdmin) { toast('پہلے ایڈمن لاگ ان کریں!', '#ef4444'); return; }
+  document.getElementById("editProdIndex").value = -1;
+  document.getElementById("addProductForm").reset();
+  document.getElementById("prodCat").value = currentCategory;
+  document.getElementById("addProductForm").style.display = "block";
+};
+window.closeAddProductModal = function () {
+  document.getElementById("addProductForm").style.display = "none";
+};
+
+/* ---------- File reader ---------- */
+function readFileAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => resolve(e.target.result);
+    reader.onerror = (e) => reject(e);
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ---------- Employees ---------- */
+function generateNextEmpId() {
+  let maxNum = 1000;
+  employees.forEach(e => {
+    const n = parseInt(String(e.empId).replace(/\D/g, ''), 10);
+    if (!isNaN(n) && n > maxNum) maxNum = n;
+  });
+  return "FM-" + (maxNum + 1);
+}
+
+function renderEmployees() {
+  const box = document.getElementById("employeeList");
+  if (!box) return;
+  box.innerHTML = "";
+  if (employees.length === 0) {
+    box.innerHTML = `<div style="text-align:center; grid-column:1/-1; padding:30px; color:#9ca3af;">کوئی ایمپلائی نہیں</div>`;
+    return;
+  }
+  employees.forEach((emp, i) => {
+    box.innerHTML += `<div class="card">
+      <h3>${emp.name} (${emp.empId})</h3>
+      <p>📱 ${emp.mobile || '-'}</p>
+      <p>💰 سیلری: ${emp.salary || 0}</p>
+      <div style="margin-top:10px; display:flex; gap:6px;">
+        <button class="action-btn edit-btn" onclick="editEmployee(${i})">✏️ ایڈٹ</button>
+        <button class="action-btn del-btn" onclick="deleteEmployee(${i})">🗑️ ڈیلیٹ</button>
+      </div>
+    </div>`;
+  });
+}
+
+window.editEmployee = async function (i) {
+  if (!currentAdmin) { toast('صرف ایڈمن!', '#ef4444'); return; }
+  const emp = employees[i];
+  if (!emp) return;
+  const newName = prompt("نیا نام:", emp.name);
+  if (newName === null) return;
+  const newMobile = prompt("نیا موبائل:", emp.mobile || '');
+  if (newMobile === null) return;
+  const newSalary = prompt("نئی سیلری:", emp.salary || 0);
+  if (newSalary === null) return;
+  employees[i] = { ...emp, name: newName, mobile: newMobile, salary: safeNum(newSalary) };
+  await saveData();
+  renderEmployees();
+  toast('✅ اپڈیٹ ہو گیا');
+};
+
+window.deleteEmployee = async function (i) {
+  if (!currentAdmin) { toast('صرف ایڈمن!', '#ef4444'); return; }
+  if (confirm("ڈیلیٹ کریں؟")) {
+    employees.splice(i, 1);
+    await saveData();
+    renderEmployees();
+    toast('✅ ڈیلیٹ ہو گیا');
+  }
+};
+
+/* ---------- Orders ---------- */
+function renderOrders() {
+  const tb = document.querySelector("#ordersTable tbody");
+  if (!tb) return;
+  tb.innerHTML = "";
+  if (orders.length === 0) {
+    tb.innerHTML = `<tr><td colspan="6" style="text-align:center;">کوئی آرڈر نہیں</td></tr>`;
+    return;
+  }
+  orders.forEach((o, i) => {
+    tb.innerHTML += `<tr>
+      <td>${o.orderNo}</td>
+      <td>${o.customer}</td>
+      <td>${o.product}</td>
+      <td>${o.amount}</td>
+      <td>${o.status === 'pending' ? '⏳ پینڈنگ' : (o.status === 'confirmed' ? '✅ کنفرم' : '📦 ڈیلیور')}</td>
+      <td>
+        ${o.status === 'pending' ? `<button class="action-btn" onclick="confirmOrder(${i})" style="background:var(--green); color:#000;">✅ کنفرم</button>` : ''}
+        ${o.status === 'confirmed' ? `<button class="action-btn" onclick="deliverOrder(${i})" style="background:var(--blue); color:#fff;">📦 ڈیلیور</button>` : ''}
+        <button class="action-btn del-btn" onclick="deleteOrder(${i})">🗑️</button>
+      </td>
+    </tr>`;
+  });
+}
+
+window.confirmOrder = async function (index) {
+  if (!currentAdmin) { toast('صرف ایڈمن!', '#ef4444'); return; }
+  if (!orders[index]) return;
+  orders[index].status = 'confirmed';
+  await saveData();
+  renderOrders();
+  updateOrderBadge();
+  toast('✅ آرڈر کنفرم ہو گیا!');
+};
+
+window.deliverOrder = async function (index) {
+  if (!currentAdmin) { toast('صرف ایڈمن!', '#ef4444'); return; }
+  if (!orders[index]) return;
+  orders[index].status = 'delivered';
+  await saveData();
+  renderOrders();
+  toast('📦 ڈیلیور ہو گیا');
+};
+
+window.deleteOrder = async function (i) {
+  if (!currentAdmin) { toast('صرف ایڈمن!', '#ef4444'); return; }
+  if (confirm("ڈیلیٹ کریں؟")) {
+    orders.splice(i, 1);
+    await saveData();
+    renderOrders();
+    updateOrderBadge();
+    toast('✅ ڈیلیٹ ہو گیا');
+  }
+};
+
+window.cancelOrder = async function (index) {
+  if (!orders[index]) return;
+  if (orders[index].status === 'pending') {
+    orders.splice(index, 1);
+    await saveData();
+    renderOrders();
+    renderMyOrders();
+    toast('✅ آرڈر کینسل ہو گیا!');
+  } else {
+    toast('❌ یہ آرڈر کنفرم ہو چکا ہے، اب کینسل نہیں ہو سکتا!', '#ef4444');
+  }
+};
+
+function renderMyOrders() {
+  const tb = document.querySelector("#myOrdersTable tbody");
+  if (!tb) return;
+  tb.innerHTML = "";
+  const sessionId = getCustomerSession();
+  const my = orders.filter(o => o.sessionId === sessionId);
+
+  if (my.length === 0) {
+    tb.innerHTML = `<tr><td colspan="5" style="text-align:center;">آپ نے ابھی تک کوئی آرڈر نہیں دیا۔</td></tr>`;
+    return;
+  }
+
+  my.forEach((o) => {
+    const originalIndex = orders.indexOf(o);
+    tb.innerHTML += `<tr>
+      <td>${o.orderNo}</td>
+      <td>${o.product}</td>
+      <td>${o.amount}</td>
+      <td>${o.status === 'pending' ? '⏳ پینڈنگ' : (o.status === 'confirmed' ? '✅ کنفرم' : '📦 ڈیلیور')}</td>
+      <td>
+        ${o.status === 'pending' ? `<button class="action-btn del-btn" onclick="cancelOrder(${originalIndex})">❌ کینسل</button>` : ''}
+        ${(o.status === 'confirmed' || o.status === 'delivered') ? `<button class="action-btn" onclick="printReceipt(${originalIndex})" style="background:var(--green); color:#000;">🖨️ رسید</button>` : ''}
+      </td>
+    </tr>`;
+  });
+}
+
+window.printReceipt = function (i) {
+  const o = orders[i];
+  if (!o) return;
+  const win = window.open('', '', 'width=600,height=800');
+  if (!win) { toast('پاپ اپ بلاک ہے', '#ef4444'); return; }
+  win.document.write(`<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><title>رسید</title>
+    <style>body{font-family:"Noto Nastaliq Urdu",sans-serif; text-align:right; padding:20px; line-height:2;}
+    h2{text-align:center;}</style></head><body>
+    <h2>FAIZY MART</h2>
+    <p style="text-align:center;">شکریہ! آپ کا آرڈر کنفرم ہو گیا ہے۔</p>
+    <hr>
+    <p><strong>آرڈر نمبر:</strong> ${o.orderNo}</p>
+    <p><strong>کسٹمر:</strong> ${o.customer}</p>
+    <p><strong>پروڈکٹ:</strong> ${o.product}</p>
+    <p><strong>رقم:</strong> ${o.amount} روپے</p>
+    <p><strong>شہر:</strong> ${o.city}</p>
+    <p><strong>ایڈریس:</strong> ${o.address}</p>
+    <hr>
+    <p style="text-align:center;">© 2026 Faizy Mart</p>
+    </body></html>`);
+  win.document.close();
+  win.print();
+};
+
+function updateOrderBadge() {
+  const pending = orders.filter(o => o.status === 'pending').length;
+  const badge = document.getElementById("orderBadge");
+  if (!badge) return;
+  badge.textContent = pending;
+  badge.style.display = pending > 0 ? "inline-block" : "none";
+}
+
+/* ---------- Applications ---------- */
+function renderApplications() {
+  const tb = document.querySelector("#applicationsTable tbody");
+  if (!tb) return;
+  tb.innerHTML = "";
+  if (applications.length === 0) {
+    tb.innerHTML = `<tr><td colspan="5" style="text-align:center;">کوئی درخواست نہیں</td></tr>`;
+    return;
+  }
+  applications.forEach((a, i) => {
+    tb.innerHTML += `<tr>
+      <td>${a.name}</td><td>${a.mobile}</td><td>${a.city}</td><td>${a.accType} - ${a.accNo}</td>
+      <td>
+        <button class="action-btn" onclick="approveApplication(${i})" style="background:var(--green); color:#000;">✅ اپروو</button>
+        <button class="action-btn del-btn" onclick="deleteApplication(${i})">🗑️</button>
+      </td>
+    </tr>`;
+  });
+}
+
+window.approveApplication = async function (i) {
+  if (!currentAdmin) { toast('صرف ایڈمن!', '#ef4444'); return; }
+  const app = applications[i];
+  if (!app) return;
+  const newEmpId = generateNextEmpId();
+  const newPass = "pass" + Math.floor(1000 + Math.random() * 9000);
+  const newEmp = {
+    empId: newEmpId, name: app.name, mobile: app.mobile,
+    salary: 20000, target: 40, password: newPass,
+    city: app.city, address: app.address,
+    accName: app.accName, accType: app.accType, accNo: app.accNo
+  };
+  employees.push(newEmp);
+  applications.splice(i, 1);
+  await saveData();
+  renderEmployees();
+  renderApplications();
+  printJoiningSlip(newEmp);
+};
+
+window.printJoiningSlip = function (emp) {
+  const win = window.open('', '', 'width=600,height=800');
+  if (!win) { toast('پاپ اپ بلاک ہے', '#ef4444'); return; }
+  win.document.write(`<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><title>جوائننگ سلپ</title>
+    <style>body{font-family:"Noto Nastaliq Urdu",sans-serif; text-align:center; padding:40px; color:#000;}
+    .box{border:2px solid #000; padding:30px; border-radius:10px; max-width:500px; margin:auto;}
+    h2{color:#d4af37;} .details{text-align:right; font-size:18px; line-height:2.5; margin-top:20px;}
+    .details strong{display:inline-block; width:130px;} .footer{margin-top:30px; font-size:12px; color:#555; border-top:1px solid #ccc; padding-top:10px;}</style>
+    </head><body><div class="box">
+    <h2>FAIZY MART</h2><p>فیضی مارٹ میں خوش آمدید!</p>
+    <h3>🎉 ایمپلائی جوائننگ سلپ 🎉</h3>
+    <div class="details">
+      <p><strong>نام:</strong> ${emp.name}</p>
+      <p><strong>آئی ڈی:</strong> <b>${emp.empId}</b></p>
+      <p><strong>پاس ورڈ:</strong> <b style="color:#d4af37;">${emp.password}</b></p>
+    </div>
+    <p style="margin-top:20px; font-size:14px;">یہ رسید محفوظ رکھیں۔</p>
+    <div class="footer">© 2026 Faizy Mart.</div>
+    </div></body></html>`);
+  win.document.close();
+  win.print();
+};
+
+window.deleteApplication = async function (i) {
+  if (!currentAdmin) { toast('صرف ایڈمن!', '#ef4444'); return; }
+  if (confirm("ڈیلیٹ کریں؟")) {
+    applications.splice(i, 1);
+    await saveData();
+    renderApplications();
+    toast('✅ ڈیلیٹ ہو گیا');
+  }
+};
+
+/* ---------- My Profile ---------- */
+function renderMyProfile() {
+  const box = document.getElementById("myProfileBox");
+  if (!box) return;
+  if (!currentEmployee) {
+    box.innerHTML = `<div class="card"><p>پہلے لاگ ان کریں۔</p></div>`;
+    return;
+  }
+  const myOrders = orders.filter(o => o.empId === currentEmployee.empId);
+  const myTotal = myOrders.reduce((sum, o) => sum + safeNum(o.amount), 0);
+  box.innerHTML = `<div class="card">
+    <h3>👤 ${currentEmployee.name} (${currentEmployee.empId})</h3>
+    <p>خوش آمدید! یہ آپ کا پورٹل ہے۔</p>
+    <h4 style="margin-top:15px; color:var(--primary-yellow);">میری کارکردگی</h4>
+    <p>میرے آرڈرز: ${myOrders.length}</p>
+    <p>میری کمائی: ${myTotal} روپے</p>
+  </div>`;
+}
+
+/* ---------- Salary ---------- */
+function renderSalaryList() {
+  const box = document.getElementById("salaryList");
+  if (!box) return;
+  box.innerHTML = "";
+  if (employees.length === 0) {
+    box.innerHTML = `<div style="text-align:center; grid-column:1/-1; color:#9ca3af;">کوئی ایمپلائی نہیں</div>`;
+    return;
+  }
+  employees.forEach((emp, i) => {
+    box.innerHTML += `<div class="card">
+      <h3>${emp.name}</h3>
+      <p>💰 سیلری: ${emp.salary || 0} روپے</p>
+      <button class="action-btn edit-btn" onclick="editSalary(${i})" style="margin-top:8px;">✏️ ایڈٹ</button>
+    </div>`;
+  });
+}
+
+window.editSalary = async function (i) {
+  if (!currentAdmin) { toast('صرف ایڈمن!', '#ef4444'); return; }
+  const newSal = prompt("نئی سیلری:", employees[i]?.salary || 0);
+  if (newSal !== null) {
+    employees[i].salary = safeNum(newSal);
+    await saveData();
+    renderSalaryList();
+    toast('✅ اپڈیٹ');
+  }
+};
+
+/* ---------- Reports ---------- */
+function renderReports() {
+  const tb = document.querySelector("#totalReport tbody");
+  if (!tb) return;
+  tb.innerHTML = "";
+  let total = 0;
+  orders.forEach(o => total += safeNum(o.amount));
+  tb.innerHTML += `<tr><td>کل فروخت</td><td>${orders.length}</td><td>${total} روپے</td><td>—</td></tr>`;
+  employees.forEach((emp, i) => {
+    const empOrders = orders.filter(o => o.empId === emp.empId);
+    const empTotal = empOrders.reduce((sum, o) => sum + safeNum(o.amount), 0);
+    tb.innerHTML += `<tr><td>${emp.name} (${emp.empId})</td><td>${empOrders.length}</td><td>${empTotal} روپے</td>
+      <td><button class="action-btn edit-btn" onclick="editEmployee(${i})">✏️</button></td></tr>`;
+  });
+}
+
+window.filterReports = function () {
+  const val = (document.getElementById("searchEmployee")?.value || '').toLowerCase();
+  document.querySelectorAll("#totalReport tbody tr").forEach(row => {
+    row.style.display = row.innerText.toLowerCase().includes(val) ? "" : "none";
+  });
+};
+
+/* ---------- CSV Download ---------- */
+function downloadCSV(filename, csv) {
+  const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+window.downloadOrdersCSV = function () {
+  let csv = "OrderNo,Customer,Mobile,City,Address,Product,Amount,AccName,AccType,AccNo,EmpID,Status\n";
+  orders.forEach(o => {
+    csv += `"${o.orderNo||''}","${o.customer||''}","${o.mobile||''}","${o.city||''}","${o.address||''}","${o.product||''}","${o.amount||0}","${o.accName||''}","${o.accType||''}","${o.accNo||''}","${o.empId||''}","${o.status||''}"\n`;
+  });
+  downloadCSV('Orders.csv', csv);
+};
+
+window.downloadEmployeesCSV = function () {
+  let csv = "ID,Name,Mobile,Salary,Target,Password\n";
+  employees.forEach(emp => {
+    csv += `"${emp.empId||''}","${emp.name||''}","${emp.mobile||''}","${emp.salary||0}","${emp.target||0}","${emp.password||''}"\n`;
+  });
+  downloadCSV('Employees.csv', csv);
+};
+
+window.downloadSalaryCSV = function () {
+  let csv = "Name,Salary\n";
+  employees.forEach(emp => {
+    csv += `"${emp.name||''}","${emp.salary||0}"\n`;
+  });
+  downloadCSV('Salary.csv', csv);
+};
+
+window.downloadReportsCSV = function () {
+  let csv = "Employee,Orders,Total\n";
+  employees.forEach(emp => {
+    const empOrders = orders.filter(o => o.empId === emp.empId);
+    const empTotal = empOrders.reduce((s, o) => s + safeNum(o.amount), 0);
+    csv += `"${emp.name||''} (${emp.empId||''})","${empOrders.length}","${empTotal}"\n`;
+  });
+  downloadCSV('Reports.csv', csv);
+};
+
+/* ---------- Print ---------- */
+function printHTML(title, bodyHtml) {
+  const win = window.open('', '', 'width=800,height=600');
+  if (!win) { toast('پاپ اپ بلاک ہے', '#ef4444'); return; }
+  win.document.write(`<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><title>${title}</title>
+    <style>body{font-family:"Noto Nastaliq Urdu",sans-serif; padding:20px;}
+    table{width:100%; border-collapse:collapse;} td,th{border:1px solid #000; padding:8px; text-align:right;}
+    h2{text-align:center;}</style></head><body>${bodyHtml}</body></html>`);
+  win.document.close();
+  setTimeout(() => win.print(), 300);
+}
+
+window.printOrders = function () {
+  let h = "<h2>تمام آرڈرز</h2><table><tr><th>آرڈر</th><th>کسٹمر</th><th>پروڈکٹ</th><th>رقم</th><th>اسٹیٹس</th></tr>";
+  orders.forEach(o => { h += `<tr><td>${o.orderNo}</td><td>${o.customer}</td><td>${o.product}</td><td>${o.amount}</td><td>${o.status}</td></tr>`; });
+  h += "</table>";
+  printHTML('آرڈرز', h);
+};
+
+window.printEmployees = function () {
+  let h = "<h2>تمام ایمپلائیز</h2><table><tr><th>ID</th><th>نام</th><th>موبائل</th><th>سیلری</th></tr>";
+  employees.forEach(emp => { h += `<tr><td>${emp.empId}</td><td>${emp.name}</td><td>${emp.mobile||''}</td><td>${emp.salary||0}</td></tr>`; });
+  h += "</table>";
+  printHTML('ایمپلائیز', h);
+};
+
+window.printSalary = function () {
+  let h = "<h2>سیلری مینجمنٹ</h2><table><tr><th>نام</th><th>سیلری</th></tr>";
+  employees.forEach(emp => { h += `<tr><td>${emp.name}</td><td>${emp.salary||0}</td></tr>`; });
+  h += "</table>";
+  printHTML('سیلری', h);
+};
+
+window.printReports = function () {
+  let h = "<h2>رپورٹس</h2><table><tr><th>نام</th><th>آرڈرز</th><th>رقم</th></tr>";
+  employees.forEach(emp => {
+    const eo = orders.filter(o => o.empId === emp.empId);
+    const et = eo.reduce((s, o) => s + safeNum(o.amount), 0);
+    h += `<tr><td>${emp.name} (${emp.empId})</td><td>${eo.length}</td><td>${et}</td></tr>`;
+  });
+  h += "</table>";
+  printHTML('رپورٹس', h);
+};
+
+/* ---------- CSV Upload ---------- */
+function parseCSVLine(line) {
+  const out = [];
+  let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') {
+      if (inQ && line[i+1] === '"') { cur += '"'; i++; }
+      else inQ = !inQ;
+    } else if (c === ',' && !inQ) { out.push(cur); cur = ''; }
+    else cur += c;
+  }
+  out.push(cur);
+  return out;
+}
+
+window.uploadOrdersCSV = async function (event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (!currentAdmin) { toast('صرف ایڈمن!', '#ef4444'); event.target.value = ''; return; }
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    try {
+      const lines = e.target.result.split(/\r?\n/).filter(l => l.trim());
+      let added = 0;
+      lines.slice(1).forEach(line => {
+        const cols = parseCSVLine(line);
+        const [orderNo, customer, mobile, city, address, product, amount, accName, accType, accNo, empId, status] = cols;
+        if (orderNo && orderNo.trim()) {
+          orders.push({
+            orderNo: orderNo.trim(), customer: customer||'', mobile: mobile||'',
+            city: city||'', address: address||'', product: product||'',
+            amount: safeNum(amount), accName: accName||'', accType: accType||'',
+            accNo: accNo||'', empId: empId||'', status: status || 'pending',
+            sessionId: 'IMPORTED'
+          });
+          added++;
+        }
+      });
+      await saveData();
+      renderOrders();
+      updateOrderBadge();
+      toast(`✅ ${added} آرڈرز اپلوڈ ہو گئے!`);
+    } catch (err) { console.error(err); toast('CSV خراب ہے', '#ef4444'); }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+};
+
+window.uploadEmployeesCSV = async function (event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (!currentAdmin) { toast('صرف ایڈمن!', '#ef4444'); event.target.value = ''; return; }
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    try {
+      const lines = e.target.result.split(/\r?\n/).filter(l => l.trim());
+      let added = 0;
+      lines.slice(1).forEach(line => {
+        const cols = parseCSVLine(line);
+        const [id, name, mobile, salary, target, password] = cols;
+        if (id && id.trim()) {
+          employees.push({
+            empId: id.trim(), name: name||'', mobile: mobile||'',
+            salary: safeNum(salary), target: safeNum(target),
+            password: password || ('pass' + Math.floor(1000 + Math.random() * 9000))
+          });
+          added++;
+        }
+      });
+      await saveData();
+      renderEmployees();
+      toast(`✅ ${added} ایمپلائی اپلوڈ ہو گئے!`);
+    } catch (err) { console.error(err); toast('CSV خراب ہے', '#ef4444'); }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+};
+
+/* ---------- Quick Order ---------- */
+window.quickOrder = function (name, price) {
+  showTab('addOrder');
+  setTimeout(() => {
+    const p = document.getElementById("product");
+    const a = document.getElementById("amount");
+    if (p) p.value = name;
+    if (a) a.value = price;
+  }, 200);
+};
+
+/* ---------- Init ---------- */
+document.addEventListener('DOMContentLoaded', () => {
+  /* Product form */
+  const addProductForm = document.getElementById("addProductForm");
+  if (addProductForm) {
+    addProductForm.addEventListener("submit", async e => {
+      e.preventDefault();
+      if (!currentAdmin) { toast('صرف ایڈمن!', '#ef4444'); return; }
+      const cat = document.getElementById("prodCat").value || currentCategory;
+      const name = document.getElementById("prodName").value;
+      const desc = document.getElementById("prodDesc").value;
+      const price = safeNum(document.getElementById("prodPrice").value);
+      const stock = safeNum(document.getElementById("prodStock").value);
+      const editIdx = parseInt(document.getElementById("editProdIndex").value);
+
+      const file = document.getElementById("prodImg1").files[0];
+      let images = [];
+      try { if (file) { const imgData = await readFileAsDataURL(file); images.push(imgData); } }
+      catch (err) { console.error(err); }
+
+      if (!CATALOG[cat]) CATALOG[cat] = [];
+
+      if (editIdx === -1) {
+        CATALOG[cat].push({ name, desc, price, stock, images });
+      } else {
+        const oldImages = CATALOG[cat][editIdx].images || [];
+        CATALOG[cat][editIdx] = { name, desc, price, stock, images: images.length > 0 ? images : oldImages };
+      }
+      await saveData();
+      renderProducts();
+      closeAddProductModal();
+      toast('✅ محفوظ ہو گیا');
+    });
+  }
+
+  /* Employee form */
+  const employeeForm = document.getElementById("employeeForm");
+  if (employeeForm) {
+    employeeForm.addEventListener("submit", async e => {
+      e.preventDefault();
+      if (!currentAdmin) { toast('صرف ایڈمن!', '#ef4444'); return; }
+      const emp = {
+        empId: document.getElementById("empId").value,
+        name: document.getElementById("empName").value,
+        mobile: document.getElementById("empMobile").value,
+        salary: safeNum(document.getElementById("empSalary").value),
+        target: safeNum(document.getElementById("empTarget").value),
+        password: document.getElementById("empPass").value
+      };
+      employees.push(emp);
+      await saveData();
+      renderEmployees();
+      e.target.reset();
+      toast('✅ ایمپلائی شامل ہو گیا!');
+    });
+  }
+
+  /* Order form */
+  const orderForm = document.getElementById("orderForm");
+  if (orderForm) {
+    orderForm.addEventListener("submit", async e => {
+      e.preventDefault();
+      const empRef = document.getElementById("empRefId").value.trim();
+      const o = {
+        orderNo: document.getElementById("orderNo").value,
+        customer: document.getElementById("customer").value,
+        mobile: document.getElementById("custMobile").value,
+        city: document.getElementById("custCity").value,
+        address: document.getElementById("custAddress").value,
+        product: document.getElementById("product").value,
+        amount: safeNum(document.getElementById("amount").value),
+        accName: document.getElementById("custAccName").value,
+        accType: document.getElementById("custAccType").value,
+        accNo: document.getElementById("custAccNo").value,
+        empId: empRef || (currentEmployee ? currentEmployee.empId : null),
+        status: "pending",
+        sessionId: getCustomerSession(),
+        createdAt: new Date().toISOString()
+      };
+      orders.push(o);
+      await saveData();
+      renderOrders();
+      updateOrderBadge();
+      e.target.reset();
+      toast('✅ آرڈر محفوظ!');
+      showTab('myOrders');
+    });
+  }
+
+  /* Job form */
+  const jobForm = document.getElementById("jobApplicationForm");
+  if (jobForm) {
+    jobForm.addEventListener("submit", async e => {
+      e.preventDefault();
+      const job = {
+        name: document.getElementById("jobName").value,
+        age: document.getElementById("jobAge").value,
+        mobile: document.getElementById("jobMobile").value,
+        city: document.getElementById("jobCity").value,
+        address: document.getElementById("jobAddress").value,
+        accName: document.getElementById("jobAccName").value,
+        accType: document.getElementById("jobAccType").value,
+        accNo: document.getElementById("jobAccNo").value
+      };
+      applications.push(job);
+      await saveData();
+      e.target.reset();
+      toast('✅ درخواست بھیج دی گئی!');
+      showTab('home');
+    });
+  }
+
+  /* Load local + render */
+  loadLocal();
+  renderAll();
+
+  /* Restore admin session */
+  try {
+    const savedAdmin = JSON.parse(localStorage.getItem('fm_currentAdmin'));
+    if (savedAdmin) {
+      currentAdmin = savedAdmin;
+      document.body.classList.add('is-super-admin');
+    }
+    const savedEmp = JSON.parse(localStorage.getItem('fm_currentEmployee'));
+    if (savedEmp) {
+      currentEmployee = savedEmp;
+      document.body.classList.add('is-sub-admin');
+    }
+  } catch (e) {}
+
+  /* Load from Supabase */
+  loadFromSupabase();
 });
+
+function renderAll() {
+  renderEmployees();
+  renderOrders();
+  renderSalaryList();
+  renderApplications();
+  renderReports();
+  updateOrderBadge();
+  if (currentCategory) renderProducts();
+}
 </script>
 </body>
 </html>
