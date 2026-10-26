@@ -132,6 +132,7 @@
   <button class="tab-btn customer-only" onclick="showTab('hiddenLoginSection')">🔐 ایڈمن لاگ ان</button>
   <button class="tab-btn customer-only" onclick="showTab('empLoginSection')">🔑 ایمپلائی لاگ ان</button>
   <button class="tab-btn customer-only" onclick="showTab('jobForm')">📝 جاب اپلائی کریں</button>
+  <button class="tab-btn customer-only" onclick="showTab('myApplications')">📋 میری درخواستیں</button>
   <button class="tab-btn customer-only" onclick="showTab('addOrder')">➕ نیا آرڈر</button>
   <button class="tab-btn customer-only" onclick="showTab('myOrders')">📦 میرے آرڈرز</button>
 
@@ -927,21 +928,20 @@ function renderApplications() {
   });
 }
 
-/* ✅ نیا فنکشن: ایڈمن اپروو کرے گا تو رسید ایڈمن کو نہیں بلکہ کسٹمر کو ملے گی */
 window.approveApplication = async function (i) {
   if (!currentAdmin) { toast('صرف ایڈمن!', '#ef4444'); return; }
   const app = applications[i];
   if (!app) return;
+  
   const newEmpId = generateNextEmpId();
   const newPass = "pass" + Math.floor(1000 + Math.random() * 9000);
   
-  // نیا ایمپلائی بنائیں
   const newEmp = {
     empId: newEmpId, name: app.name, mobile: app.mobile,
     salary: 20000, target: 40, password: newPass,
     city: app.city, address: app.address,
     accName: app.accName, accType: app.accType, accNo: app.accNo,
-    sessionId: app.sessionId // کسٹمر کا سیشن آئی ڈی محفوظ کریں تاکہ اسے رسید مل سکے
+    sessionId: app.sessionId // ✅ سیشن آئی ڈی کاپی ہو رہی ہے
   };
   employees.push(newEmp);
   applications.splice(i, 1);
@@ -992,9 +992,7 @@ function renderMyApplications() {
   tb.innerHTML = "";
   
   const sessionId = getCustomerSession();
-  // وہ درخواستیں جو اس سیشن نے بھیجی ہیں
   const myApplies = applications.filter(a => a.sessionId === sessionId);
-  // وہ ایمپلائی جو اس سیشن کی درخواست سے بنے ہیں
   const myApproved = employees.filter(e => e.sessionId === sessionId);
 
   if (myApplies.length === 0 && myApproved.length === 0) {
