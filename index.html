@@ -167,7 +167,7 @@
   <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
   <div style="display:flex; justify-content:space-between;">
     <h2 id="catHeaderTitle">TOYS</h2>
-    <button onclick="openAddProductModal()" style="padding:10px; background:var(--primary-yellow); border:none; border-radius:8px; font-weight:bold;">➕ نیا آئٹم</button>
+    <button onclick="openAddProductModal()" class="admin-only" style="padding:10px; background:var(--primary-yellow); border:none; border-radius:8px; font-weight:bold;">➕ نیا آئٹم</button>
   </div>
   <form id="addProductForm" style="display:none;">
     <button class="back-btn" type="button" onclick="closeAddProductModal()">← واپس</button>
@@ -364,7 +364,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-function togglePassword(inputId, icon) {
+window.togglePassword = function(inputId, icon) {
   const input = document.getElementById(inputId);
   if (input.type === "password") {
     input.type = "text";
@@ -375,19 +375,10 @@ function togglePassword(inputId, icon) {
   }
 }
 
-// 🌟 ٹائم آؤٹ فنکشن تاکہ سائٹ ہینگ نہ ہو
-function withTimeout(promise, ms = 8000) {
-  return Promise.race([
-    promise,
-    new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), ms))
-  ]);
-}
-
-function initApp() {
+window.initApp = function() {
   let supabaseClient = null;
   try {
     if (window.supabase) {
-      // یہاں آپ کی اصلی Supabase Key واپس لگا دی گئی ہے
       supabaseClient = window.supabase.createClient(
         'https://ofjlswkrdrpwapcvwzun.supabase.co',
         'sb_publishable_yk51b9Pps15BXSX-tmnBdw_IFsWoUCW' 
@@ -402,6 +393,13 @@ function initApp() {
   let applications = JSON.parse(localStorage.getItem("fm_applications")) || [];
   let currentAdmin = JSON.parse(localStorage.getItem("fm_currentAdmin")) || null;
   let currentEmployee = JSON.parse(localStorage.getItem("fm_currentEmployee")) || null;
+
+  function withTimeout(promise, ms = 8000) {
+    return Promise.race([
+      promise,
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), ms))
+    ]);
+  }
 
   async function loadFromSupabase() {
     if (!supabaseClient) return;
@@ -527,8 +525,8 @@ function initApp() {
       const div = document.createElement("div"); div.className = "product-item";
       const img = (p.images && p.images.length > 0) ? p.images[0] : "https://via.placeholder.com/200x200?text=No+Image";
       div.innerHTML = `
-        <button class="edit-prod-btn" onclick="editProduct('${currentCategory}', ${index})" title="ایڈٹ کریں">✏️</button>
-        <button class="delete-prod-btn" onclick="deleteProduct('${currentCategory}', ${index})" title="ڈیلیٹ کریں">🗑️</button>
+        <button class="edit-prod-btn admin-only" style="display: ${currentAdmin ? 'flex' : 'none'}" onclick="editProduct('${currentCategory}', ${index})" title="ایڈٹ کریں">✏️</button>
+        <button class="delete-prod-btn admin-only" style="display: ${currentAdmin ? 'flex' : 'none'}" onclick="deleteProduct('${currentCategory}', ${index})" title="ڈیلیٹ کریں">🗑️</button>
         <div class="product-img-box"><img src="${img}" onerror="this.src='https://via.placeholder.com/200x200?text=Error'" /></div>
         <div class="product-info">
           <h4>${p.name}</h4>
@@ -542,10 +540,12 @@ function initApp() {
   }
 
   window.deleteProduct = async (cat, index) => {
+    if (!currentAdmin) { alert("صرف ایڈمن یہ کام کر سکتا ہے!"); return; }
     if(confirm("ڈیلیٹ کریں؟")) { CATALOG[cat].splice(index, 1); await saveData(); renderProducts(); }
   }
 
   window.editProduct = (cat, index) => {
+    if (!currentAdmin) { alert("صرف ایڈمن یہ کام کر سکتا ہے!"); return; }
     const p = CATALOG[cat][index];
     document.getElementById("prodName").value = p.name;
     document.getElementById("prodDesc").value = p.desc || '';
@@ -1009,13 +1009,13 @@ function initApp() {
 }
 
 window.addEventListener('load', () => {
-  if (window.supabase) initApp();
+  if (window.supabase) window.initApp();
   else {
     let tries = 0;
     const t = setInterval(() => {
       tries++;
-      if (window.supabase) { clearInterval(t); initApp(); }
-      else if (tries > 20) { clearInterval(t); console.warn("Supabase library failed to load"); initApp(); }
+      if (window.supabase) { clearInterval(t); window.initApp(); }
+      else if (tries > 20) { clearInterval(t); window.initApp(); }
     }, 150);
   }
 });
