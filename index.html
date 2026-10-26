@@ -384,7 +384,10 @@ window.initApp = function() {
         'sb_publishable_yk51b9Pps15BXSX-tmnBdw_IFsWoUCW' 
       );
     }
-  } catch (e) { console.error('Supabase init failed', e); }
+  } catch (e) { 
+    console.error('Supabase init failed', e); 
+    alert("سسٹم ایرر: " + e.message);
+  }
 
   let employees = JSON.parse(localStorage.getItem("fm_employees")) || [];
   let orders = JSON.parse(localStorage.getItem("fm_orders")) || [];
@@ -402,12 +405,21 @@ window.initApp = function() {
   }
 
   async function loadFromSupabase() {
-    if (!supabaseClient) return;
+    if (!supabaseClient) {
+      alert("⚠️ Supabase سے کنیکٹ نہیں ہو سکا۔ (Key غلط ہے)");
+      return;
+    }
     try {
       const { data, error } = await withTimeout(
         supabaseClient.from('store').select('data').eq('id', 1).single()
       );
-      if (error) { console.warn('Supabase load error:', error.message); return; }
+      
+      // 🌟 یہاں ایرر پکڑنے کا نیا سسٹم لگایا ہے
+      if (error) { 
+        alert("❌ Supabase Error: " + error.message + "\n\nبراہ کرم Supabase میں SQL چیک کریں۔");
+        return; 
+      }
+      
       if (!data || !data.data) return;
       
       const d = data.data;
@@ -422,7 +434,10 @@ window.initApp = function() {
       }
       saveLocal(); 
       setTimeout(() => { renderAll(); }, 100);
-    } catch (e) { console.error("Load failed:", e); }
+    } catch (e) { 
+      alert("❌ کنیکشن کا مسئلہ: " + e.message);
+      console.error("Load failed:", e); 
+    }
   }
 
   async function saveToSupabase() {
@@ -431,9 +446,17 @@ window.initApp = function() {
       const { data, error } = await withTimeout(
         supabaseClient.from('store').upsert({ id: 1, data: { employees, orders, CATALOG, salaryPayments, applications } }, { onConflict: 'id' }).select()
       );
-      if (error) { console.error("Save error:", error.message); return false; }
+      if (error) { 
+        alert("❌ محفوظ نہیں ہو سکا: " + error.message);
+        console.error("Save error:", error.message); 
+        return false; 
+      }
       return true;
-    } catch (e) { console.error("Save failed:", e); return false; }
+    } catch (e) { 
+      alert("❌ محفوظ کرنے میں مسئلہ: " + e.message);
+      console.error("Save failed:", e); 
+      return false; 
+    }
   }
 
   function saveLocal() {
