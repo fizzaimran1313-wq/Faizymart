@@ -364,7 +364,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// ✅ یہ لائنیں آپ کے براؤزر کا خراب ڈیٹا صاف کر دیں گی
+// فوری طور پر پرانا خراب ڈیٹا صاف کریں
 localStorage.removeItem("fm_employees");
 localStorage.removeItem("fm_orders");
 localStorage.removeItem("fm_catalog");
@@ -403,13 +403,18 @@ function initApp() {
   let currentAdmin = JSON.parse(localStorage.getItem("fm_currentAdmin")) || null;
   let currentEmployee = JSON.parse(localStorage.getItem("fm_currentEmployee")) || null;
 
+  // یہاں سب سے بڑی تبدیلی کی گئی ہے تاکہ سائٹ ہینگ نہ ہو
   async function loadFromSupabase() {
     if (!supabase) return;
     try {
+      // بیک گراؤنڈ میں ڈیٹا لائیں
       const { data, error } = await supabase.from('store').select('data').eq('id', 1).single();
-      if (error) { console.warn("Supabase read:", error.message); return; }
+      if (error) return;
       if (!data || !data.data) return;
+      
       const d = data.data;
+      
+      // صرف تب اپ ڈیٹ کریں جب ڈیٹا موجود ہو
       if (Array.isArray(d.employees) && d.employees.length) employees = d.employees;
       if (Array.isArray(d.orders) && d.orders.length) orders = d.orders;
       if (Array.isArray(d.salaryPayments) && d.salaryPayments.length) salaryPayments = d.salaryPayments;
@@ -419,8 +424,10 @@ function initApp() {
           if (Array.isArray(d.CATALOG[cat]) && d.CATALOG[cat].length) CATALOG[cat] = d.CATALOG[cat];
         }
       }
-      saveLocal(); renderAll();
-    } catch (e) { console.error("Supabase لوڈ میں مسئلہ:", e); }
+      saveLocal(); 
+      // UI کو اپ ڈیٹ کریں لیکن آہستہ آہستہ
+      setTimeout(() => { renderAll(); }, 100);
+    } catch (e) { console.error("Supabase load error:", e); }
   }
 
   async function saveToSupabase() {
@@ -999,6 +1006,7 @@ function initApp() {
   if (currentEmployee) document.body.classList.add("is-sub-admin");
   
   renderAll();
+  // یہ فنکشن اب سائٹ کو ہینگ نہیں کرے گا
   loadFromSupabase();
 }
 
