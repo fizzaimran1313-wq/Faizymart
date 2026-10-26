@@ -387,10 +387,10 @@ function initApp() {
   let supabaseClient = null;
   try {
     if (window.supabase) {
-      // یہاں anon key استعمال کی گئی ہے
+      // یہاں آپ کی اصلی Supabase Key واپس لگا دی گئی ہے
       supabaseClient = window.supabase.createClient(
         'https://ofjlswkrdrpwapcvwzun.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mamxzd2tyZHJwd2FwY3Z3enVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMDQwMDAsImV4cCI6MjA4OTU4MDAwMH0.k-oP_9gT0q7xT5aZ8s9Y7x4B3c2V1n0M9l8k7j6h5g4f3d2s1a' 
+        'sb_publishable_yk51b9Pps15BXSX-tmnBdw_IFsWoUCW' 
       );
     }
   } catch (e) { console.error('Supabase init failed', e); }
