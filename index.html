@@ -274,7 +274,22 @@
   <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
   <h2>تمام آرڈرز</h2>
   <div class="table-container">
-    <table id="ordersTable"><thead><tr><th>آرڈر</th><th>کسٹمر</th><th>پروڈکٹ</th><th>رقم</th><th>اسٹیٹس</th><th>ایکشن</th></tr></thead><tbody></tbody></table>
+    <table id="ordersTable">
+      <thead>
+        <tr>
+          <th>آرڈر</th>
+          <th>کسٹمر</th>
+          <th>موبائل</th>
+          <th>شہر</th>
+          <th>ایڈریس</th>
+          <th>پروڈکٹ</th>
+          <th>رقم</th>
+          <th>اسٹیٹس</th>
+          <th>ایکشن</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </div>
   <div style="margin-top:15px; display:flex; gap:10px; flex-wrap:wrap;">
     <button onclick="downloadOrdersCSV()" style="background:#4ade80; padding:10px; border:none; border-radius:8px; font-weight:bold; color:#000; cursor:pointer;">📥 آرڈرز ایکسل ڈاؤن لوڈ</button>
@@ -778,13 +793,16 @@ function renderOrders() {
   if (!tb) return;
   tb.innerHTML = "";
   if (orders.length === 0) {
-    tb.innerHTML = `<tr><td colspan="6" style="text-align:center;">کوئی آرڈر نہیں</td></tr>`;
+    tb.innerHTML = `<tr><td colspan="9" style="text-align:center;">کوئی آرڈر نہیں</td></tr>`;
     return;
   }
   orders.forEach((o, i) => {
     tb.innerHTML += `<tr>
       <td>${o.orderNo}</td>
       <td>${o.customer}</td>
+      <td>${o.mobile}</td>
+      <td>${o.city}</td>
+      <td>${o.address}</td>
       <td>${o.product}</td>
       <td>${o.amount}</td>
       <td>${o.status === 'pending' ? '⏳ پینڈنگ' : (o.status === 'confirmed' ? '✅ کنفرم' : '📦 ڈیلیور')}</td>
@@ -867,7 +885,6 @@ function renderMyOrders() {
   });
 }
 
-/* ✅ نیا اور خوبصورت پروفیشنل رسید کا ڈیزائن */
 window.printReceipt = function (i) {
   const o = orders[i];
   if (!o) return;
@@ -1144,9 +1161,9 @@ function downloadCSV(filename, csv) {
 }
 
 window.downloadOrdersCSV = function () {
-  let csv = "OrderNo,Customer,Mobile,City,Address,Product,Amount,AccName,AccType,AccNo,EmpID,Status\n";
+  let csv = "OrderNo,Customer,Mobile,City,Address,Product,Amount,EmpID,Status\n";
   orders.forEach(o => {
-    csv += `"${o.orderNo||''}","${o.customer||''}","${o.mobile||''}","${o.city||''}","${o.address||''}","${o.product||''}","${o.amount||0}","${o.accName||''}","${o.accType||''}","${o.accNo||''}","${o.empId||''}","${o.status||''}"\n`;
+    csv += `"${o.orderNo||''}","${o.customer||''}","${o.mobile||''}","${o.city||''}","${o.address||''}","${o.product||''}","${o.amount||0}","${o.empId||''}","${o.status||''}"\n`;
   });
   downloadCSV('Orders.csv', csv);
 };
@@ -1189,8 +1206,8 @@ function printHTML(title, bodyHtml) {
 }
 
 window.printOrders = function () {
-  let h = "<h2>تمام آرڈرز</h2><table><tr><th>آرڈر</th><th>کسٹمر</th><th>پروڈکٹ</th><th>رقم</th><th>اسٹیٹس</th></tr>";
-  orders.forEach(o => { h += `<tr><td>${o.orderNo}</td><td>${o.customer}</td><td>${o.product}</td><td>${o.amount}</td><td>${o.status}</td></tr>`; });
+  let h = "<h2>تمام آرڈرز</h2><table><tr><th>آرڈر</th><th>کسٹمر</th><th>موبائل</th><th>شہر</th><th>ایڈریس</th><th>پروڈکٹ</th><th>رقم</th><th>اسٹیٹس</th></tr>";
+  orders.forEach(o => { h += `<tr><td>${o.orderNo}</td><td>${o.customer}</td><td>${o.mobile||''}</td><td>${o.city||''}</td><td>${o.address||''}</td><td>${o.product}</td><td>${o.amount}</td><td>${o.status}</td></tr>`; });
   h += "</table>";
   printHTML('آرڈرز', h);
 };
@@ -1246,13 +1263,12 @@ window.uploadOrdersCSV = async function (event) {
       let added = 0;
       lines.slice(1).forEach(line => {
         const cols = parseCSVLine(line);
-        const [orderNo, customer, mobile, city, address, product, amount, accName, accType, accNo, empId, status] = cols;
+        const [orderNo, customer, mobile, city, address, product, amount, empId, status] = cols;
         if (orderNo && orderNo.trim()) {
           orders.push({
             orderNo: orderNo.trim(), customer: customer||'', mobile: mobile||'',
             city: city||'', address: address||'', product: product||'',
-            amount: safeNum(amount), accName: accName||'', accType: accType||'',
-            accNo: accNo||'', empId: empId||'', status: status || 'pending',
+            amount: safeNum(amount), empId: empId||'', status: status || 'pending',
             sessionId: 'IMPORTED'
           });
           added++;
