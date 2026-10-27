@@ -809,6 +809,7 @@ function renderOrders() {
       <td>
         ${o.status === 'pending' ? `<button class="action-btn" onclick="confirmOrder(${i})" style="background:var(--green); color:#000;">✅ کنفرم</button>` : ''}
         ${o.status === 'confirmed' ? `<button class="action-btn" onclick="deliverOrder(${i})" style="background:var(--blue); color:#fff;">📦 ڈیلیور</button>` : ''}
+        ${(o.status === 'confirmed' || o.status === 'delivered') ? `<button class="action-btn" onclick="printReceipt(${i})" style="background:var(--green); color:#000;">🖨️ رسید</button>` : ''}
         <button class="action-btn del-btn" onclick="deleteOrder(${i})">🗑️</button>
       </td>
     </tr>`;
