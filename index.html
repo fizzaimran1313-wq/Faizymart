@@ -294,16 +294,6 @@
     <label>ایڈریس <input type="text" id="custAddress" required /></label>
     <label>پروڈکٹ <input type="text" id="product" required /></label>
     <label>رقم <input type="number" id="amount" required /></label>
-    <label>اکاؤنٹ کا نام <input type="text" id="custAccName" required /></label>
-    <label>اکاؤنٹ کی قسم
-      <select id="custAccType" required>
-        <option value="">منتخب کریں</option>
-        <option value="JazzCash">جیز کیش (JazzCash)</option>
-        <option value="Easypaisa">ایزی پیسہ (Easypaisa)</option>
-        <option value="Bank">بینک اکاؤنٹ (Bank)</option>
-      </select>
-    </label>
-    <label>اکاؤنٹ نمبر <input type="text" id="custAccNo" required /></label>
     <label>ایمپلائی آئی ڈی (اختیاری) <input type="text" id="empRefId" placeholder="FM-1001" /></label>
     <button type="submit">آرڈر کریں</button>
   </form>
@@ -877,28 +867,57 @@ function renderMyOrders() {
   });
 }
 
+/* ✅ نیا اور خوبصورت پروفیشنل رسید کا ڈیزائن */
 window.printReceipt = function (i) {
   const o = orders[i];
   if (!o) return;
-  const win = window.open('', '', 'width=600,height=800');
+  const win = window.open('', '', 'width=800,height=900');
   if (!win) { toast('پاپ اپ بلاک ہے', '#ef4444'); return; }
-  win.document.write(`<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><title>رسید</title>
-    <style>body{font-family:"Noto Nastaliq Urdu",sans-serif; text-align:right; padding:20px; line-height:2;}
-    h2{text-align:center;}</style></head><body>
-    <h2>FAIZY MART</h2>
-    <p style="text-align:center;">شکریہ! آپ کا آرڈر کنفرم ہو گیا ہے۔</p>
-    <hr>
-    <p><strong>آرڈر نمبر:</strong> ${o.orderNo}</p>
-    <p><strong>کسٹمر:</strong> ${o.customer}</p>
-    <p><strong>پروڈکٹ:</strong> ${o.product}</p>
-    <p><strong>رقم:</strong> ${o.amount} روپے</p>
-    <p><strong>شہر:</strong> ${o.city}</p>
-    <p><strong>ایڈریس:</strong> ${o.address}</p>
-    <hr>
-    <p style="text-align:center;">© 2026 Faizy Mart</p>
+  
+  win.document.write(`<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><title>رسید - فیضی مارٹ</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap');
+      body { font-family: "Noto Nastaliq Urdu", sans-serif; background: #f3f4f6; padding: 30px; margin: 0; }
+      .receipt-box { background: #fff; max-width: 700px; margin: 0 auto; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; }
+      .header { background: #000; color: #facc15; padding: 20px; text-align: center; border-bottom: 4px solid #facc15; }
+      .header h1 { margin: 0; font-size: 32px; font-weight: 900; }
+      .header p { margin: 5px 0 0 0; color: #fff; font-size: 14px; }
+      .content { padding: 30px; }
+      .content h2 { text-align: center; color: #111827; margin-bottom: 25px; }
+      .details { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+      .details th, .details td { border: 1px solid #d1d5db; padding: 15px; text-align: right; font-size: 16px; }
+      .details th { background: #f9fafb; color: #374151; width: 35%; font-weight: bold; }
+      .details td { color: #111827; font-weight: 600; }
+      .footer { background: #f9fafb; padding: 20px; text-align: center; border-top: 2px dashed #d1d5db; }
+      .footer p { margin: 5px 0; color: #6b7280; font-size: 14px; }
+      @media print { body { background: #fff; padding: 0; } .receipt-box { box-shadow: none; border: 1px solid #000; } }
+    </style>
+    </head><body>
+    <div class="receipt-box">
+      <div class="header">
+        <h1>FAIZY MART</h1>
+        <p>فیضی مارٹ - کیش آن ڈیلیوری</p>
+      </div>
+      <div class="content">
+        <h2>آرڈر کی رسید</h2>
+        <table class="details">
+          <tr><th>آرڈر نمبر</th><td>${o.orderNo}</td></tr>
+          <tr><th>کسٹمر کا نام</th><td>${o.customer}</td></tr>
+          <tr><th>موبائل نمبر</th><td>${o.mobile}</td></tr>
+          <tr><th>پروڈکٹ</th><td>${o.product}</td></tr>
+          <tr><th>کل رقم</th><td style="color: #16a34a; font-size: 18px;">${o.amount} روپے</td></tr>
+          <tr><th>شہر</th><td>${o.city}</td></tr>
+          <tr><th>ڈیلیوری ایڈریس</th><td>${o.address}</td></tr>
+        </table>
+      </div>
+      <div class="footer">
+        <p>خریداری کا شکریہ! آپ کا آرڈر کامیابی سے کنفرم ہو گیا ہے۔</p>
+        <p>© 2026 Faizy Mart. All rights reserved.</p>
+      </div>
+    </div>
     </body></html>`);
   win.document.close();
-  win.print();
+  setTimeout(() => win.print(), 500);
 };
 
 function updateOrderBadge() {
@@ -941,7 +960,7 @@ window.approveApplication = async function (i) {
     salary: 20000, target: 40, password: newPass,
     city: app.city, address: app.address,
     accName: app.accName, accType: app.accType, accNo: app.accNo,
-    sessionId: app.sessionId // ✅ سیشن آئی ڈی کاپی ہو رہی ہے
+    sessionId: app.sessionId
   };
   employees.push(newEmp);
   applications.splice(i, 1);
@@ -953,26 +972,54 @@ window.approveApplication = async function (i) {
 };
 
 window.printJoiningSlip = function (emp) {
-  const win = window.open('', '', 'width=600,height=800');
+  const win = window.open('', '', 'width=800,height=900');
   if (!win) { toast('پاپ اپ بلاک ہے', '#ef4444'); return; }
-  win.document.write(`<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><title>جوائننگ سلپ</title>
-    <style>body{font-family:"Noto Nastaliq Urdu",sans-serif; text-align:center; padding:40px; color:#000;}
-    .box{border:2px solid #000; padding:30px; border-radius:10px; max-width:500px; margin:auto;}
-    h2{color:#d4af37;} .details{text-align:right; font-size:18px; line-height:2.5; margin-top:20px;}
-    .details strong{display:inline-block; width:130px;} .footer{margin-top:30px; font-size:12px; color:#555; border-top:1px solid #ccc; padding-top:10px;}</style>
-    </head><body><div class="box">
-    <h2>FAIZY MART</h2><p>فیضی مارٹ میں خوش آمدید!</p>
-    <h3>🎉 ایمپلائی جوائننگ سلپ 🎉</h3>
-    <div class="details">
-      <p><strong>نام:</strong> ${emp.name}</p>
-      <p><strong>آئی ڈی:</strong> <b>${emp.empId}</b></p>
-      <p><strong>پاس ورڈ:</strong> <b style="color:#d4af37;">${emp.password}</b></p>
+  win.document.write(`<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><title>جوائننگ سلپ - فیضی مارٹ</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap');
+      body { font-family: "Noto Nastaliq Urdu", sans-serif; background: #f3f4f6; padding: 30px; margin: 0; }
+      .receipt-box { background: #fff; max-width: 600px; margin: 0 auto; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; }
+      .header { background: #000; color: #facc15; padding: 25px; text-align: center; border-bottom: 4px solid #facc15; }
+      .header h1 { margin: 0; font-size: 32px; font-weight: 900; }
+      .content { padding: 30px; text-align: center; }
+      .content h2 { color: #111827; margin-bottom: 10px; }
+      .content p { color: #6b7280; margin-bottom: 30px; }
+      .id-card { background: #f9fafb; border: 2px dashed #facc15; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+      .id-card h3 { margin: 0 0 15px 0; color: #111827; }
+      .id-card .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-size: 18px; }
+      .id-card .detail-row:last-child { border-bottom: none; }
+      .id-card .detail-row strong { color: #374151; }
+      .id-card .detail-row span { color: #d4af37; font-weight: bold; }
+      .footer { background: #f9fafb; padding: 20px; text-align: center; border-top: 2px dashed #d1d5db; }
+      .footer p { margin: 5px 0; color: #6b7280; font-size: 14px; }
+      @media print { body { background: #fff; padding: 0; } .receipt-box { box-shadow: none; border: 1px solid #000; } }
+    </style>
+    </head><body>
+    <div class="receipt-box">
+      <div class="header">
+        <h1>FAIZY MART</h1>
+        <p style="margin:5px 0 0; color:#fff;">ایمپلائی پورٹل</p>
+      </div>
+      <div class="content">
+        <h2>🎉 مبارک ہو! آپ کا انتخاب ہو گیا ہے 🎉</h2>
+        <p>آپ کو فیضی مارٹ کی ٹیم میں شامل کر لیا گیا ہے۔</p>
+        
+        <div class="id-card">
+          <h3>آپ کی لاگ ان تفصیلات</h3>
+          <div class="detail-row"><strong>نام:</strong> <span>${emp.name}</span></div>
+          <div class="detail-row"><strong>آئی ڈی:</strong> <span>${emp.empId}</span></div>
+          <div class="detail-row"><strong>پاس ورڈ:</strong> <span style="color:#d97706;">${emp.password}</span></div>
+        </div>
+        
+        <p style="font-size: 14px; color: #ef4444;">نوٹ: یہ رسید محفوظ رکھیں۔ ویب سائٹ پر لاگ ان کرنے کے لیے ان تفصیلات کی ضرورت ہوگی۔</p>
+      </div>
+      <div class="footer">
+        <p>© 2026 Faizy Mart. All rights reserved.</p>
+      </div>
     </div>
-    <p style="margin-top:20px; font-size:14px;">یہ رسید محفوظ رکھیں۔</p>
-    <div class="footer">© 2026 Faizy Mart.</div>
-    </div></body></html>`);
+    </body></html>`);
   win.document.close();
-  win.print();
+  setTimeout(() => win.print(), 500);
 };
 
 window.deleteApplication = async function (i) {
@@ -985,7 +1032,6 @@ window.deleteApplication = async function (i) {
   }
 };
 
-/* ✅ نیا فنکشن: کسٹمر کے لیے "میری درخواستیں" */
 function renderMyApplications() {
   const tb = document.querySelector("#myApplicationsTable tbody");
   if (!tb) return;
@@ -1338,9 +1384,6 @@ document.addEventListener('DOMContentLoaded', () => {
         address: document.getElementById("custAddress").value,
         product: document.getElementById("product").value,
         amount: safeNum(document.getElementById("amount").value),
-        accName: document.getElementById("custAccName").value,
-        accType: document.getElementById("custAccType").value,
-        accNo: document.getElementById("custAccNo").value,
         empId: empRef || (currentEmployee ? currentEmployee.empId : null),
         status: "pending",
         sessionId: getCustomerSession(),
@@ -1369,7 +1412,7 @@ document.addEventListener('DOMContentLoaded', () => {
         accName: document.getElementById("jobAccName").value,
         accType: document.getElementById("jobAccType").value,
         accNo: document.getElementById("jobAccNo").value,
-        sessionId: getCustomerSession() // ✅ سیشن آئی ڈی شامل کی تاکہ رسید مل سکے
+        sessionId: getCustomerSession()
       };
       applications.push(job);
       await saveData();
