@@ -222,6 +222,7 @@
   <button class="back-btn" onclick="showTab('home')">← واپس جائیں</button>
   <h2>نیا ایمپلائی شامل کریں</h2>
   <form id="employeeForm">
+    <input type="hidden" id="editingEmpId" value="" />
     <label>آئی ڈی <input type="text" id="empId" readonly /></label>
     <label>نام <input type="text" id="empName" required /></label>
     <label>موبائل <input type="tel" id="empMobile" required /></label>
@@ -233,7 +234,7 @@
         <span class="toggle-pass" onclick="togglePassword('empPass', this)">👁️</span>
       </div>
     </label>
-    <button type="submit">محفوظ کریں</button>
+    <button type="submit" id="empSubmitBtn">محفوظ کریں</button>
   </form>
 </section>
 
@@ -591,6 +592,10 @@ window.showTab = function (name) {
   if (name === "addEmployee") {
     const el = document.getElementById("empId");
     if (el) el.value = generateNextEmpId();
+    document.getElementById("editingEmpId").value = "";
+    document.getElementById("empSubmitBtn").textContent = "محفوظ کریں";
+    document.getElementById("employeeForm").reset();
+    document.getElementById("empId").value = generateNextEmpId();
   }
   if (name === "addOrder") {
     const el = document.getElementById("orderNo");
@@ -762,20 +767,20 @@ function renderEmployees() {
   });
 }
 
-window.editEmployee = async function (i) {
+window.editEmployee = function (i) {
   if (!currentAdmin) { toast('صرف ایڈمن!', '#ef4444'); return; }
   const emp = employees[i];
   if (!emp) return;
-  const newName = prompt("نیا نام:", emp.name);
-  if (newName === null) return;
-  const newMobile = prompt("نیا موبائل:", emp.mobile || '');
-  if (newMobile === null) return;
-  const newSalary = prompt("نئی سیلری:", emp.salary || 0);
-  if (newSalary === null) return;
-  employees[i] = { ...emp, name: newName, mobile: newMobile, salary: safeNum(newSalary) };
-  await saveData();
-  renderEmployees();
-  toast('✅ اپڈیٹ ہو گیا');
+  
+  showTab('addEmployee');
+  document.getElementById('editingEmpId').value = i;
+  document.getElementById('empId').value = emp.empId;
+  document.getElementById('empName').value = emp.name;
+  document.getElementById('empMobile').value = emp.mobile || '';
+  document.getElementById('empSalary').value = emp.salary || 0;
+  document.getElementById('empTarget').value = emp.target || 0;
+  document.getElementById('empPass').value = emp.password || '';
+  document.getElementById('empSubmitBtn').textContent = "اپڈیٹ کریں";
 };
 
 window.deleteEmployee = async function (i) {
@@ -965,6 +970,7 @@ function renderApplications() {
   });
 }
 
+/* ✅ نیا فنکشن: ایڈمن اپروو کرنے پر ایڈمن کو بھی رسید دکھے گی */
 window.approveApplication = async function (i) {
   if (!currentAdmin) { toast('صرف ایڈمن!', '#ef4444'); return; }
   const app = applications[i];
@@ -974,7 +980,7 @@ window.approveApplication = async function (i) {
   const newPass = "pass" + Math.floor(1000 + Math.random() * 9000);
   
   const newEmp = {
-    empId: newEmpId, name: app.name, mobile: app.mobile,
+    empId: newEmpId, name: app.name, mobile: app.mobile, age: app.age,
     salary: 20000, target: 40, password: newPass,
     city: app.city, address: app.address,
     accName: app.accName, accType: app.accType, accNo: app.accNo,
@@ -986,50 +992,58 @@ window.approveApplication = async function (i) {
   await saveData();
   renderEmployees();
   renderApplications();
+  printJoiningSlip(newEmp); // ایڈمن کو رسید دکھائیں
   toast('✅ درخواست اپروو ہو گئی! رسید کسٹمر کو بھیج دی گئی ہے۔');
 };
 
+/* ✅ نیا فنکشن: رسید میں وہ ساری تفصیلات ہوں جو فارم میں تھیں */
 window.printJoiningSlip = function (emp) {
-  const win = window.open('', '', 'width=800,height=900');
+  const win = window.open('', '', 'width=800,height=1000');
   if (!win) { toast('پاپ اپ بلاک ہے', '#ef4444'); return; }
   win.document.write(`<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><title>جوائننگ سلپ - فیضی مارٹ</title>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap');
       body { font-family: "Noto Nastaliq Urdu", sans-serif; background: #f3f4f6; padding: 30px; margin: 0; }
-      .receipt-box { background: #fff; max-width: 600px; margin: 0 auto; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; }
+      .receipt-box { background: #fff; max-width: 700px; margin: 0 auto; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; }
       .header { background: #000; color: #facc15; padding: 25px; text-align: center; border-bottom: 4px solid #facc15; }
       .header h1 { margin: 0; font-size: 32px; font-weight: 900; }
-      .content { padding: 30px; text-align: center; }
-      .content h2 { color: #111827; margin-bottom: 10px; }
-      .content p { color: #6b7280; margin-bottom: 30px; }
-      .id-card { background: #f9fafb; border: 2px dashed #facc15; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
-      .id-card h3 { margin: 0 0 15px 0; color: #111827; }
-      .id-card .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-size: 18px; }
-      .id-card .detail-row:last-child { border-bottom: none; }
-      .id-card .detail-row strong { color: #374151; }
-      .id-card .detail-row span { color: #d4af37; font-weight: bold; }
+      .content { padding: 30px; }
+      .content h2 { text-align: center; color: #111827; margin-bottom: 25px; }
+      .details { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+      .details th, .details td { border: 1px solid #d1d5db; padding: 12px; text-align: right; font-size: 16px; }
+      .details th { background: #f9fafb; color: #374151; width: 35%; font-weight: bold; }
+      .details td { color: #111827; font-weight: 600; }
       .footer { background: #f9fafb; padding: 20px; text-align: center; border-top: 2px dashed #d1d5db; }
       .footer p { margin: 5px 0; color: #6b7280; font-size: 14px; }
+      .highlight { background: #fffbeb; border: 1px solid #facc15; padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center; }
       @media print { body { background: #fff; padding: 0; } .receipt-box { box-shadow: none; border: 1px solid #000; } }
     </style>
     </head><body>
     <div class="receipt-box">
       <div class="header">
         <h1>FAIZY MART</h1>
-        <p style="margin:5px 0 0; color:#fff;">ایمپلائی پورٹل</p>
+        <p style="margin:5px 0 0; color:#fff;">ایمپلائی جوائننگ سلپ</p>
       </div>
       <div class="content">
         <h2>🎉 مبارک ہو! آپ کا انتخاب ہو گیا ہے 🎉</h2>
-        <p>آپ کو فیضی مارٹ کی ٹیم میں شامل کر لیا گیا ہے۔</p>
+        <table class="details">
+          <tr><th>نام</th><td>${emp.name}</td></tr>
+          <tr><th>عمر</th><td>${emp.age || '-'}</td></tr>
+          <tr><th>موبائل نمبر</th><td>${emp.mobile || '-'}</td></tr>
+          <tr><th>شہر</th><td>${emp.city || '-'}</td></tr>
+          <tr><th>ایڈریس</th><td>${emp.address || '-'}</td></tr>
+          <tr><th>اکاؤنٹ کا نام</th><td>${emp.accName || '-'}</td></tr>
+          <tr><th>اکاؤنٹ کی قسم</th><td>${emp.accType || '-'}</td></tr>
+          <tr><th>اکاؤنٹ نمبر</th><td>${emp.accNo || '-'}</td></tr>
+        </table>
         
-        <div class="id-card">
-          <h3>آپ کی لاگ ان تفصیلات</h3>
-          <div class="detail-row"><strong>نام:</strong> <span>${emp.name}</span></div>
-          <div class="detail-row"><strong>آئی ڈی:</strong> <span>${emp.empId}</span></div>
-          <div class="detail-row"><strong>پاس ورڈ:</strong> <span style="color:#d97706;">${emp.password}</span></div>
+        <div class="highlight">
+          <p style="margin:0 0 10px 0; font-weight:bold;">آپ کی لاگ ان تفصیلات:</p>
+          <p style="margin:5px 0;"><strong>آئی ڈی:</strong> <span style="color:#d97706; font-size:18px;">${emp.empId}</span></p>
+          <p style="margin:5px 0;"><strong>پاس ورڈ:</strong> <span style="color:#d97706; font-size:18px;">${emp.password}</span></p>
         </div>
         
-        <p style="font-size: 14px; color: #ef4444;">نوٹ: یہ رسید محفوظ رکھیں۔ ویب سائٹ پر لاگ ان کرنے کے لیے ان تفصیلات کی ضرورت ہوگی۔</p>
+        <p style="margin-top: 20px; font-size: 14px; color: #ef4444;">نوٹ: یہ رسید محفوظ رکھیں۔ ویب سائٹ پر لاگ ان کرنے کے لیے ان تفصیلات کی ضرورت ہوگی۔</p>
       </div>
       <div class="footer">
         <p>© 2026 Faizy Mart. All rights reserved.</p>
@@ -1372,19 +1386,45 @@ document.addEventListener('DOMContentLoaded', () => {
     employeeForm.addEventListener("submit", async e => {
       e.preventDefault();
       if (!currentAdmin) { toast('صرف ایڈمن!', '#ef4444'); return; }
-      const emp = {
-        empId: document.getElementById("empId").value,
-        name: document.getElementById("empName").value,
-        mobile: document.getElementById("empMobile").value,
-        salary: safeNum(document.getElementById("empSalary").value),
-        target: safeNum(document.getElementById("empTarget").value),
-        password: document.getElementById("empPass").value
-      };
-      employees.push(emp);
-      await saveData();
-      renderEmployees();
-      e.target.reset();
-      toast('✅ ایمپلائی شامل ہو گیا!');
+      
+      const editingIdx = document.getElementById("editingEmpId").value;
+      
+      if (editingIdx !== "") {
+        // اپڈیٹ کریں
+        const i = parseInt(editingIdx);
+        employees[i] = {
+          ...employees[i],
+          name: document.getElementById("empName").value,
+          mobile: document.getElementById("empMobile").value,
+          salary: safeNum(document.getElementById("empSalary").value),
+          target: safeNum(document.getElementById("empTarget").value),
+          password: document.getElementById("empPass").value
+        };
+        await saveData();
+        renderEmployees();
+        document.getElementById("editingEmpId").value = "";
+        document.getElementById("empSubmitBtn").textContent = "محفوظ کریں";
+        e.target.reset();
+        document.getElementById("empId").value = generateNextEmpId();
+        showTab('employees');
+        toast('✅ اپڈیٹ ہو گیا!');
+      } else {
+        // نیا شامل کریں
+        const emp = {
+          empId: document.getElementById("empId").value,
+          name: document.getElementById("empName").value,
+          mobile: document.getElementById("empMobile").value,
+          salary: safeNum(document.getElementById("empSalary").value),
+          target: safeNum(document.getElementById("empTarget").value),
+          password: document.getElementById("empPass").value
+        };
+        employees.push(emp);
+        await saveData();
+        renderEmployees();
+        e.target.reset();
+        document.getElementById("empId").value = generateNextEmpId();
+        toast('✅ ایمپلائی شامل ہو گیا!');
+      }
     });
   }
 
